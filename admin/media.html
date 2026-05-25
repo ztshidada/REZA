@@ -4,45 +4,205 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Media | Reza Admin</title>
-  <link rel="stylesheet" href="css/admin.css">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #241812;
+      background:
+        radial-gradient(circle at 80% 10%, rgba(232,201,141,.35), transparent 25%),
+        radial-gradient(circle at 15% 80%, rgba(244,199,184,.32), transparent 28%),
+        linear-gradient(135deg, #fffaf2, #f5e3c9);
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    .side {
+      padding: 34px 28px;
+      border-right: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.45);
+      backdrop-filter: blur(18px);
+    }
+
+    .side h1 {
+      font-family: Georgia, serif;
+      font-size: 2.3rem;
+      margin: 0;
+    }
+
+    .side h1 span { color: #b8872f; }
+
+    .side p {
+      margin: 12px 0 32px;
+      color: #6f5a46;
+      font-weight: 700;
+    }
+
+    .side a {
+      display: block;
+      padding: 15px 18px;
+      margin: 8px 0;
+      border-radius: 18px;
+      color: #241812;
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .side a.active,
+    .side a:hover {
+      background: #241812;
+      color: #fffaf2;
+    }
+
+    .main {
+      padding: 44px;
+    }
+
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .head h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(3rem, 7vw, 5.6rem);
+      margin: 0;
+      line-height: .9;
+    }
+
+    .card {
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 32px;
+      padding: 28px;
+      box-shadow: 0 28px 80px rgba(70, 45, 25, .13);
+      max-width: 1050px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+
+    .preview {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 26px;
+      margin: 18px 0;
+      background: #f3dfce;
+      border: 1px solid rgba(0,0,0,.08);
+      display: block;
+    }
+
+    .input {
+      width: 100%;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.13);
+      background: rgba(255,255,255,.75);
+      font-size: 1rem;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 16px 28px;
+      font-weight: 1000;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #e7c06f, #c9943d);
+      color: #241812;
+      box-shadow: 0 18px 40px rgba(201,148,61,.25);
+    }
+
+    .ghost {
+      background: rgba(255,255,255,.75);
+      color: #241812;
+      border: 1px solid rgba(0,0,0,.12);
+    }
+
+    .status {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(201,148,61,.13);
+      color: #6d4917;
+      font-weight: 900;
+      min-height: 52px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    @media(max-width: 850px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { border-right: 0; border-bottom: 1px solid rgba(0,0,0,.08); }
+      .main { padding: 24px; }
+    }
+  </style>
 </head>
+
 <body>
-  <aside class="side">
-    <h1>Reza <span>Admin</span></h1>
-    <p>Champagne Luxury V11</p>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="products.html">Products</a>
-    <a class="active" href="media.html">Media</a>
-    <a href="orders.html">Orders</a>
-    <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
-    <a href="login.html">Logout</a>
-  </aside>
+  <div class="layout">
+    <aside class="side">
+      <h1>Reza <span>Admin</span></h1>
+      <p>Champagne Luxury V11</p>
 
-  <main class="main">
-    <div class="page-head">
-      <div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="products.html">Products</a>
+      <a class="active" href="media.html">Media</a>
+      <a href="orders.html">Orders</a>
+      <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+      <a href="login.html">Logout</a>
+    </aside>
+
+    <main class="main">
+      <div class="head">
         <h1>Media</h1>
-        <p>Change the homepage hero background image.</p>
+        <button id="saveBtn" class="btn primary" type="button">Save</button>
       </div>
-      <button id="saveMediaBtn" class="btn primary" type="button">Save</button>
-    </div>
 
-    <section class="card">
-      <h2>Hero Background</h2>
-      <p>Upload the image that must show on the homepage.</p>
+      <section class="card">
+        <h2>Homepage Hero Background</h2>
+        <p>Upload the image that must show on the customer homepage.</p>
 
-      <img id="previewImage" src="" alt="Hero preview" style="width:100%;max-height:360px;object-fit:cover;border-radius:26px;margin:18px 0;background:#f4e4cf">
+        <img id="preview" class="preview" alt="Hero preview">
 
-      <input id="heroFile" class="input" type="file" accept="image/*">
-      <br><br>
+        <input id="fileInput" class="input" type="file" accept="image/*">
 
-      <input id="heroTitle" class="input" type="text" value="Champagne Luxury" placeholder="Hero title">
+        <br><br>
 
-      <p id="mediaStatus" style="margin-top:16px;font-weight:900;color:#8a5b19"></p>
+        <input id="titleInput" class="input" type="text" value="Champagne Luxury" placeholder="Hero title">
 
-      <button id="testMediaBtn" class="btn ghost" type="button" style="margin-top:14px">Test API</button>
-    </section>
-  </main>
+        <div class="actions">
+          <button id="testBtn" class="btn ghost" type="button">Test API</button>
+          <a class="btn ghost" href="https://api.rezaholdings.co.za/api/media" target="_blank">Open Media API</a>
+          <a class="btn ghost" href="https://rezaholdings.co.za/index.html" target="_blank">Open Homepage</a>
+        </div>
+
+        <div id="status" class="status">Loading...</div>
+      </section>
+    </main>
+  </div>
 
   <script>
     const API_BASE =
@@ -50,74 +210,76 @@
         ? "http://localhost:10000"
         : "https://api.rezaholdings.co.za";
 
-    const fileInput = document.getElementById("heroFile");
-    const titleInput = document.getElementById("heroTitle");
-    const saveBtn = document.getElementById("saveMediaBtn");
-    const testBtn = document.getElementById("testMediaBtn");
-    const preview = document.getElementById("previewImage");
-    const statusEl = document.getElementById("mediaStatus");
+    const fileInput = document.getElementById("fileInput");
+    const titleInput = document.getElementById("titleInput");
+    const preview = document.getElementById("preview");
+    const statusBox = document.getElementById("status");
+    const saveBtn = document.getElementById("saveBtn");
+    const testBtn = document.getElementById("testBtn");
 
-    let selectedImageData = "";
+    let imageData = "";
 
-    function setStatus(message) {
-      statusEl.textContent = message;
+    function status(message) {
+      statusBox.textContent = message;
     }
 
-    function fileToDataUrl(file) {
+    function fileToDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error("Could not read image"));
+        reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
 
-    async function loadCurrentMedia() {
+    async function loadMedia() {
       try {
-        setStatus("Loading current media...");
+        status("Testing connection to backend...");
+
         const res = await fetch(API_BASE + "/api/media?t=" + Date.now());
         const data = await res.json();
 
-        if (data.success && data.media) {
-          if (data.media.heroImage) {
-            preview.src = data.media.heroImage.startsWith("data:image")
-              ? data.media.heroImage
-              : data.media.heroImage;
-          }
-          if (data.media.heroTitle) titleInput.value = data.media.heroTitle;
-          setStatus("Ready.");
-        } else {
-          setStatus("Media API returned no data.");
+        if (!data.success) {
+          status("Backend responded, but media failed.");
+          return;
         }
-      } catch (err) {
-        console.error(err);
-        setStatus("Could not load media API.");
+
+        if (data.media.heroImage) {
+          preview.src = data.media.heroImage;
+        }
+
+        if (data.media.heroTitle) {
+          titleInput.value = data.media.heroTitle;
+        }
+
+        status("Ready. Choose an image and click Save.");
+      } catch (error) {
+        console.error(error);
+        status("Could not connect to backend API. Redeploy backend or check /api/media.");
       }
     }
 
     fileInput.addEventListener("change", async () => {
-      const file = fileInput.files && fileInput.files[0];
+      const file = fileInput.files[0];
       if (!file) return;
 
-      setStatus("Reading image...");
-      selectedImageData = await fileToDataUrl(file);
-      preview.src = selectedImageData;
-      setStatus("Image ready. Click Save.");
+      status("Reading image...");
+      imageData = await fileToDataURL(file);
+      preview.src = imageData;
+      status("Image loaded. Now click Save.");
     });
 
     saveBtn.addEventListener("click", async () => {
       try {
         saveBtn.disabled = true;
         saveBtn.textContent = "Saving...";
-        setStatus("Saving to backend...");
+        status("Saving image to backend...");
 
         const payload = {
           heroTitle: titleInput.value.trim() || "Champagne Luxury"
         };
 
-        if (selectedImageData) {
-          payload.heroImage = selectedImageData;
-        }
+        if (imageData) payload.heroImage = imageData;
 
         const res = await fetch(API_BASE + "/api/media", {
           method: "POST",
@@ -128,16 +290,16 @@
         const data = await res.json();
 
         if (!data.success) {
-          setStatus(data.message || "Save failed.");
+          status(data.message || "Save failed.");
           alert(data.message || "Save failed.");
           return;
         }
 
-        setStatus("Saved successfully. Now hard refresh the homepage.");
-        alert("Saved successfully. Open the homepage and hard refresh.");
-      } catch (err) {
-        console.error(err);
-        setStatus("Save failed. Check backend deploy or browser console.");
+        status("Saved successfully. Open homepage and hard refresh.");
+        alert("Saved successfully. Now open homepage and press Command + Shift + R.");
+      } catch (error) {
+        console.error(error);
+        status("Save failed. Check backend deploy or browser console.");
         alert("Save failed. Check backend deploy or browser console.");
       } finally {
         saveBtn.disabled = false;
@@ -147,20 +309,20 @@
 
     testBtn.addEventListener("click", async () => {
       try {
-        setStatus("Testing API...");
+        status("Testing API...");
         const res = await fetch(API_BASE + "/api/media?t=" + Date.now());
         const data = await res.json();
         console.log(data);
-        alert("API works. Check console for response.");
-        setStatus("API works.");
-      } catch (err) {
-        console.error(err);
+        alert("API test complete. Check the status box and console.");
+        status(data.success ? "API is working." : "API responded but failed.");
+      } catch (error) {
+        console.error(error);
+        status("API test failed.");
         alert("API test failed.");
-        setStatus("API test failed.");
       }
     });
 
-    loadCurrentMedia();
+    loadMedia();
   </script>
 </body>
 </html>
