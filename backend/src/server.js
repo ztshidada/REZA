@@ -155,4 +155,73 @@ app.post("/api/media", express.json({ limit: "80mb" }), (req, res) => {
 });
 
 
+
+// ================================
+// REZA MEDIA ROUTES - FORCED LIVE
+// ================================
+const REZA_MEDIA_FILE_FINAL = path.join(__dirname, "../data/media.json");
+
+function rezaDefaultMediaFinal() {
+  return {
+    heroImage: "assets/images/reza-soft-beauty-bg.svg",
+    heroTitle: "Champagne Luxury",
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function rezaReadMediaFinal() {
+  try {
+    fs.mkdirSync(path.dirname(REZA_MEDIA_FILE_FINAL), { recursive: true });
+
+    if (!fs.existsSync(REZA_MEDIA_FILE_FINAL)) {
+      const defaults = rezaDefaultMediaFinal();
+      fs.writeFileSync(REZA_MEDIA_FILE_FINAL, JSON.stringify(defaults, null, 2));
+      return defaults;
+    }
+
+    return JSON.parse(fs.readFileSync(REZA_MEDIA_FILE_FINAL, "utf8"));
+  } catch (error) {
+    return {
+      ...rezaDefaultMediaFinal(),
+      error: error.message
+    };
+  }
+}
+
+app.get("/api/media", (req, res) => {
+  res.json({
+    success: true,
+    media: rezaReadMediaFinal()
+  });
+});
+
+app.post("/api/media", (req, res) => {
+  try {
+    const current = rezaReadMediaFinal();
+
+    const next = {
+      ...current,
+      heroImage: req.body.heroImage || current.heroImage,
+      heroTitle: req.body.heroTitle || current.heroTitle || "Champagne Luxury",
+      updatedAt: new Date().toISOString()
+    };
+
+    fs.mkdirSync(path.dirname(REZA_MEDIA_FILE_FINAL), { recursive: true });
+    fs.writeFileSync(REZA_MEDIA_FILE_FINAL, JSON.stringify(next, null, 2));
+
+    res.json({
+      success: true,
+      message: "Media saved successfully",
+      media: next
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// END REZA MEDIA ROUTES - FORCED LIVE
+
 app.listen(PORT,()=>console.log(`Reza V11 API running on port ${PORT}`));
