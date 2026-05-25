@@ -1,0 +1,26 @@
+[
+  {
+    "id": "order_1779529112297_9cff02",
+    "orderNumber": "REZA-1779529112297",
+    "customer": {
+      "name": "Rendani Tshidada",
+      "phone": "0647610299",
+      "email": "ztshidada@gmail.com",
+      "address": "Zambezi minor life style estate",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "champagne-glow-oil",
+        "name": "Champagne Glow Oil",
+        "price": 380,
+        "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1400&auto=format&fit=crop",
+        "qty": 1
+      }
+    ],
+    "total": 380,
+    "status": "New Order",
+    "paymentStatus": "Pending",
+    "createdAt": "2026-05-23T09:38:32.297Z"
+  }
+]

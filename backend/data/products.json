@@ -1,0 +1,53 @@
+[
+  {
+    "id": "champagne-glow-oil",
+    "name": "Champagne Glow Oil",
+    "category": "Skincare",
+    "price": 380,
+    "stock": 30,
+    "badge": "Signature",
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1400&auto=format&fit=crop",
+    "description": "A radiant beauty oil crafted for soft, glowing, luxury-looking skin.",
+    "benefits": [
+      "Radiant glow",
+      "Soft skin finish",
+      "Luxury daily care"
+    ],
+    "howToUse": "Apply a few drops to clean skin and massage gently.",
+    "showOnline": true
+  },
+  {
+    "id": "rose-gold-wellness-set",
+    "name": "Rose Gold Wellness Set",
+    "category": "Wellness",
+    "price": 650,
+    "stock": 18,
+    "badge": "Premium Combo",
+    "image": "https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=1400&auto=format&fit=crop",
+    "description": "A premium health and beauty set designed for everyday confidence.",
+    "benefits": [
+      "Daily wellness support",
+      "Premium product pairing",
+      "Beautiful gift-ready feel"
+    ],
+    "howToUse": "Use consistently according to the instructions on each product.",
+    "showOnline": true
+  },
+  {
+    "id": "ivory-skin-ritual",
+    "name": "Ivory Skin Ritual",
+    "category": "Beauty",
+    "price": 520,
+    "stock": 12,
+    "badge": "New",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1400&auto=format&fit=crop",
+    "description": "A refined beauty ritual for customers who love a soft, premium look.",
+    "benefits": [
+      "Luxury self-care",
+      "Smooth routine",
+      "Elegant beauty finish"
+    ],
+    "howToUse": "Use as part of your morning or evening routine.",
+    "showOnline": true
+  }
+]
