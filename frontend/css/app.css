@@ -584,3 +584,20 @@ body {
   background-position: center !important;
 }
 
+
+/* FINAL — Hard-coded Reza homepage background */
+.hero {
+  background:
+    linear-gradient(90deg, rgba(255,250,242,.86), rgba(255,250,242,.55), rgba(255,250,242,.18)),
+    url("../assets/images/reza-live-hero.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.page-hero {
+  background:
+    linear-gradient(135deg, rgba(255,250,242,.78), rgba(243,223,206,.52)),
+    url("../assets/images/reza-live-hero.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
