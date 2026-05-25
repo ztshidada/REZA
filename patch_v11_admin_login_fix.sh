@@ -1,3 +1,9 @@
+#!/bin/bash
+set -e
+
+echo "Fixing V11 admin login..."
+
+cat > admin/login.html <<'HTML'
 <!doctype html>
 <html>
 <head>
@@ -67,3 +73,41 @@
   </script>
 </body>
 </html>
+HTML
+
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("admin/js/admin.js")
+text = p.read_text()
+
+# Replace API base with live-safe version
+start = 'const API_BASE ='
+if start in text:
+    lines = text.splitlines()
+    new_lines = []
+    skipping = False
+    for line in lines:
+        if line.startswith("const API_BASE"):
+            new_lines.append('const API_BASE =')
+            new_lines.append('  location.hostname.includes("localhost")')
+            new_lines.append('    ? "http://localhost:10000"')
+            new_lines.append('    : (localStorage.getItem("REZA_API_BASE") || "https://api.rezaholdings.co.za");')
+            skipping = True
+            continue
+        if skipping:
+            if line.strip().endswith(";"):
+                skipping = False
+            continue
+        new_lines.append(line)
+    text = "\n".join(new_lines)
+
+p.write_text(text)
+print("Admin JS API URL checked.")
+PY
+
+git add .
+git commit -m "Fix V11 admin login button and API connection"
+git push
+
+echo "Done. Now redeploy admin and backend on Render."
