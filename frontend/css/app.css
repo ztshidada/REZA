@@ -479,3 +479,46 @@ body {
   }
 }
 
+
+/* Reza custom champagne image backgrounds */
+body {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(232,201,141,.28), transparent 28%),
+    radial-gradient(circle at 92% 8%, rgba(243,215,200,.44), transparent 30%),
+    url("../assets/images/reza-luxury-pattern.svg"),
+    linear-gradient(180deg,#fffdf8 0%, var(--cream) 55%, #fff8ee 100%) !important;
+  background-size: auto, auto, 720px auto, cover !important;
+}
+
+.hero {
+  background:
+    linear-gradient(90deg,rgba(255,250,242,.92),rgba(255,250,242,.62),rgba(255,250,242,.22)),
+    var(--hero, url("../assets/images/reza-champagne-hero.svg")) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.page-hero {
+  background:
+    linear-gradient(135deg, rgba(255,250,242,.88), rgba(243,223,206,.78)),
+    url("../assets/images/reza-champagne-hero.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.product-img {
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.74), transparent 38%),
+    url("../assets/images/reza-product-glow.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero-card-inner {
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.74), transparent 42%),
+    url("../assets/images/reza-product-glow.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+

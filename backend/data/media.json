@@ -1,5 +1,7 @@
 {
-  "heroImage": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1900&auto=format&fit=crop",
+  "heroImage": "assets/images/reza-champagne-hero.svg",
   "logoText": "Reza",
-  "accentLine": "Champagne Luxury"
+  "accentLine": "Champagne Luxury",
+  "patternImage": "assets/images/reza-luxury-pattern.svg",
+  "productGlow": "assets/images/reza-product-glow.svg"
 }
