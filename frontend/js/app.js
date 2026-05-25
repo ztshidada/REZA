@@ -362,3 +362,32 @@ document.addEventListener("DOMContentLoaded", renderWixCheckout);
 
   document.addEventListener("DOMContentLoaded", applyAdminHeroImage);
 })();
+
+// V11.5 - direct live homepage media loader
+(function(){
+  const API_BASE =
+    location.hostname.includes("localhost")
+      ? "http://localhost:10000"
+      : "https://api.rezaholdings.co.za";
+
+  async function applyLiveHeroBackground() {
+    try {
+      const res = await fetch(API_BASE + "/api/media?t=" + Date.now());
+      const data = await res.json();
+      if (!data.success || !data.media || !data.media.heroImage) return;
+
+      const img = data.media.heroImage;
+
+      document.querySelectorAll(".hero, .page-hero").forEach(el => {
+        el.style.backgroundImage =
+          `linear-gradient(90deg, rgba(255,250,242,.88), rgba(255,250,242,.58), rgba(255,250,242,.18)), url("${img}")`;
+        el.style.backgroundSize = "cover";
+        el.style.backgroundPosition = "center";
+      });
+    } catch (err) {
+      console.warn("Hero media not applied", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", applyLiveHeroBackground);
+})();

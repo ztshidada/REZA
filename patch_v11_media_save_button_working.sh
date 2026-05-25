@@ -1,3 +1,106 @@
+#!/bin/bash
+set -e
+
+echo "🔧 Fixing Media Save button properly..."
+
+# 1. Make backend media endpoint strong
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("backend/src/server.js")
+text = p.read_text()
+
+if 'const fs = require("fs");' not in text and "const fs = require('fs');" not in text:
+    text = 'const fs = require("fs");\n' + text
+
+if 'const path = require("path");' not in text and "const path = require('path');" not in text:
+    text = 'const path = require("path");\n' + text
+
+media_code = r'''
+// ================================
+// WORKING REZA MEDIA API
+// ================================
+const rezaMediaPath = path.join(__dirname, "../data/media.json");
+
+function readRezaMediaSafe() {
+  try {
+    fs.mkdirSync(path.dirname(rezaMediaPath), { recursive: true });
+    if (!fs.existsSync(rezaMediaPath)) {
+      const defaults = {
+        heroImage: "assets/images/reza-soft-beauty-bg.svg",
+        heroTitle: "Champagne Luxury",
+        updatedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(rezaMediaPath, JSON.stringify(defaults, null, 2));
+      return defaults;
+    }
+    return JSON.parse(fs.readFileSync(rezaMediaPath, "utf8"));
+  } catch (err) {
+    return {
+      heroImage: "assets/images/reza-soft-beauty-bg.svg",
+      heroTitle: "Champagne Luxury",
+      error: err.message
+    };
+  }
+}
+
+app.get("/api/media", (req, res) => {
+  res.json({ success: true, media: readRezaMediaSafe() });
+});
+
+app.post("/api/media", express.json({ limit: "80mb" }), (req, res) => {
+  try {
+    const current = readRezaMediaSafe();
+    const next = {
+      ...current,
+      heroImage: req.body.heroImage || current.heroImage,
+      heroTitle: req.body.heroTitle || current.heroTitle || "Champagne Luxury",
+      updatedAt: new Date().toISOString()
+    };
+
+    fs.mkdirSync(path.dirname(rezaMediaPath), { recursive: true });
+    fs.writeFileSync(rezaMediaPath, JSON.stringify(next, null, 2));
+
+    res.json({
+      success: true,
+      message: "Media saved successfully",
+      media: next
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+'''
+
+if "WORKING REZA MEDIA API" not in text:
+    # Insert before common 404 handlers if found
+    markers = [
+        'app.use((req, res) =>',
+        'app.get("*"',
+        "app.get('*'",
+        'app.listen('
+    ]
+
+    inserted = False
+    for marker in markers:
+        idx = text.find(marker)
+        if idx != -1:
+            text = text[:idx] + media_code + "\n\n" + text[idx:]
+            inserted = True
+            break
+
+    if not inserted:
+        text += "\n\n" + media_code + "\n"
+
+p.write_text(text)
+print("✅ Backend media API inserted/checked.")
+PY
+
+# 2. Replace Media page with working version
+cat > admin/media.html <<'HTML'
 <!doctype html>
 <html lang="en">
 <head>
@@ -164,3 +267,43 @@
   </script>
 </body>
 </html>
+HTML
+
+# 3. Make frontend apply media directly
+cat >> frontend/js/app.js <<'JS'
+
+// V11.5 - direct live homepage media loader
+(function(){
+  const API_BASE =
+    location.hostname.includes("localhost")
+      ? "http://localhost:10000"
+      : "https://api.rezaholdings.co.za";
+
+  async function applyLiveHeroBackground() {
+    try {
+      const res = await fetch(API_BASE + "/api/media?t=" + Date.now());
+      const data = await res.json();
+      if (!data.success || !data.media || !data.media.heroImage) return;
+
+      const img = data.media.heroImage;
+
+      document.querySelectorAll(".hero, .page-hero").forEach(el => {
+        el.style.backgroundImage =
+          `linear-gradient(90deg, rgba(255,250,242,.88), rgba(255,250,242,.58), rgba(255,250,242,.18)), url("${img}")`;
+        el.style.backgroundSize = "cover";
+        el.style.backgroundPosition = "center";
+      });
+    } catch (err) {
+      console.warn("Hero media not applied", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", applyLiveHeroBackground);
+})();
+JS
+
+git add .
+git commit -m "Make admin media save button work"
+git push
+
+echo "✅ Done. Redeploy backend, admin and frontend on Render."

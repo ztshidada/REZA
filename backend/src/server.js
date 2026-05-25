@@ -96,4 +96,63 @@ app.get("/api/orders",admin,(req,res)=>res.json({success:true,orders:read("order
 app.post("/api/orders",(req,res)=>{let os=read("orders.json",[]),b=req.body||{},total=(b.items||[]).reduce((s,i)=>s+Number(i.price||0)*Number(i.qty||1),0);let o={id:id("order"),orderNumber:`REZA-${Date.now()}`,customer:b.customer||{},items:b.items||[],total,status:"New Order",paymentStatus:"Pending",createdAt:new Date().toISOString()};os.unshift(o);write("orders.json",os);res.json({success:true,order:o,message:"Order created successfully."})});
 app.get("/api/payments/yoco/diagnostics",(req,res)=>{const key=process.env.YOCO_SECRET_KEY||"";res.json({success:true,yocoConfigured:Boolean(key),keyMode:key.startsWith("sk_live_")||key.startsWith("yoco_live_")?"live":key.startsWith("sk_test_")||key.startsWith("yoco_test_")?"test":"unknown",webhookConfigured:Boolean(process.env.YOCO_WEBHOOK_SECRET),frontendUrl:process.env.FRONTEND_URL||null,webhookUrl:"/api/payments/yoco/webhook"})});
 app.post("/api/payments/yoco/webhook",(req,res)=>{console.log("Yoco webhook",JSON.stringify(req.body).slice(0,600));res.json({success:true,received:true})});
-app.use((req,res)=>res.status(404).json({success:false,message:"Route not found"}));app.listen(PORT,()=>console.log(`Reza V11 API running on port ${PORT}`));
+app.use((req,res)=>res.status(404).json({success:false,message:"Route not found"}));
+// ================================
+// WORKING REZA MEDIA API
+// ================================
+const rezaMediaPath = path.join(__dirname, "../data/media.json");
+
+function readRezaMediaSafe() {
+  try {
+    fs.mkdirSync(path.dirname(rezaMediaPath), { recursive: true });
+    if (!fs.existsSync(rezaMediaPath)) {
+      const defaults = {
+        heroImage: "assets/images/reza-soft-beauty-bg.svg",
+        heroTitle: "Champagne Luxury",
+        updatedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(rezaMediaPath, JSON.stringify(defaults, null, 2));
+      return defaults;
+    }
+    return JSON.parse(fs.readFileSync(rezaMediaPath, "utf8"));
+  } catch (err) {
+    return {
+      heroImage: "assets/images/reza-soft-beauty-bg.svg",
+      heroTitle: "Champagne Luxury",
+      error: err.message
+    };
+  }
+}
+
+app.get("/api/media", (req, res) => {
+  res.json({ success: true, media: readRezaMediaSafe() });
+});
+
+app.post("/api/media", express.json({ limit: "80mb" }), (req, res) => {
+  try {
+    const current = readRezaMediaSafe();
+    const next = {
+      ...current,
+      heroImage: req.body.heroImage || current.heroImage,
+      heroTitle: req.body.heroTitle || current.heroTitle || "Champagne Luxury",
+      updatedAt: new Date().toISOString()
+    };
+
+    fs.mkdirSync(path.dirname(rezaMediaPath), { recursive: true });
+    fs.writeFileSync(rezaMediaPath, JSON.stringify(next, null, 2));
+
+    res.json({
+      success: true,
+      message: "Media saved successfully",
+      media: next
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
+
+app.listen(PORT,()=>console.log(`Reza V11 API running on port ${PORT}`));
