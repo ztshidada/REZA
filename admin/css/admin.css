@@ -16,3 +16,19 @@ body {
   background-position: center !important;
 }
 
+
+/* V11.3 — Admin background image upgrade */
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(232,201,141,.30), transparent 28%),
+    url("../assets/images/reza-soft-beauty-bg.svg"),
+    linear-gradient(135deg,#fffaf2,#f3dfce) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.card {
+  background: rgba(255,255,255,.82) !important;
+  backdrop-filter: blur(18px);
+}
+

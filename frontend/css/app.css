@@ -522,3 +522,43 @@ body {
   background-position: center !important;
 }
 
+
+/* V11.3 — Premium Reza background images */
+.hero {
+  background:
+    linear-gradient(90deg, rgba(255,250,242,.88), rgba(255,250,242,.58), rgba(255,250,242,.18)),
+    url("../assets/images/reza-soft-beauty-bg.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.page-hero {
+  background:
+    linear-gradient(135deg, rgba(255,250,242,.78), rgba(243,223,206,.56)),
+    url("../assets/images/reza-soft-beauty-bg.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.product-img,
+.hero-card-inner {
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.45), transparent 42%),
+    url("../assets/images/reza-card-bg.svg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -120px;
+  bottom: -180px;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,201,141,.38), transparent 68%);
+  filter: blur(12px);
+  pointer-events: none;
+}
+
