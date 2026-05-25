@@ -278,3 +278,43 @@ document.addEventListener("DOMContentLoaded", renderWixCheckout);
   document.addEventListener("DOMContentLoaded", showPopup);
 })();
 
+
+// ================================
+// V11.4 — LOAD ADMIN MEDIA ON FRONTEND
+// ================================
+(function(){
+  const API_BASE =
+    location.hostname.includes("localhost")
+      ? "http://localhost:10000"
+      : "https://api.rezaholdings.co.za";
+
+  function normaliseImage(src){
+    if(!src) return null;
+    if(src.startsWith("data:image")) return src;
+    if(src.startsWith("http")) return src;
+    if(src.startsWith("/")) return API_BASE + src;
+    return src;
+  }
+
+  async function loadLiveMedia(){
+    try {
+      const res = await fetch(API_BASE + "/api/media?time=" + Date.now());
+      const data = await res.json();
+      const media = data.media || data;
+
+      const hero = normaliseImage(media.heroImage || media.heroBackground || media.backgroundImage);
+
+      if(hero){
+        document.documentElement.style.setProperty("--reza-live-hero-bg", `url("${hero}")`);
+      }
+
+      if(media.heroTitle){
+        document.documentElement.style.setProperty("--reza-hero-title", `"${media.heroTitle}"`);
+      }
+    } catch (error) {
+      console.warn("Could not load live media settings", error);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadLiveMedia);
+})();

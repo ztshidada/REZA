@@ -562,3 +562,25 @@ body {
   pointer-events: none;
 }
 
+
+/* V11.4 — Dynamic admin-controlled homepage background */
+:root {
+  --reza-live-hero-bg: url("../assets/images/reza-soft-beauty-bg.svg");
+}
+
+.hero {
+  background:
+    linear-gradient(90deg, rgba(255,250,242,.88), rgba(255,250,242,.58), rgba(255,250,242,.18)),
+    var(--reza-live-hero-bg) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.page-hero {
+  background:
+    linear-gradient(135deg, rgba(255,250,242,.78), rgba(243,223,206,.56)),
+    var(--reza-live-hero-bg) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
