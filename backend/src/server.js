@@ -1,12 +1,88 @@
+const path = require("path");
+const fs = require("fs");
 require("dotenv").config();
 const express=require("express"),cors=require("cors"),fs=require("fs"),path=require("path");
 const app=express(),PORT=process.env.PORT||10000,DATA=path.join(__dirname,"..","data");
-app.use(cors({origin:true,credentials:true}));app.use(express.json({limit:"20mb"}));
+app.use(cors({origin:true,credentials:true}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+  next();
+});
+
+app.use(express.json({limit:"20mb"}));
 function fp(n){if(!fs.existsSync(DATA))fs.mkdirSync(DATA,{recursive:true});return path.join(DATA,n)}
 function read(n,f){const p=fp(n);if(!fs.existsSync(p)){fs.writeFileSync(p,JSON.stringify(f,null,2));return f}try{return JSON.parse(fs.readFileSync(p,"utf8"))}catch{return f}}
 function write(n,d){fs.writeFileSync(fp(n),JSON.stringify(d,null,2))}
 function id(p){return `${p}_${Date.now()}_${Math.random().toString(16).slice(2,8)}`}
 function admin(req,res,next){const t=String(req.headers.authorization||"").replace("Bearer ","");if(t==="reza-v11-admin-token")return next();res.status(401).json({success:false,message:"Unauthorized"})}
+
+// ================================
+// REZA MEDIA API - FINAL
+// ================================
+const rezaMediaFile = path.join(__dirname, "../data/media.json");
+
+function getDefaultMedia() {
+  return {
+    heroImage: "assets/images/reza-soft-beauty-bg.svg",
+    heroTitle: "Champagne Luxury",
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function readRezaMedia() {
+  try {
+    fs.mkdirSync(path.dirname(rezaMediaFile), { recursive: true });
+
+    if (!fs.existsSync(rezaMediaFile)) {
+      const defaults = getDefaultMedia();
+      fs.writeFileSync(rezaMediaFile, JSON.stringify(defaults, null, 2));
+      return defaults;
+    }
+
+    const raw = fs.readFileSync(rezaMediaFile, "utf8");
+    return JSON.parse(raw || "{}");
+  } catch (error) {
+    return getDefaultMedia();
+  }
+}
+
+app.get("/api/media", (req, res) => {
+  res.json({
+    success: true,
+    media: readRezaMedia()
+  });
+});
+
+app.post("/api/media", express.json({ limit: "60mb" }), (req, res) => {
+  try {
+    const current = readRezaMedia();
+
+    const next = {
+      ...current,
+      ...req.body,
+      updatedAt: new Date().toISOString()
+    };
+
+    fs.mkdirSync(path.dirname(rezaMediaFile), { recursive: true });
+    fs.writeFileSync(rezaMediaFile, JSON.stringify(next, null, 2));
+
+    res.json({
+      success: true,
+      message: "Media saved successfully",
+      media: next
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+
 app.get("/api/health",(req,res)=>res.json({success:true,message:"Reza V11 Champagne API online",time:new Date().toISOString()}));
 app.post("/api/auth/login",(req,res)=>{const {email,password}=req.body||{};if(email==="admin@reza.co.za"&&password==="reza2026")return res.json({success:true,token:"reza-v11-admin-token",user:{email,name:"Reza Admin"}});res.status(401).json({success:false,message:"Invalid login"})});
 app.get("/api/products",(req,res)=>res.json({success:true,products:read("products.json",[])}));

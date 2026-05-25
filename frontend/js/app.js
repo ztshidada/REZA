@@ -318,3 +318,47 @@ document.addEventListener("DOMContentLoaded", renderWixCheckout);
 
   document.addEventListener("DOMContentLoaded", loadLiveMedia);
 })();
+
+// ================================
+// V11 FINAL - APPLY ADMIN HERO IMAGE
+// ================================
+(function(){
+  const MEDIA_API_BASE =
+    location.hostname.includes("localhost")
+      ? "http://localhost:10000"
+      : "https://api.rezaholdings.co.za";
+
+  function normalizeHeroImage(src) {
+    if (!src) return null;
+    if (src.startsWith("data:image")) return src;
+    if (src.startsWith("http")) return src;
+    if (src.startsWith("/")) return MEDIA_API_BASE + src;
+    return src;
+  }
+
+  async function applyAdminHeroImage() {
+    try {
+      const response = await fetch(MEDIA_API_BASE + "/api/media?t=" + Date.now());
+      const data = await response.json();
+
+      if (!data.success || !data.media) return;
+
+      const heroImage = normalizeHeroImage(data.media.heroImage);
+
+      if (!heroImage) return;
+
+      document.querySelectorAll(".hero, .page-hero").forEach(section => {
+        section.style.backgroundImage =
+          `linear-gradient(90deg, rgba(255,250,242,.88), rgba(255,250,242,.58), rgba(255,250,242,.18)), url("${heroImage}")`;
+        section.style.backgroundSize = "cover";
+        section.style.backgroundPosition = "center";
+      });
+
+      console.log("✅ Reza admin hero image applied.");
+    } catch (error) {
+      console.warn("Could not load admin media image", error);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", applyAdminHeroImage);
+})();

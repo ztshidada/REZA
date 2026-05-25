@@ -1,66 +1,65 @@
-const API_BASE =
+const MEDIA_API_BASE =
   location.hostname.includes("localhost")
     ? "http://localhost:10000"
     : "https://api.rezaholdings.co.za";
 
-function fileToDataUrl(file){
+function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error("Could not read file"));
     reader.readAsDataURL(file);
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const saveBtn = [...document.querySelectorAll("button")].find(btn =>
+  const saveButton = [...document.querySelectorAll("button")].find(btn =>
     btn.textContent.trim().toLowerCase() === "save"
   );
 
   const fileInput = document.querySelector('input[type="file"]');
   const titleInput = document.querySelector('input[type="text"]');
 
-  if(!saveBtn || !fileInput) return;
+  if (!saveButton) {
+    console.warn("Save button not found.");
+    return;
+  }
 
-  saveBtn.addEventListener("click", async (event) => {
+  saveButton.addEventListener("click", async (event) => {
     event.preventDefault();
 
     try {
-      saveBtn.textContent = "Saving...";
-
-      let heroImage = null;
-      if(fileInput.files && fileInput.files[0]){
-        heroImage = await fileToDataUrl(fileInput.files[0]);
-      }
+      saveButton.disabled = true;
+      saveButton.textContent = "Saving...";
 
       const payload = {
-        heroTitle: titleInput ? titleInput.value : "Champagne Luxury"
+        heroTitle: titleInput ? titleInput.value.trim() : "Champagne Luxury"
       };
 
-      if(heroImage){
-        payload.heroImage = heroImage;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        payload.heroImage = await readFileAsDataUrl(fileInput.files[0]);
       }
 
-      const res = await fetch(API_BASE + "/api/media", {
+      const response = await fetch(MEDIA_API_BASE + "/api/media", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if(!data.success){
-        alert(data.message || "Could not save media.");
-        saveBtn.textContent = "Save";
+      if (!data.success) {
+        alert(data.message || "Media save failed.");
         return;
       }
 
-      alert("Media saved. Refresh the customer homepage.");
-      saveBtn.textContent = "Save";
+      alert("Saved successfully. Now hard refresh the homepage.");
     } catch (error) {
       console.error(error);
-      alert("Could not connect to backend API.");
-      saveBtn.textContent = "Save";
+      alert("Media save failed. Open Console to see the error.");
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "Save";
     }
   });
 });
