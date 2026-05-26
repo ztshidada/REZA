@@ -166,3 +166,16 @@
     font-size: .9rem !important;
   }
 }
+
+/* Coming soon image fix: never crop, show full poster/image */
+#comingSoonGrid img,
+.coming-soon-grid img,
+.reza-final-product-image {
+  object-fit: contain !important;
+  object-position: center !important;
+  background: #fff7ee !important;
+}
+
+.reza-final-product-image-wrap {
+  background: #fff7ee !important;
+}

@@ -382,6 +382,124 @@ app.post("/api/popup", (req, res) => {
 // ======================================================
 
 
+
+// ======================================================
+// REZA FINAL PRODUCTS + POPUP API
+// ======================================================
+const REZA_FINAL_DATA_DIR = path.join(__dirname, "../data");
+const REZA_FINAL_PRODUCTS_FILE = path.join(REZA_FINAL_DATA_DIR, "products.json");
+const REZA_FINAL_POPUP_FILE = path.join(REZA_FINAL_DATA_DIR, "popup.json");
+
+function rezaFinalEnsureData(){
+  fs.mkdirSync(REZA_FINAL_DATA_DIR, { recursive:true });
+  if(!fs.existsSync(REZA_FINAL_PRODUCTS_FILE)){
+    fs.writeFileSync(REZA_FINAL_PRODUCTS_FILE, JSON.stringify([], null, 2));
+  }
+  if(!fs.existsSync(REZA_FINAL_POPUP_FILE)){
+    fs.writeFileSync(REZA_FINAL_POPUP_FILE, JSON.stringify({
+      enabled:false,
+      category:"Specials",
+      title:"Manyora Special",
+      message:"Limited time Reza skincare special. Best value for your skin.",
+      buttonText:"Shop Special",
+      buttonLink:"shop.html",
+      image:"https://rezaholdings.co.za/assets/images/specials/manyora-special.jpg",
+      updatedAt:new Date().toISOString()
+    }, null, 2));
+  }
+}
+
+function rezaFinalRead(file, fallback){
+  try{
+    rezaFinalEnsureData();
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  }catch(e){ return fallback; }
+}
+function rezaFinalWrite(file, data){
+  rezaFinalEnsureData();
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+function rezaFinalSlug(v){
+  return String(v || "product").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
+function rezaFinalProduct(body){
+  const name = body.name || "New Product";
+  return {
+    id: body.id || `${rezaFinalSlug(name)}-${Date.now()}`,
+    name,
+    category: body.category || "Skincare",
+    productType: body.productType || "Single",
+    status: body.status || "sale",
+    price: Number(body.price || 0),
+    stock: Number(body.stock || 0),
+    badge: body.badge || "",
+    image: body.image || "",
+    description: body.description || "",
+    showOnline: body.showOnline !== false,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+app.get("/api/products", (req,res)=>{
+  res.json({ success:true, products: rezaFinalRead(REZA_FINAL_PRODUCTS_FILE, []) });
+});
+
+app.post("/api/products", (req,res)=>{
+  const products = rezaFinalRead(REZA_FINAL_PRODUCTS_FILE, []);
+  const product = rezaFinalProduct(req.body || {});
+  products.push(product);
+  rezaFinalWrite(REZA_FINAL_PRODUCTS_FILE, products);
+  res.json({ success:true, message:"Product added", product, products });
+});
+
+app.put("/api/products/:id", (req,res)=>{
+  const products = rezaFinalRead(REZA_FINAL_PRODUCTS_FILE, []);
+  const i = products.findIndex(p => p.id === req.params.id);
+  if(i === -1) return res.status(404).json({ success:false, message:"Product not found" });
+  products[i] = { ...products[i], ...rezaFinalProduct({ ...products[i], ...req.body, id:products[i].id }), id:products[i].id, updatedAt:new Date().toISOString() };
+  rezaFinalWrite(REZA_FINAL_PRODUCTS_FILE, products);
+  res.json({ success:true, message:"Product updated", product:products[i], products });
+});
+
+app.patch("/api/products/:id/toggle", (req,res)=>{
+  const products = rezaFinalRead(REZA_FINAL_PRODUCTS_FILE, []);
+  const product = products.find(p => p.id === req.params.id);
+  if(!product) return res.status(404).json({ success:false, message:"Product not found" });
+  product.showOnline = !product.showOnline;
+  product.updatedAt = new Date().toISOString();
+  rezaFinalWrite(REZA_FINAL_PRODUCTS_FILE, products);
+  res.json({ success:true, message:product.showOnline ? "Product visible" : "Product hidden", product, products });
+});
+
+app.delete("/api/products/:id", (req,res)=>{
+  const products = rezaFinalRead(REZA_FINAL_PRODUCTS_FILE, []);
+  const next = products.filter(p => p.id !== req.params.id);
+  rezaFinalWrite(REZA_FINAL_PRODUCTS_FILE, next);
+  res.json({ success:true, message:"Product deleted", products:next });
+});
+
+app.get("/api/popup", (req,res)=>{
+  res.json({ success:true, popup: rezaFinalRead(REZA_FINAL_POPUP_FILE, {}) });
+});
+
+app.post("/api/popup", (req,res)=>{
+  const popup = {
+    enabled: Boolean(req.body.enabled),
+    category: req.body.category || "Specials",
+    title: req.body.title || "",
+    message: req.body.message || "",
+    buttonText: req.body.buttonText || "Shop Now",
+    buttonLink: req.body.buttonLink || "shop.html",
+    image: req.body.image || "",
+    updatedAt:new Date().toISOString()
+  };
+  rezaFinalWrite(REZA_FINAL_POPUP_FILE, popup);
+  res.json({ success:true, message:"Popup saved", popup });
+});
+// ======================================================
+// END REZA FINAL PRODUCTS + POPUP API
+// ======================================================
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,

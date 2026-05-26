@@ -9,7 +9,8 @@
     "badge": "On Sale",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-collagen-anti-ageing-cream.jpg",
     "description": "Anti-ageing cream for youthful, firm and radiant-looking skin.",
-    "showOnline": true
+    "showOnline": true,
+    "productType": "Single"
   },
   {
     "id": "reza-starter-pack-combo",
@@ -21,7 +22,8 @@
     "badge": "Starter Combo",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-starter-pack-combo.jpg",
     "description": "Complete anti-ageing skincare solution starter combo.",
-    "showOnline": true
+    "showOnline": true,
+    "productType": "Single"
   },
   {
     "id": "reza-complete-anti-ageing-skin-combo",
@@ -33,7 +35,8 @@
     "badge": "Complete Combo",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-complete-anti-ageing-combo.jpg",
     "description": "A complete anti-ageing skin combo for youthful, firm and glowing skin.",
-    "showOnline": true
+    "showOnline": true,
+    "productType": "Single"
   },
   {
     "id": "luxury-reza-marine-collagen",
@@ -45,7 +48,8 @@
     "badge": "Coming Soon",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-marine-collagen.jpg",
     "description": "Premium beauty-from-within support for glow, repair and nourish.",
-    "showOnline": false
+    "showOnline": false,
+    "productType": "Coming Soon"
   },
   {
     "id": "reza-acne-care-collection",
@@ -57,7 +61,8 @@
     "badge": "Coming Soon",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-acne-care-collection.jpg",
     "description": "Luxury soap collection made for clearer, healthier-looking skin.",
-    "showOnline": false
+    "showOnline": false,
+    "productType": "Coming Soon"
   },
   {
     "id": "reza-sea-moss",
@@ -69,6 +74,7 @@
     "badge": "Coming Soon",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-sea-moss.jpg",
     "description": "Wildcrafted Irish sea moss for wellness and daily support.",
-    "showOnline": false
+    "showOnline": false,
+    "productType": "Coming Soon"
   }
 ]
