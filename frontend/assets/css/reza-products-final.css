@@ -1,0 +1,168 @@
+/* Reza final product display fix */
+
+.reza-final-products-grid,
+.products-grid,
+.product-grid,
+#productsGrid,
+#productGrid,
+#featuredProducts,
+.featured-products,
+#comingSoonGrid,
+.coming-soon-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 28px !important;
+  align-items: stretch !important;
+  width: min(1180px, calc(100% - 36px)) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  overflow: visible !important;
+}
+
+.reza-final-product-card {
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(0,0,0,.08) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  box-shadow: 0 18px 55px rgba(50,30,15,.12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100% !important;
+}
+
+.reza-final-product-image-wrap {
+  position: relative !important;
+  width: 100% !important;
+  background: #fff7ee !important;
+  border-radius: 28px 28px 0 0 !important;
+  overflow: hidden !important;
+  height: 360px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.reza-final-product-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+  background: #fff7ee !important;
+}
+
+.reza-final-badge {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  z-index: 5 !important;
+  background: linear-gradient(135deg,#e8c774,#c89334) !important;
+  color: #241812 !important;
+  padding: 9px 15px !important;
+  border-radius: 999px !important;
+  font-weight: 1000 !important;
+  font-size: .78rem !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.reza-final-product-body {
+  padding: 22px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 !important;
+}
+
+.reza-final-product-type {
+  margin: 0 !important;
+  color: #a67724 !important;
+  font-size: .78rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.reza-final-product-body h3 {
+  margin: 0 !important;
+  color: #241812 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.12 !important;
+  font-weight: 1000 !important;
+}
+
+.reza-final-price {
+  margin: 0 !important;
+  color: #9a6719 !important;
+  font-size: 1.1rem !important;
+  font-weight: 1000 !important;
+}
+
+.reza-final-description {
+  margin: 0 !important;
+  color: #4f443d !important;
+  line-height: 1.55 !important;
+  font-size: .96rem !important;
+}
+
+.reza-final-btn {
+  margin-top: auto !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 13px 20px !important;
+  background: linear-gradient(135deg,#e8c774,#c89334) !important;
+  color: #241812 !important;
+  font-weight: 1000 !important;
+  cursor: pointer !important;
+  width: max-content !important;
+}
+
+.reza-final-btn.muted {
+  background: #241812 !important;
+  color: #fffaf2 !important;
+}
+
+.reza-final-empty {
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+  font-weight: 900 !important;
+  padding: 40px !important;
+}
+
+/* Kill old product image rules that crop posters */
+.product-card img,
+.product-img img,
+.product-card .product-img img {
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Phone */
+@media (max-width: 760px) {
+  .reza-final-products-grid,
+  .products-grid,
+  .product-grid,
+  #productsGrid,
+  #productGrid,
+  #featuredProducts,
+  .featured-products,
+  #comingSoonGrid,
+  .coming-soon-grid {
+    grid-template-columns: 1fr !important;
+    width: calc(100% - 28px) !important;
+    gap: 22px !important;
+  }
+
+  .reza-final-product-image-wrap {
+    height: 300px !important;
+  }
+
+  .reza-final-product-body {
+    padding: 18px !important;
+  }
+
+  .reza-final-btn {
+    padding: 12px 18px !important;
+    font-size: .9rem !important;
+  }
+}
