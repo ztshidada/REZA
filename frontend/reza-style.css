@@ -779,3 +779,40 @@ textarea {
     height: 260px;
   }
 }
+
+/* FINAL HERO FIX — use real frontend hero image only */
+.hero-shopify {
+  background-image: url("assets/images/reza-hero.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.hero-shopify .hero-shade {
+  background: linear-gradient(
+    90deg,
+    rgba(35, 28, 25, .20),
+    rgba(35, 28, 25, .28)
+  ) !important;
+}
+
+/* Stop fallback SVG from causing double text */
+.hero-shopify::before,
+.hero-shopify::after {
+  display: none !important;
+}
+
+@media(max-width: 720px) {
+  .hero-shopify {
+    min-height: 560px !important;
+    background-position: center center !important;
+  }
+
+  .hero-shopify .hero-shade {
+    background: linear-gradient(
+      0deg,
+      rgba(35, 28, 25, .58),
+      rgba(35, 28, 25, .10)
+    ) !important;
+  }
+}
