@@ -1,0 +1,154 @@
+/* REZA FINAL MOBILE FIX
+   Loaded last. Keeps gold headings. Fixes phone view only.
+*/
+
+@media (max-width: 768px) {
+
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Stop the floating/alive words on phone */
+  .floating-words,
+  .alive-words,
+  .word-cloud,
+  .hero-floating-words,
+  .floating-words span {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Hero must stay inside phone width */
+  .hero-shopify,
+  .hero,
+  .home-hero,
+  .page-hero,
+  .hero-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .hero-shopify .container,
+  .hero .container,
+  .page-hero .container,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Keep headings gold, but make them fit */
+  .hero-shopify h1,
+  .hero h1,
+  .home-hero h1,
+  .page-hero h1,
+  .hero-section h1,
+  main h1 {
+    max-width: 100% !important;
+    font-size: clamp(2.4rem, 14vw, 4rem) !important;
+    line-height: .92 !important;
+    letter-spacing: -0.05em !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .hero-shopify p,
+  .hero p,
+  .page-hero p {
+    max-width: 100% !important;
+    font-size: .98rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Fix buttons: not too long, not full screen */
+  .hero-actions,
+  .hero-buttons,
+  .cta-row,
+  .actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  .hero-actions a,
+  .hero-actions .btn,
+  .hero-buttons a,
+  .hero-buttons .btn,
+  .cta-row a,
+  .cta-row .btn,
+  .actions a,
+  .actions .btn,
+  a.btn,
+  button.btn,
+  .btn,
+  .primary,
+  .secondary {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 11px 15px !important;
+    font-size: .84rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
+  }
+
+  /* Product grids stay one column */
+  .product-grid,
+  .products-grid,
+  .catalog-grid,
+  #productsGrid,
+  #productGrid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+
+  .product-card,
+  .card {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-actions a,
+  .hero-actions .btn,
+  .hero-buttons a,
+  .hero-buttons .btn,
+  .cta-row a,
+  .cta-row .btn,
+  .actions a,
+  .actions .btn,
+  a.btn,
+  button.btn,
+  .btn {
+    padding: 10px 12px !important;
+    font-size: .78rem !important;
+  }
+
+  .hero-shopify h1,
+  .hero h1,
+  .page-hero h1,
+  main h1 {
+    font-size: clamp(2.15rem, 13vw, 3.4rem) !important;
+  }
+}
