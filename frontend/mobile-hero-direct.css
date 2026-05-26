@@ -1,0 +1,60 @@
+/* Direct phone fix loaded last */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+
+  .floating-words,
+  .alive-words,
+  .word-cloud,
+  .hero-floating-words {
+    display: none !important;
+  }
+
+  .hero-shopify,
+  .hero,
+  .home-hero,
+  .page-hero {
+    overflow: hidden !important;
+    min-height: 560px !important;
+  }
+
+  .hero-shopify h1,
+  .hero h1,
+  .home-hero h1,
+  .page-hero h1,
+  main h1 {
+    max-width: 100% !important;
+    font-size: clamp(2.6rem, 12vw, 3.8rem) !important;
+    line-height: .9 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .hero-actions,
+  .hero-buttons,
+  .cta-row,
+  .actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .hero-actions .btn,
+  .hero-buttons .btn,
+  .cta-row .btn,
+  .actions .btn,
+  .hero .btn,
+  .hero-shopify .btn,
+  .btn {
+    width: auto !important;
+    max-width: max-content !important;
+    min-width: unset !important;
+    flex: 0 0 auto !important;
+    padding: 11px 15px !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+  }
+}
