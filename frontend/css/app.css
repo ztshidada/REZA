@@ -712,3 +712,130 @@ body {
   background-repeat: no-repeat !important;
 }
 
+
+/* V11 Alive Words + Button Motion */
+.word-pop {
+  animation: rezaWordPop .75s cubic-bezier(.18,.89,.32,1.28);
+}
+
+@keyframes rezaWordPop {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(.96);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.btn,
+button,
+.nav a,
+.cart-btn,
+.shop-btn {
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+.btn:hover,
+button:hover,
+.nav a:hover,
+.cart-btn:hover,
+.shop-btn:hover {
+  transform: translateY(-4px) scale(1.035);
+  filter: brightness(1.04);
+}
+
+.btn.primary,
+button.primary,
+.shop-btn,
+.cart-btn {
+  animation: rezaSoftBounce 2.7s ease-in-out infinite;
+}
+
+@keyframes rezaSoftBounce {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 14px 32px rgba(201,148,61,.20);
+  }
+  50% {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 48px rgba(201,148,61,.30);
+  }
+}
+
+.floating-words {
+  position: absolute;
+  inset: auto 8% 8% auto;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 420px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.floating-words span {
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.68);
+  border: 1px solid rgba(201,148,61,.22);
+  box-shadow: 0 16px 40px rgba(95,64,30,.10);
+  font-weight: 900;
+  color: #5b3b1d;
+  animation: rezaFloatChip 4s ease-in-out infinite;
+}
+
+.floating-words span:nth-child(2) { animation-delay: .6s; }
+.floating-words span:nth-child(3) { animation-delay: 1.2s; }
+.floating-words span:nth-child(4) { animation-delay: 1.8s; }
+
+@keyframes rezaFloatChip {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: .82;
+  }
+  50% {
+    transform: translateY(-12px) rotate(-1deg);
+    opacity: 1;
+  }
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  right: 10%;
+  top: 16%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214,168,79,.22), transparent 65%);
+  filter: blur(10px);
+  animation: rezaGlowMove 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes rezaGlowMove {
+  0%, 100% {
+    transform: translate(0,0) scale(1);
+  }
+  50% {
+    transform: translate(-28px, 24px) scale(1.15);
+  }
+}
+
+@media (max-width: 850px) {
+  .floating-words {
+    position: static;
+    margin-top: 24px;
+    max-width: 100%;
+  }
+}
+
