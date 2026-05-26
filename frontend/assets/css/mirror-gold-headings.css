@@ -1,0 +1,40 @@
+/* Safe mirror-gold effect: headings only, no layout changes */
+
+.mirror-gold-heading,
+.hero-shopify h1,
+.page-hero h1,
+.section-title h2 {
+  color: transparent !important;
+  background: linear-gradient(
+    115deg,
+    #6b420c 0%,
+    #b77a21 18%,
+    #fff1bd 34%,
+    #d8a13d 48%,
+    #7a4a0f 62%,
+    #f7d98e 78%,
+    #a86b19 100%
+  ) !important;
+  background-size: 240% auto !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rezaMirrorGold 8s linear infinite;
+  text-shadow: none !important;
+}
+
+@keyframes rezaMirrorGold {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Mobile-safe: no size/layout edits */
+@media (max-width: 768px) {
+  .mirror-gold-heading,
+  .hero-shopify h1,
+  .page-hero h1,
+  .section-title h2 {
+    background-size: 220% auto !important;
+  }
+}
