@@ -4,170 +4,219 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Reza Holdings | Champagne Luxury</title>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,sans-serif;color:#241812;background:#fff7ea}
-    a{text-decoration:none;color:inherit}
-    .top{background:#f2d7a5;text-align:center;padding:10px;font-weight:900;letter-spacing:.28em;font-size:.78rem}
-    .nav{position:sticky;top:0;z-index:50;background:rgba(255,250,242,.9);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-between;padding:18px 9%;box-shadow:0 10px 35px rgba(70,45,25,.08)}
-    .brand{display:flex;align-items:center;gap:14px;font-weight:1000}
-    .logo{width:52px;height:52px;border-radius:18px;background:#fff0c8;display:grid;place-items:center;font-family:Georgia,serif;font-size:1.5rem}
-    .brand small{display:block;letter-spacing:.25em;color:#8a5b19;font-size:.7rem}
-    .links{display:flex;gap:10px;background:#fff;padding:8px;border-radius:999px}
-    .links a{padding:12px 22px;border-radius:999px;font-weight:900}
-    .links a.active{background:#241812;color:#fff}
-    .shopbtn{background:#d7a447;padding:15px 28px;border-radius:999px;font-weight:1000}
-    .hero{min-height:78vh;display:grid;align-items:center;padding:80px 9%;background-size:cover;background-position:center;position:relative}
-    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,248,238,.94),rgba(255,240,220,.66),rgba(255,220,205,.18))}
-    .hero-content{position:relative;max-width:720px}
-    .kicker{letter-spacing:.45em;color:#a36d20;font-weight:1000;font-size:.78rem}
-    h1{font-family:Georgia,serif;font-size:clamp(4rem,10vw,8.8rem);line-height:.86;margin:20px 0;color:#271915}
-    .lead{font-size:1.25rem;line-height:1.8;font-weight:750;color:#5e5047;max-width:650px}
-    .chips{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}
-    .chip{background:rgba(255,255,255,.75);padding:12px 18px;border-radius:999px;font-weight:900}
-    .actions{display:flex;gap:14px;flex-wrap:wrap}
-    .btn{border:0;border-radius:999px;padding:16px 28px;font-weight:1000;cursor:pointer;font-size:1rem}
-    .primary{background:linear-gradient(135deg,#f0c96f,#c9943d);color:#241812}
-    .ghost{background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.1)}
-    .section{padding:80px 9%;background:radial-gradient(circle at 80% 10%,rgba(244,199,184,.25),transparent 28%),#fff8ed}
-    .section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:35px}
-    .section h2{font-family:Georgia,serif;font-size:clamp(3rem,7vw,5.8rem);line-height:.9;margin:0}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
-    .card{background:rgba(255,255,255,.85);border-radius:34px;overflow:hidden;box-shadow:0 25px 80px rgba(90,55,25,.14);border:1px solid rgba(120,80,40,.1)}
-    .pic{height:300px;position:relative;background:#f5dfc3}
-    .pic img{width:100%;height:100%;object-fit:cover}
-    .badge{position:absolute;top:16px;left:16px;background:#d7a447;padding:10px 16px;border-radius:999px;font-weight:1000}
-    .info{padding:24px}
-    .cat{color:#9b6b25;text-transform:uppercase;letter-spacing:.15em;font-weight:1000;font-size:.75rem}
-    .info h3{font-size:1.55rem;margin:10px 0}
-    .price{font-size:1.35rem;font-weight:1000;color:#8a5b19}
-    .desc{color:#5e5047;line-height:1.65}
-    .loading{background:rgba(255,255,255,.75);padding:30px;border-radius:24px;font-weight:900;text-align:center}
-    @media(max-width:800px){.links{display:none}.nav{padding:14px 5%}.hero,.section{padding:60px 5%}}
-  </style>
+  <link rel="preload" as="image" href="assets/images/reza-hero.png">
+  <link rel="stylesheet" href="reza-style.css">
 </head>
-<body>
-  <div class="top">SOFT LUXURY • HEALTH • BEAUTY • WELLNESS</div>
 
-  <nav class="nav">
+<body>
+  <div class="announcement">WELCOME TO OUR STORE</div>
+
+  <header class="site-header">
     <a class="brand" href="index.html">
       <span class="logo">R</span>
-      <span>Reza Holdings <small>CHAMPAGNE LUXURY</small></span>
+      <span>
+        <b>Reza Holdings</b>
+        <small>Champagne Luxury</small>
+      </span>
     </a>
-    <div class="links">
+
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+    <nav id="mainNav" class="nav-links">
       <a class="active" href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
+      <a href="shop.html">Catalog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
       <a href="policies.html">Policies</a>
-    </div>
-    <a class="shopbtn" href="shop.html">Shop</a>
-  </nav>
+    </nav>
 
-  <section id="hero" class="hero">
-    <div class="hero-content">
-      <div class="kicker">REZA HOLDINGS</div>
-      <h1>Elevate.<br>Bloom.<br>Become.</h1>
-      <p class="lead">A soft luxury health, beauty and wellness store with a champagne glow, elegant products and a smooth shopping experience.</p>
-      <div class="chips">
-        <span class="chip">Luxury Beauty</span>
-        <span class="chip">Soft Wellness</span>
-        <span class="chip">Premium Care</span>
-      </div>
-      <div class="actions">
-        <a class="btn primary" href="shop.html">Explore Products</a>
-        <a class="btn ghost" href="contact.html">Talk to us</a>
-      </div>
-    </div>
-  </section>
+    <a class="cart-btn" href="cart.html">🛍️ <span id="cartCount">0</span></a>
+  </header>
 
-  <section class="section">
-    <div class="section-head">
+  <main>
+    <section id="hero" class="hero-clean">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        <p class="eyebrow">PREMIUM SKINCARE & WELLNESS</p>
+        <h1>Glow. Repair. Restore.</h1>
+        <p class="hero-text">
+          Premium skincare made for soft, healthy-looking, glowing skin.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="shop.html">Shop Products</a>
+          <a class="btn glass" href="contact.html">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-section">
+      <div class="section-title">
+        <p class="eyebrow">REZA HOLDINGS</p>
+        <h2>Featured Products</h2>
+      </div>
+
+      <div id="featuredGrid" class="product-grid">
+        <div class="loading-card">Loading products...</div>
+      </div>
+    </section>
+
+    <section class="coming-section">
+      <div class="section-title light">
+        <p class="eyebrow">COMING SOON</p>
+        <h2>New Reza products are coming soon</h2>
+        <p>Get ready for more premium wellness and skincare products from Reza Holdings.</p>
+      </div>
+
+      <div class="coming-grid">
+        <article>
+          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
+          <span>COMING SOON</span>
+          <h3>Reza Sea Moss</h3>
+          <p>Wildcrafted Irish sea moss for wellness and daily support.</p>
+        </article>
+
+        <article>
+          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
+          <span>COMING SOON</span>
+          <h3>Reza Acne Care Collection</h3>
+          <p>A luxury soap collection made for clearer, healthier-looking skin.</p>
+        </article>
+
+        <article>
+          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
+          <span>COMING SOON</span>
+          <h3>Luxury Reza Marine Collagen</h3>
+          <p>Premium beauty-from-within support for glow, repair and nourish.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="why-section">
+      <div class="why-card">
+        <p class="eyebrow">WHY REZA HOLDINGS?</p>
+        <h2>Luxury care for real skin confidence.</h2>
+        <p>
+          Our products are created for customers who want a premium, beautiful and simple skincare experience.
+          Shop with confidence and give your skin the care it deserves.
+        </p>
+      </div>
+    </section>
+
+    <section class="email-section">
       <div>
-        <div class="kicker">FEATURED</div>
-        <h2>Luxury Picks</h2>
+        <h2>Join our email list</h2>
+        <p>Get exclusive deals and early access to new products.</p>
       </div>
-      <a class="btn primary" href="shop.html">View All</a>
-    </div>
-    <div id="productsGrid" class="grid">
-      <div class="loading">Loading products...</div>
-    </div>
-  </section>
+      <form onsubmit="event.preventDefault(); alert('Thank you for joining Reza updates.');">
+        <input type="email" required placeholder="Email address">
+        <button>→</button>
+      </form>
+    </section>
+  </main>
 
-  <section id="about" class="section">
-    <h2>About Reza</h2>
-    <p class="lead">Premium health, beauty and wellness products made for customers who love quality, beauty and confidence.</p>
-  </section>
+  <footer class="footer">
+    <p>© 2026 Reza Holdings. Powered by Reza.</p>
+    <a href="policies.html">Terms and Policies</a>
+  </footer>
 
+  <script src="reza-live.js"></script>
   <script>
     const API = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
 
+    function toggleMenu(){
+      document.getElementById("mainNav").classList.toggle("open");
+    }
+
     function money(v){
-      return "R " + Number(v || 0).toLocaleString("en-ZA",{minimumFractionDigits:2,maximumFractionDigits:2});
+      return "R " + Number(v || 0).toLocaleString("en-ZA", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
     function img(src){
-      if(!src) return "";
+      if(!src) return "assets/images/reza-card-bg.svg";
       if(src.startsWith("data:image")) return src;
       if(src.startsWith("http")) return src;
       if(src.startsWith("/")) return API + src;
       return src;
     }
 
-    async function loadMedia(){
-      try{
-        const res = await fetch(API + "/api/media?t=" + Date.now());
-        const data = await res.json();
-        if(data.success && data.media && data.media.heroImage){
-          document.getElementById("hero").style.backgroundImage = `url("${img(data.media.heroImage)}")`;
-        }
-      }catch(e){ console.warn(e); }
-    }
-
-    async function loadProducts(){
-      const grid = document.getElementById("productsGrid");
-      try{
-        const res = await fetch(API + "/api/products?t=" + Date.now());
-        const data = await res.json();
-        const products = (data.products || []).filter(p => p.showOnline !== false).slice(0,6);
-
-        if(!products.length){
-          grid.innerHTML = `<div class="loading">No products yet. Add products from admin.</div>`;
-          return;
-        }
-
-        grid.innerHTML = products.map(p => `
-          <article class="card">
-            <div class="pic">
-              ${p.badge ? `<span class="badge">${p.badge}</span>` : ""}
-              <img src="${img(p.image)}" alt="${p.name}">
-            </div>
-            <div class="info">
-              <div class="cat">${p.category || "Reza Holdings"}</div>
-              <h3>${p.name}</h3>
-              <div class="price">${money(p.price)}</div>
-              <p class="desc">${p.description || ""}</p>
-              <button class="btn primary" onclick='addToCart(${JSON.stringify(p).replace(/'/g,"&apos;")})'>Add to Cart</button>
-            </div>
-          </article>
-        `).join("");
-      }catch(e){
-        grid.innerHTML = `<div class="loading">Could not connect to products API.</div>`;
-      }
+    function updateCartCount(){
+      const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
+      const count = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
+      const badge = document.getElementById("cartCount");
+      if(badge) badge.textContent = count;
     }
 
     function addToCart(product){
       const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-      const found = cart.find(i => i.id === product.id);
+      const found = cart.find(item => item.id === product.id);
       if(found) found.qty += 1;
       else cart.push({...product, qty:1});
       localStorage.setItem("reza_cart", JSON.stringify(cart));
+      updateCartCount();
       alert("Added to cart");
     }
 
+    async function loadMedia(){
+      try{
+        const res = await fetch(API + "/api/media?t=" + Date.now());
+        const data = await res.json();
+
+        if(data.success && data.media){
+          if(data.media.logoImage){
+            document.querySelectorAll(".logo").forEach(el => {
+              el.innerHTML = `<img src="${img(data.media.logoImage)}" alt="Reza Logo">`;
+            });
+          }
+
+          /* Fast local hero image first. Backend hero only if available and not too huge. */
+          const hero = document.getElementById("hero");
+          if(data.media.heroImage && !data.media.heroImage.startsWith("data:image")){
+            hero.style.backgroundImage = `url("${img(data.media.heroImage)}")`;
+          }
+        }
+      }catch(e){
+        console.warn("Media failed", e);
+      }
+    }
+
+    async function loadProducts(){
+      const grid = document.getElementById("featuredGrid");
+
+      try{
+        const res = await fetch(API + "/api/products?t=" + Date.now());
+        const data = await res.json();
+        const products = (data.products || []).filter(p => p.showOnline !== false).slice(0, 4);
+
+        if(!products.length){
+          grid.innerHTML = `<div class="loading-card">No products yet. Add products from admin.</div>`;
+          return;
+        }
+
+        grid.innerHTML = products.map(p => `
+          <article class="product-card">
+            <div class="product-image">
+              ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
+              <img src="${img(p.image)}" alt="${p.name}" loading="lazy">
+            </div>
+            <div class="product-body">
+              <h3>${p.name}</h3>
+              <p class="price">${money(p.price)}</p>
+              <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
+            </div>
+          </article>
+        `).join("");
+
+      }catch(e){
+        grid.innerHTML = `<div class="loading-card">Could not load products.</div>`;
+      }
+    }
+
+    updateCartCount();
     loadMedia();
     loadProducts();
   </script>
-<script src="reza-live.js"></script>
 </body>
 </html>
