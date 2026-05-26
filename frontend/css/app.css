@@ -601,3 +601,95 @@ body {
   background-size: cover !important;
   background-position: center !important;
 }
+
+/* FINAL — Live backend products grid */
+.reza-live-products-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 28px !important;
+  width: min(1180px, calc(100% - 40px));
+  margin: 28px auto !important;
+}
+
+.reza-live-card {
+  overflow: hidden;
+  border-radius: 30px;
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(120,80,40,.12);
+  box-shadow: 0 24px 70px rgba(90,55,25,.13);
+}
+
+.reza-live-img-wrap {
+  position: relative;
+  height: 270px;
+  background: #f7ead9;
+  overflow: hidden;
+}
+
+.reza-live-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reza-live-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #d4a247;
+  color: #241812;
+  font-weight: 900;
+}
+
+.reza-live-info {
+  padding: 22px;
+}
+
+.reza-live-cat {
+  color: #9b6b25;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: .75rem;
+}
+
+.reza-live-info h3 {
+  margin: 8px 0;
+  font-size: 1.5rem;
+}
+
+.reza-live-price {
+  font-size: 1.35rem;
+  font-weight: 1000;
+  color: #8a5b19;
+}
+
+.reza-live-desc {
+  color: #5e5047;
+  line-height: 1.6;
+}
+
+.reza-live-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 15px 20px;
+  margin-top: 14px;
+  cursor: pointer;
+  font-weight: 1000;
+  background: linear-gradient(135deg, #f0c96f, #c9943d);
+  color: #241812;
+}
+
+.reza-live-loading,
+.reza-live-empty {
+  grid-column: 1 / -1;
+  padding: 30px;
+  border-radius: 24px;
+  background: rgba(255,255,255,.75);
+  text-align: center;
+  font-weight: 900;
+}
