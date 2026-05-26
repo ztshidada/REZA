@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Reza Holdings | Champagne Luxury</title>
-  <link rel="preload" as="image" href="assets/images/reza-hero.png">
   <link rel="stylesheet" href="reza-style.css">
 </head>
 
@@ -34,14 +33,16 @@
   </header>
 
   <main>
-    <section id="hero" class="hero-clean">
-      <div class="hero-overlay"></div>
-      <div class="hero-inner">
+    <section id="hero" class="hero-shopify">
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
         <p class="eyebrow">PREMIUM SKINCARE & WELLNESS</p>
         <h1>Glow. Repair. Restore.</h1>
-        <p class="hero-text">
+        <p>
           Premium skincare made for soft, healthy-looking, glowing skin.
         </p>
+
         <div class="hero-actions">
           <a class="btn primary" href="shop.html">Shop Products</a>
           <a class="btn glass" href="contact.html">Contact Us</a>
@@ -60,39 +61,8 @@
       </div>
     </section>
 
-    <section class="coming-section">
-      <div class="section-title light">
-        <p class="eyebrow">COMING SOON</p>
-        <h2>New Reza products are coming soon</h2>
-        <p>Get ready for more premium wellness and skincare products from Reza Holdings.</p>
-      </div>
-
-      <div class="coming-grid">
-        <article>
-          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
-          <span>COMING SOON</span>
-          <h3>Reza Sea Moss</h3>
-          <p>Wildcrafted Irish sea moss for wellness and daily support.</p>
-        </article>
-
-        <article>
-          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
-          <span>COMING SOON</span>
-          <h3>Reza Acne Care Collection</h3>
-          <p>A luxury soap collection made for clearer, healthier-looking skin.</p>
-        </article>
-
-        <article>
-          <img src="assets/images/reza-card-bg.svg" alt="Coming soon product" loading="lazy">
-          <span>COMING SOON</span>
-          <h3>Luxury Reza Marine Collagen</h3>
-          <p>Premium beauty-from-within support for glow, repair and nourish.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="why-section">
-      <div class="why-card">
+    <section class="promo-section">
+      <div class="promo-card">
         <p class="eyebrow">WHY REZA HOLDINGS?</p>
         <h2>Luxury care for real skin confidence.</h2>
         <p>
@@ -107,6 +77,7 @@
         <h2>Join our email list</h2>
         <p>Get exclusive deals and early access to new products.</p>
       </div>
+
       <form onsubmit="event.preventDefault(); alert('Thank you for joining Reza updates.');">
         <input type="email" required placeholder="Email address">
         <button>→</button>
@@ -115,51 +86,13 @@
   </main>
 
   <footer class="footer">
-    <p>© 2026 Reza Holdings. Powered by Reza.</p>
+    <p>© 2026 Reza Holdings.</p>
     <a href="policies.html">Terms and Policies</a>
   </footer>
 
-  <script src="reza-live.js"></script>
+  <script src="site.js"></script>
   <script>
-    const API = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
-
-    function toggleMenu(){
-      document.getElementById("mainNav").classList.toggle("open");
-    }
-
-    function money(v){
-      return "R " + Number(v || 0).toLocaleString("en-ZA", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    function img(src){
-      if(!src) return "assets/images/reza-card-bg.svg";
-      if(src.startsWith("data:image")) return src;
-      if(src.startsWith("http")) return src;
-      if(src.startsWith("/")) return API + src;
-      return src;
-    }
-
-    function updateCartCount(){
-      const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-      const count = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
-      const badge = document.getElementById("cartCount");
-      if(badge) badge.textContent = count;
-    }
-
-    function addToCart(product){
-      const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-      const found = cart.find(item => item.id === product.id);
-      if(found) found.qty += 1;
-      else cart.push({...product, qty:1});
-      localStorage.setItem("reza_cart", JSON.stringify(cart));
-      updateCartCount();
-      alert("Added to cart");
-    }
-
-    async function loadMedia(){
+    async function loadHomeMedia(){
       try{
         const res = await fetch(API + "/api/media?t=" + Date.now());
         const data = await res.json();
@@ -171,24 +104,26 @@
             });
           }
 
-          /* Fast local hero image first. Backend hero only if available and not too huge. */
           const hero = document.getElementById("hero");
           if(data.media.heroImage && !data.media.heroImage.startsWith("data:image")){
             hero.style.backgroundImage = `url("${img(data.media.heroImage)}")`;
           }
         }
       }catch(e){
-        console.warn("Media failed", e);
+        console.warn("Media not loaded", e);
       }
     }
 
-    async function loadProducts(){
+    async function loadFeaturedProducts(){
       const grid = document.getElementById("featuredGrid");
 
       try{
         const res = await fetch(API + "/api/products?t=" + Date.now());
         const data = await res.json();
-        const products = (data.products || []).filter(p => p.showOnline !== false).slice(0, 4);
+
+        const products = (data.products || [])
+          .filter(p => p.showOnline !== false)
+          .slice(0, 4);
 
         if(!products.length){
           grid.innerHTML = `<div class="loading-card">No products yet. Add products from admin.</div>`;
@@ -201,22 +136,23 @@
               ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
               <img src="${img(p.image)}" alt="${p.name}" loading="lazy">
             </div>
+
             <div class="product-body">
+              <p class="category">${p.category || "Reza Holdings"}</p>
               <h3>${p.name}</h3>
               <p class="price">${money(p.price)}</p>
               <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
             </div>
           </article>
         `).join("");
-
       }catch(e){
         grid.innerHTML = `<div class="loading-card">Could not load products.</div>`;
       }
     }
 
     updateCartCount();
-    loadMedia();
-    loadProducts();
+    loadHomeMedia();
+    loadFeaturedProducts();
   </script>
 </body>
 </html>

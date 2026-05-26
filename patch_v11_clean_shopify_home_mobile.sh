@@ -1,3 +1,170 @@
+#!/bin/bash
+set -e
+
+echo "✨ Cleaning Reza homepage into Shopify-style mobile luxury layout..."
+
+cat > frontend/index.html <<'HTML'
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reza Holdings | Champagne Luxury</title>
+  <link rel="stylesheet" href="reza-style.css">
+</head>
+
+<body>
+  <div class="announcement">WELCOME TO OUR STORE</div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="logo">R</span>
+      <span>
+        <b>Reza Holdings</b>
+        <small>Champagne Luxury</small>
+      </span>
+    </a>
+
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+    <nav id="mainNav" class="nav-links">
+      <a class="active" href="index.html">Home</a>
+      <a href="shop.html">Catalog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="policies.html">Policies</a>
+    </nav>
+
+    <a class="cart-btn" href="cart.html">🛍️ <span id="cartCount">0</span></a>
+  </header>
+
+  <main>
+    <section id="hero" class="hero-shopify">
+      <div class="hero-shade"></div>
+
+      <div class="hero-content">
+        <p class="eyebrow">PREMIUM SKINCARE & WELLNESS</p>
+        <h1>Glow. Repair. Restore.</h1>
+        <p>
+          Premium skincare made for soft, healthy-looking, glowing skin.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn primary" href="shop.html">Shop Products</a>
+          <a class="btn glass" href="contact.html">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-section">
+      <div class="section-title">
+        <p class="eyebrow">REZA HOLDINGS</p>
+        <h2>Featured Products</h2>
+      </div>
+
+      <div id="featuredGrid" class="product-grid">
+        <div class="loading-card">Loading products...</div>
+      </div>
+    </section>
+
+    <section class="promo-section">
+      <div class="promo-card">
+        <p class="eyebrow">WHY REZA HOLDINGS?</p>
+        <h2>Luxury care for real skin confidence.</h2>
+        <p>
+          Our products are created for customers who want a premium, beautiful and simple skincare experience.
+          Shop with confidence and give your skin the care it deserves.
+        </p>
+      </div>
+    </section>
+
+    <section class="email-section">
+      <div>
+        <h2>Join our email list</h2>
+        <p>Get exclusive deals and early access to new products.</p>
+      </div>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you for joining Reza updates.');">
+        <input type="email" required placeholder="Email address">
+        <button>→</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Reza Holdings.</p>
+    <a href="policies.html">Terms and Policies</a>
+  </footer>
+
+  <script src="site.js"></script>
+  <script>
+    async function loadHomeMedia(){
+      try{
+        const res = await fetch(API + "/api/media?t=" + Date.now());
+        const data = await res.json();
+
+        if(data.success && data.media){
+          if(data.media.logoImage){
+            document.querySelectorAll(".logo").forEach(el => {
+              el.innerHTML = `<img src="${img(data.media.logoImage)}" alt="Reza Logo">`;
+            });
+          }
+
+          const hero = document.getElementById("hero");
+          if(data.media.heroImage && !data.media.heroImage.startsWith("data:image")){
+            hero.style.backgroundImage = `url("${img(data.media.heroImage)}")`;
+          }
+        }
+      }catch(e){
+        console.warn("Media not loaded", e);
+      }
+    }
+
+    async function loadFeaturedProducts(){
+      const grid = document.getElementById("featuredGrid");
+
+      try{
+        const res = await fetch(API + "/api/products?t=" + Date.now());
+        const data = await res.json();
+
+        const products = (data.products || [])
+          .filter(p => p.showOnline !== false)
+          .slice(0, 4);
+
+        if(!products.length){
+          grid.innerHTML = `<div class="loading-card">No products yet. Add products from admin.</div>`;
+          return;
+        }
+
+        grid.innerHTML = products.map(p => `
+          <article class="product-card">
+            <div class="product-image">
+              ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
+              <img src="${img(p.image)}" alt="${p.name}" loading="lazy">
+            </div>
+
+            <div class="product-body">
+              <p class="category">${p.category || "Reza Holdings"}</p>
+              <h3>${p.name}</h3>
+              <p class="price">${money(p.price)}</p>
+              <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
+            </div>
+          </article>
+        `).join("");
+      }catch(e){
+        grid.innerHTML = `<div class="loading-card">Could not load products.</div>`;
+      }
+    }
+
+    updateCartCount();
+    loadHomeMedia();
+    loadFeaturedProducts();
+  </script>
+</body>
+</html>
+HTML
+
+cat > frontend/reza-style.css <<'CSS'
 * {
   box-sizing: border-box;
 }
@@ -637,3 +804,10 @@ textarea {
     flex-direction: column;
   }
 }
+CSS
+
+git add .
+git commit -m "Clean homepage layout and fix mobile Shopify style"
+git push
+
+echo "✅ Done. Redeploy reza-frontend only."
