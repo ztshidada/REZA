@@ -194,6 +194,194 @@ app.delete("/api/products/:id", (req, res) => {
   });
 });
 
+
+// ======================================================
+// REZA V11 PRODUCTS + POPUP ADMIN API
+// ======================================================
+const REZA_DATA_DIR = path.join(__dirname, "../data");
+const REZA_PRODUCTS_FILE = path.join(REZA_DATA_DIR, "products.json");
+const REZA_POPUP_FILE = path.join(REZA_DATA_DIR, "popup.json");
+
+function rezaEnsureDataDir() {
+  fs.mkdirSync(REZA_DATA_DIR, { recursive: true });
+
+  if (!fs.existsSync(REZA_PRODUCTS_FILE)) {
+    fs.writeFileSync(REZA_PRODUCTS_FILE, JSON.stringify([], null, 2));
+  }
+
+  if (!fs.existsSync(REZA_POPUP_FILE)) {
+    fs.writeFileSync(REZA_POPUP_FILE, JSON.stringify({
+      enabled: false,
+      title: "Special Announcement",
+      message: "Reza special coming soon.",
+      buttonText: "Shop Now",
+      buttonLink: "shop.html",
+      image: "",
+      updatedAt: new Date().toISOString()
+    }, null, 2));
+  }
+}
+
+function rezaReadJson(file, fallback) {
+  try {
+    rezaEnsureDataDir();
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function rezaWriteJson(file, data) {
+  rezaEnsureDataDir();
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+function rezaSlug(input) {
+  return String(input || "product")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function rezaCleanProduct(body) {
+  const name = body.name || "New Product";
+
+  return {
+    id: body.id || `${rezaSlug(name)}-${Date.now()}`,
+    name,
+    category: body.category || "Skincare",
+    productType: body.productType || "Single",
+    status: body.status || "sale",
+    price: Number(body.price || 0),
+    stock: Number(body.stock || 0),
+    badge: body.badge || "",
+    image: body.image || "",
+    description: body.description || "",
+    showOnline: body.showOnline !== false,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+// Products
+app.get("/api/products", (req, res) => {
+  const products = rezaReadJson(REZA_PRODUCTS_FILE, []);
+  res.json({ success: true, products });
+});
+
+app.post("/api/products", (req, res) => {
+  const products = rezaReadJson(REZA_PRODUCTS_FILE, []);
+  const product = rezaCleanProduct(req.body || {});
+  products.push(product);
+  rezaWriteJson(REZA_PRODUCTS_FILE, products);
+
+  res.json({
+    success: true,
+    message: "Product added",
+    product,
+    products
+  });
+});
+
+app.put("/api/products/:id", (req, res) => {
+  const products = rezaReadJson(REZA_PRODUCTS_FILE, []);
+  const index = products.findIndex(p => p.id === req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: "Product not found" });
+  }
+
+  const current = products[index];
+  products[index] = {
+    ...current,
+    ...rezaCleanProduct({ ...current, ...req.body, id: current.id }),
+    id: current.id,
+    updatedAt: new Date().toISOString()
+  };
+
+  rezaWriteJson(REZA_PRODUCTS_FILE, products);
+
+  res.json({
+    success: true,
+    message: "Product updated",
+    product: products[index],
+    products
+  });
+});
+
+app.patch("/api/products/:id/toggle", (req, res) => {
+  const products = rezaReadJson(REZA_PRODUCTS_FILE, []);
+  const product = products.find(p => p.id === req.params.id);
+
+  if (!product) {
+    return res.status(404).json({ success: false, message: "Product not found" });
+  }
+
+  product.showOnline = !product.showOnline;
+  product.updatedAt = new Date().toISOString();
+
+  rezaWriteJson(REZA_PRODUCTS_FILE, products);
+
+  res.json({
+    success: true,
+    message: product.showOnline ? "Product visible" : "Product hidden",
+    product,
+    products
+  });
+});
+
+app.delete("/api/products/:id", (req, res) => {
+  const products = rezaReadJson(REZA_PRODUCTS_FILE, []);
+  const next = products.filter(p => p.id !== req.params.id);
+
+  rezaWriteJson(REZA_PRODUCTS_FILE, next);
+
+  res.json({
+    success: true,
+    message: "Product deleted",
+    products: next
+  });
+});
+
+// Popup
+app.get("/api/popup", (req, res) => {
+  const popup = rezaReadJson(REZA_POPUP_FILE, {
+    enabled: false,
+    title: "",
+    message: "",
+    buttonText: "Shop Now",
+    buttonLink: "shop.html",
+    image: ""
+  });
+
+  res.json({ success: true, popup });
+});
+
+app.post("/api/popup", (req, res) => {
+  const popup = {
+    enabled: Boolean(req.body.enabled),
+    title: req.body.title || "",
+    message: req.body.message || "",
+    buttonText: req.body.buttonText || "Shop Now",
+    buttonLink: req.body.buttonLink || "shop.html",
+    image: req.body.image || "",
+    updatedAt: new Date().toISOString()
+  };
+
+  rezaWriteJson(REZA_POPUP_FILE, popup);
+
+  res.json({
+    success: true,
+    message: "Popup saved",
+    popup
+  });
+});
+
+// ======================================================
+// END REZA V11 PRODUCTS + POPUP ADMIN API
+// ======================================================
+
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
