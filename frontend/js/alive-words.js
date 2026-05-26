@@ -1,80 +1,73 @@
 (function () {
-  const heroWords = [
-    "Elevate.",
-    "Bloom.",
-    "Glow.",
-    "Repair.",
-    "Restore.",
-    "Become.",
-    "Shine."
+  const heroSets = [
+    ["Elevate.", "Bloom.", "Become."],
+    ["Glow.", "Repair.", "Restore."],
+    ["Shine.", "Glow.", "Rise."],
+    ["Soft.", "Luxury.", "Beauty."],
+    ["Wellness.", "Glow.", "Confidence."]
   ];
 
   const subtitles = [
-    "Premium health, beauty and wellness products with a soft luxury experience.",
-    "Beautiful products. Smooth shopping. Trusted service.",
-    "Glow with confidence. Shop Reza luxury.",
-    "Health, beauty and wellness made simple."
+    "A soft luxury health, beauty and wellness store with a champagne glow.",
+    "Elegant products, premium care and a smooth shopping experience.",
+    "Glow with confidence through beauty, wellness and luxury care.",
+    "Premium products designed to feel clean, rich and beautiful.",
+    "Soft luxury shopping with a warm, modern Reza experience."
   ];
 
-  function findHeroTitle() {
+  const colorSets = [
+    ["gold-a", "gold-b", "gold-c"],
+    ["gold-b", "gold-c", "gold-d"],
+    ["gold-c", "gold-a", "gold-d"],
+    ["gold-d", "gold-b", "gold-a"],
+    ["gold-a", "gold-d", "gold-c"]
+  ];
+
+  function getTitle() {
     return document.querySelector(".hero h1") ||
            document.querySelector(".hero-title") ||
            document.querySelector("h1");
   }
 
-  function findHeroLead() {
+  function getLead() {
     return document.querySelector(".hero p") ||
+           document.querySelector(".hero-copy") ||
            document.querySelector(".lead");
   }
 
-  function animateText() {
-    const title = findHeroTitle();
-    const lead = findHeroLead();
+  function renderWords(words, colors) {
+    return words.map((word, i) => {
+      return `<span class="hero-line ${colors[i]}">${word}</span>`;
+    }).join("");
+  }
 
+  function startAnimation() {
+    const title = getTitle();
+    const lead = getLead();
     if (!title) return;
 
-    let index = 0;
+    let i = 0;
 
-    setInterval(() => {
-      index = (index + 1) % heroWords.length;
+    function update() {
+      const words = heroSets[i % heroSets.length];
+      const colors = colorSets[i % colorSets.length];
 
       title.classList.remove("word-pop");
       void title.offsetWidth;
 
-      if (index % 3 === 0) {
-        title.innerHTML = `Glow.<br>Repair.<br>Rise.`;
-      } else if (index % 3 === 1) {
-        title.innerHTML = `Elevate.<br>Bloom.<br>Become.`;
-      } else {
-        title.innerHTML = `${heroWords[index]}<br>${heroWords[(index + 1) % heroWords.length]}<br>${heroWords[(index + 2) % heroWords.length]}`;
-      }
-
+      title.innerHTML = renderWords(words, colors);
       title.classList.add("word-pop");
 
       if (lead) {
-        lead.textContent = subtitles[index % subtitles.length];
+        lead.textContent = subtitles[i % subtitles.length];
       }
-    }, 3200);
+
+      i++;
+    }
+
+    update();
+    setInterval(update, 3200);
   }
 
-  function addFloatingWords() {
-    const hero = document.querySelector(".hero");
-    if (!hero || document.querySelector(".floating-words")) return;
-
-    const wrap = document.createElement("div");
-    wrap.className = "floating-words";
-    wrap.innerHTML = `
-      <span>Luxury Beauty</span>
-      <span>Soft Wellness</span>
-      <span>Premium Care</span>
-      <span>Fast Checkout</span>
-    `;
-
-    hero.appendChild(wrap);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    animateText();
-    addFloatingWords();
-  });
+  document.addEventListener("DOMContentLoaded", startAnimation);
 })();
