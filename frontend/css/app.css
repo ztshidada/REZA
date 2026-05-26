@@ -693,3 +693,22 @@ body {
   text-align: center;
   font-weight: 900;
 }
+
+/* FINAL — Admin saved hero background support */
+:root {
+  --reza-admin-hero: none;
+}
+
+.hero,
+.home-hero,
+.page-hero,
+.landing-hero,
+.hero-section {
+  background-image:
+    linear-gradient(90deg, rgba(255,248,238,.90), rgba(255,239,220,.62), rgba(255,220,205,.24)),
+    var(--reza-admin-hero) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
