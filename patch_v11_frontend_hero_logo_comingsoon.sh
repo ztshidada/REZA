@@ -1,3 +1,88 @@
+#!/bin/bash
+set -e
+
+echo "✨ Fixing hero image, logo frontend save, and clean Coming Soon section..."
+
+mkdir -p frontend/assets/images
+
+# 1) Extract hero/logo from backend media.json if they were saved as base64
+python3 - <<'PY'
+from pathlib import Path
+import json, base64, re
+
+media_path = Path("backend/data/media.json")
+assets = Path("frontend/assets/images")
+assets.mkdir(parents=True, exist_ok=True)
+
+hero_out = assets / "reza-hero.png"
+logo_out = assets / "reza-logo.png"
+
+def save_data_image(data_url, out_path):
+    if not data_url or not data_url.startswith("data:image"):
+        return False
+    m = re.match(r"data:image/[^;]+;base64,(.*)", data_url)
+    if not m:
+        return False
+    out_path.write_bytes(base64.b64decode(m.group(1)))
+    return True
+
+media = {}
+if media_path.exists():
+    try:
+        media = json.loads(media_path.read_text())
+    except Exception:
+        media = {}
+
+hero_saved = save_data_image(media.get("heroImage", ""), hero_out)
+logo_saved = save_data_image(media.get("logoImage", ""), logo_out)
+
+if hero_saved:
+    print("✅ Extracted hero image to frontend/assets/images/reza-hero.png")
+else:
+    print("ℹ️ No base64 hero found locally. Existing reza-hero.png will be used if present.")
+
+if logo_saved:
+    print("✅ Extracted logo to frontend/assets/images/reza-logo.png")
+else:
+    print("ℹ️ No base64 logo found locally. Existing reza-logo.png will be used if present.")
+
+# Update media defaults to fast frontend paths
+media["heroImage"] = "assets/images/reza-hero.png"
+if logo_out.exists():
+    media["logoImage"] = "assets/images/reza-logo.png"
+media["updatedAt"] = media.get("updatedAt") or ""
+
+media_path.parent.mkdir(parents=True, exist_ok=True)
+media_path.write_text(json.dumps(media, indent=2))
+PY
+
+# 2) If hero/logo still do not exist, create clean fallbacks
+if [ ! -f frontend/assets/images/reza-hero.png ]; then
+cat > frontend/assets/images/reza-hero.svg <<'SVG'
+<svg width="1800" height="950" viewBox="0 0 1800 950" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1800" height="950" fill="#F8EEDC"/>
+<radialGradient id="a" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1400 250) rotate(120) scale(720 480)">
+<stop stop-color="#E7C06F"/><stop offset="1" stop-color="#E7C06F" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(460 420) rotate(90) scale(520)">
+<stop stop-color="#F3C6B6"/><stop offset="1" stop-color="#F3C6B6" stop-opacity="0"/>
+</radialGradient>
+<rect width="1800" height="950" fill="url(#a)"/>
+<rect width="1800" height="950" fill="url(#b)"/>
+<g opacity=".45">
+<rect x="1050" y="270" width="170" height="430" rx="80" fill="#C9973D"/>
+<rect x="1085" y="210" width="100" height="100" rx="34" fill="#FFF7EA"/>
+<rect x="980" y="420" width="310" height="130" rx="35" fill="#FFF7EA" fill-opacity=".82"/>
+<text x="1135" y="500" font-family="Georgia" font-size="70" font-weight="700" text-anchor="middle" fill="#2A201B">Reza</text>
+</g>
+<text x="180" y="280" font-family="Georgia" font-size="118" font-weight="700" fill="#2A201B">Glow. Repair.</text>
+<text x="180" y="410" font-family="Georgia" font-size="118" font-weight="700" fill="#2A201B">Restore.</text>
+</svg>
+SVG
+fi
+
+# 3) Replace homepage with clean version including Coming Soon
+cat > frontend/index.html <<'HTML'
 <!doctype html>
 <html lang="en">
 <head>
@@ -179,3 +264,85 @@
   </script>
 </body>
 </html>
+HTML
+
+# 4) Add/replace coming soon CSS and fix local hero
+cat >> frontend/reza-style.css <<'CSS'
+
+/* V11 final hero/logo frontend assets */
+.hero-shopify {
+  background-image: url("assets/images/reza-hero.png"), url("assets/images/reza-hero.svg") !important;
+}
+
+.coming-section {
+  background: #332c28;
+  padding: 75px 9%;
+  color: #fff;
+}
+
+.section-title.light h2,
+.section-title.light p {
+  color: #fff;
+}
+
+.coming-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 26px;
+}
+
+.coming-card {
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0,0,0,.18);
+}
+
+.coming-card img {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  display: block;
+}
+
+.coming-card span {
+  display: inline-block;
+  margin: 18px 22px 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--text);
+  font-size: .72rem;
+  font-weight: 1000;
+  letter-spacing: .15em;
+}
+
+.coming-card h3 {
+  padding: 0 22px;
+  margin: 8px 0;
+  color: #fff;
+}
+
+.coming-card p {
+  padding: 0 22px 24px;
+  color: rgba(255,255,255,.78);
+  line-height: 1.6;
+}
+
+@media(max-width: 900px) {
+  .coming-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coming-card img {
+    height: 260px;
+  }
+}
+CSS
+
+git add .
+git commit -m "Add coming soon and save hero logo as frontend assets"
+git push
+
+echo "✅ Done. Redeploy reza-frontend and reza-backend."
