@@ -585,6 +585,22 @@ app.get("/api/payments/yoco/webhook", (req, res) => {
   });
 });
 
+
+app.get("/api/debug/yoco-key", (req, res) => {
+  const key = process.env.YOCO_SECRET_KEY || process.env.YOCO_LIVE_SECRET_KEY || "";
+  res.json({
+    success: true,
+    present: Boolean(key),
+    prefix: key ? key.slice(0, 12) : "",
+    length: key.length,
+    startsWithSkLive: key.startsWith("sk_live_"),
+    startsWithYocoLive: key.startsWith("yoco_live_"),
+    startsWithSkTest: key.startsWith("sk_test_"),
+    startsWithYocoTest: key.startsWith("yoco_test_")
+  });
+});
+
+
 app.use("/api/payments", paymentRoutes);
 
 app.use((req, res) => {
