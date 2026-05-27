@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const paymentRoutes = require("./routes/payments");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -575,6 +576,16 @@ app.post("/api/orders", (req, res) => {
 // END REZA ORDERS API - SAFE ADD
 // ======================================================
 
+
+app.get("/api/payments/yoco/webhook", (req, res) => {
+  res.json({
+    success: true,
+    message: "Yoco webhook endpoint is live. Browser GET is only for testing.",
+    webhookUrl: "https://api.rezaholdings.co.za/api/payments/yoco/webhook"
+  });
+});
+
+app.use("/api/payments", paymentRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
