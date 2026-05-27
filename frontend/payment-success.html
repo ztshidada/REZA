@@ -31,5 +31,33 @@
     document.getElementById("orderNo").textContent=order;
     ["reza_cart","rezaCart","cart","reza_cart_items","reza_v11_cart"].forEach(k=>localStorage.removeItem(k));
   </script>
+
+<script>
+(async function(){
+  const params = new URLSearchParams(location.search);
+  const order = params.get("order") || params.get("orderId") || params.get("orderNumber") || "";
+  const checkoutId = params.get("checkoutId") || params.get("id") || params.get("yocoCheckoutId") || "";
+
+  if (order) {
+    try {
+      await fetch("https://api.rezaholdings.co.za/api/payments/yoco/return-success", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          orderId: order,
+          orderNumber: order,
+          checkoutId,
+          yocoCheckoutId: checkoutId
+        })
+      });
+    } catch(e) {
+      console.warn("Could not mark paid from success page", e);
+    }
+  }
+
+  ["reza_cart","rezaCart","cart","reza_cart_items","reza_v11_cart"].forEach(k=>localStorage.removeItem(k));
+})();
+</script>
+
 </body>
 </html>
