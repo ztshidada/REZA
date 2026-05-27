@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Order Details | Reza Admin</title>
+  <link rel="stylesheet" href="css/wix-orders.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span>R</span> Reza Admin</div>
+    <nav class="nav">
+      <a href="dashboard.html">Home</a>
+      <a class="active" href="orders.html">Sales • Orders</a>
+      <a href="products.html">Catalog • Products</a>
+      <a href="media.html">Media</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <a href="orders.html" style="color:#64748b;text-decoration:none">Orders ›</a>
+    <div class="top">
+      <div>
+        <h1 id="title">Order</h1>
+        <div class="statusbar">
+          <span id="paymentTag" class="tag unpaid">UNPAID</span>
+          <span id="fulfillTag" class="tag unfulfilled">UNFULFILLED</span>
+        </div>
+        <p id="placed" style="color:#64748b"></p>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="markFulfilled()">Mark fulfilled</button>
+        <button class="btn blue" onclick="markPaid()">Collect Payment / Mark Paid</button>
+        <button class="btn" onclick="openEdit()">Edit order</button>
+        <button class="btn" onclick="window.print()">Print order</button>
+        <button class="btn danger" onclick="cancelOrder()">Cancel order</button>
+      </div>
+    </div>
+
+    <div class="split">
+      <section>
+        <div class="box">
+          <h2 id="itemsTitle">Items</h2>
+          <div id="items"></div>
+        </div>
+
+        <div class="box">
+          <h2>Payment info</h2>
+          <div id="paymentInfo"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="box">
+          <h2>Order info</h2>
+          <div class="info" id="customerInfo"></div>
+        </div>
+
+        <div class="box">
+          <h2>Additional info</h2>
+          <div class="info" id="extraInfo"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="editModal">
+  <div class="dialog">
+    <h2>Edit order</h2>
+    <form id="editForm" class="grid">
+      <input id="eName" placeholder="Customer name">
+      <input id="ePhone" placeholder="Phone">
+      <input id="eEmail" placeholder="Email">
+      <input id="eTotal" type="number" placeholder="Total">
+      <select id="ePayment"><option>Pending</option><option>Paid</option><option>Unpaid</option><option>Payment Cancelled</option><option>Payment Failed</option></select>
+      <select id="eFulfillment"><option>Unfulfilled</option><option>Fulfilled</option><option>Processing</option><option>Delivered</option><option>Cancelled</option></select>
+      <textarea id="eAddress" class="full" placeholder="Address"></textarea>
+      <textarea id="eItems" class="full" placeholder="Items JSON"></textarea>
+      <button class="btn blue" type="submit">Save</button>
+      <button class="btn" type="button" onclick="closeEdit()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/wix-order-details.js"></script>
+</body>
+</html>

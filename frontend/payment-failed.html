@@ -1,29 +1,10 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Payment Failed | Reza Holdings</title>
-  <link rel="stylesheet" href="payment-page.css">
-</head>
-<body>
-  <main class="card">
-    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
-    <div class="kicker">Payment Failed</div>
-    <h1>Try again.</h1>
-    <p>The payment did not go through. Your order can still be completed. Try again or contact Reza on WhatsApp.</p>
-    <div class="order" id="orderNo">Payment failed</div>
-    <div class="actions">
-      <a class="btn primary" href="checkout.html">Try Again</a>
-      <a class="btn dark" id="wa" href="#">WhatsApp Reza</a>
-      <a class="btn ghost" href="index.html">Back Home</a>
-    </div>
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-store"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment Failed | Reza Holdings</title></head>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#fff4df;font-family:Arial;color:#241812;padding:24px">
+  <!-- REZA PAYMENT FAILED PREMIUM V2 -->
+  <main style="max-width:850px;background:white;border-radius:34px;padding:50px;box-shadow:0 30px 90px #0002">
+    <h1 style="font:70px Georgia,serif;margin:0 0 15px">Payment failed.</h1>
+    <p style="font-size:18px;color:#6d6259">The payment did not go through. Please try again or contact Reza on WhatsApp.</p>
+    <a style="display:inline-block;background:#d6a33f;color:#241812;padding:15px 24px;border-radius:999px;font-weight:900;text-decoration:none" href="checkout.html">Try Again</a>
   </main>
-  <script>
-    const params = new URLSearchParams(location.search);
-    const order = params.get("order") || params.get("orderId") || "";
-    if(order) document.getElementById("orderNo").textContent = order;
-    document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, my payment failed. Please assist me. Order: " + order);
-  </script>
-</body>
-</html>
+</body></html>

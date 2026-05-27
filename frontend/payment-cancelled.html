@@ -2,27 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Payment Cancelled | Reza Holdings</title>
-  <link rel="stylesheet" href="payment-page.css">
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;font-family:Arial,sans-serif;color:#241812;
+      display:grid;place-items:center;padding:24px;
+      background:radial-gradient(circle at 80% 10%,rgba(255,209,186,.45),transparent 35%),
+      radial-gradient(circle at 15% 20%,rgba(230,183,69,.35),transparent 30%),
+      linear-gradient(135deg,#fffdf8,#fff0d6);
+    }
+    .card{
+      width:min(900px,100%);background:rgba(255,255,255,.82);border-radius:36px;
+      padding:clamp(28px,5vw,60px);box-shadow:0 30px 100px rgba(36,24,18,.16);
+      border:1px solid rgba(214,163,63,.25);
+    }
+    .logo{display:flex;gap:14px;align-items:center;margin-bottom:32px;font-weight:900}
+    .mark{width:62px;height:62px;border-radius:18px;background:#111;color:#f6df9b;display:grid;place-items:center;font:34px Georgia,serif}
+    .kicker{color:#a47418;letter-spacing:.22em;text-transform:uppercase;font-weight:1000;font-size:13px}
+    h1{font:clamp(48px,8vw,90px)/.9 Georgia,serif;margin:12px 0 20px}
+    p{font-size:18px;line-height:1.7;color:#6d6259;max-width:720px}
+    .order{display:inline-flex;margin:14px 0 22px;padding:12px 18px;border-radius:999px;background:#fff1c7;color:#7a5312;font-weight:1000}
+    .actions{display:flex;flex-wrap:wrap;gap:12px}
+    a{padding:15px 22px;border-radius:999px;text-decoration:none;font-weight:1000}
+    .primary{background:linear-gradient(135deg,#f3d06a,#c89226);color:#241812}
+    .dark{background:#241812;color:white}
+    .ghost{background:white;border:1px solid rgba(36,24,18,.16);color:#241812}
+    @media(max-width:600px){.actions{flex-direction:column}a{text-align:center}}
+  </style>
 </head>
 <body>
+  <!-- REZA PAYMENT CANCELLED PREMIUM V2 -->
   <main class="card">
-    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
+    <div class="logo"><div class="mark">R</div><div>Reza Holdings<br><span style="color:#a47418;letter-spacing:.2em;font-size:12px">CHAMPAGNE LUXURY</span></div></div>
     <div class="kicker">Payment Cancelled</div>
     <h1>No stress.</h1>
     <p>Your order was created, but the Yoco payment was cancelled. You can go back to checkout or contact Reza on WhatsApp for assistance.</p>
-    <div class="order" id="orderNo">Payment not completed</div>
+    <div class="order" id="orderNo">REZA ORDER</div>
     <div class="actions">
-      <a class="btn primary" href="checkout.html">Back to Checkout</a>
-      <a class="btn dark" id="wa" href="#">WhatsApp Reza</a>
-      <a class="btn ghost" href="shop.html">Keep Shopping</a>
+      <a class="primary" href="checkout.html">Back to Checkout</a>
+      <a class="dark" id="wa" href="#">WhatsApp Reza</a>
+      <a class="ghost" href="shop.html">Continue Shopping</a>
     </div>
   </main>
   <script>
-    const params = new URLSearchParams(location.search);
-    const order = params.get("order") || params.get("orderId") || "";
-    if(order) document.getElementById("orderNo").textContent = order;
+    const p = new URLSearchParams(location.search);
+    const order = p.get("order") || p.get("orderId") || "REZA ORDER";
+    document.getElementById("orderNo").textContent = order;
     document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, I cancelled payment by mistake. Please assist me. Order: " + order);
   </script>
 </body>

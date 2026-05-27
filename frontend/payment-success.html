@@ -2,28 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Payment Successful | Reza Holdings</title>
-  <link rel="stylesheet" href="payment-page.css">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:#241812;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#fffdf8,#fff0d6)}
+    .card{width:min(900px,100%);background:rgba(255,255,255,.85);border-radius:36px;padding:clamp(28px,5vw,60px);box-shadow:0 30px 100px rgba(36,24,18,.16)}
+    .mark{width:62px;height:62px;border-radius:18px;background:#111;color:#f6df9b;display:grid;place-items:center;font:34px Georgia,serif}
+    .logo{display:flex;gap:14px;align-items:center;margin-bottom:32px;font-weight:900}.kicker{color:#a47418;letter-spacing:.22em;text-transform:uppercase;font-weight:1000}
+    h1{font:clamp(48px,8vw,90px)/.9 Georgia,serif;margin:12px 0 20px}p{font-size:18px;line-height:1.7;color:#6d6259}
+    .order{display:inline-flex;margin:14px 0 22px;padding:12px 18px;border-radius:999px;background:#fff1c7;color:#7a5312;font-weight:1000}
+    a{display:inline-flex;margin:6px;padding:15px 22px;border-radius:999px;text-decoration:none;font-weight:1000}.primary{background:linear-gradient(135deg,#f3d06a,#c89226);color:#241812}.dark{background:#241812;color:white}
+  </style>
 </head>
 <body>
+  <!-- REZA PAYMENT SUCCESS PREMIUM V2 -->
   <main class="card">
-    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
+    <div class="logo"><div class="mark">R</div><div>Reza Holdings<br><span style="color:#a47418;letter-spacing:.2em;font-size:12px">CHAMPAGNE LUXURY</span></div></div>
     <div class="kicker">Payment Successful</div>
     <h1>Thank you.</h1>
-    <p>Your payment was completed successfully. Reza Holdings has received your order and our team will contact you shortly.</p>
-    <div class="order" id="orderNo">Order received</div>
-    <div class="actions">
-      <a class="btn primary" href="index.html">Back Home</a>
-      <a class="btn dark" href="shop.html">Continue Shopping</a>
-      <a class="btn ghost" id="wa" href="#">WhatsApp Reza</a>
-    </div>
+    <p>Your payment was completed successfully. Reza Holdings has received your order.</p>
+    <div class="order" id="orderNo">REZA ORDER</div><br>
+    <a class="primary" href="index.html">Back Home</a><a class="dark" href="shop.html">Continue Shopping</a>
   </main>
   <script>
-    const params = new URLSearchParams(location.search);
-    const order = params.get("order") || params.get("orderId") || "";
-    if(order) document.getElementById("orderNo").textContent = order;
-    document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, my payment was successful. Order: " + order);
+    const p=new URLSearchParams(location.search);const order=p.get("order")||p.get("orderId")||"REZA ORDER";
+    document.getElementById("orderNo").textContent=order;
     ["reza_cart","rezaCart","cart","reza_cart_items","reza_v11_cart"].forEach(k=>localStorage.removeItem(k));
   </script>
 </body>
