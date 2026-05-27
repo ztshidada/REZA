@@ -715,6 +715,224 @@ app.delete("/api/orders/:id", (req, res) => {
 // ======================================================
 
 
+
+// ======================================================
+// REZA YOCO PAID SYNC FIX
+// This does not expose keys. It updates local order status when
+// Yoco confirms a checkout/payment is paid.
+// ======================================================
+const REZA_YOCO_EVENTS_FILE = path.join(DATA_DIR, "yoco-events.json");
+
+function rezaSafeJsonFile(file, fallback) {
+  try {
+    if (!fs.existsSync(file)) fs.writeFileSync(file, JSON.stringify(fallback, null, 2));
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    return data;
+  } catch {
+    return fallback;
+  }
+}
+
+function rezaWriteJsonFile(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+function rezaGetOrdersFileForYocoSync() {
+  return path.join(DATA_DIR, "orders.json");
+}
+
+function rezaReadOrdersForYocoSync() {
+  const file = rezaGetOrdersFileForYocoSync();
+  return rezaSafeJsonFile(file, []);
+}
+
+function rezaWriteOrdersForYocoSync(orders) {
+  const file = rezaGetOrdersFileForYocoSync();
+  rezaWriteJsonFile(file, orders);
+}
+
+function rezaFindOrderByAnyYocoRef(orders, ref) {
+  const value = String(ref || "").trim();
+  if (!value) return -1;
+
+  return orders.findIndex(o => {
+    const possible = [
+      o.id,
+      o.orderNumber,
+      o.orderNo,
+      o.yocoCheckoutId,
+      o.checkoutId,
+      o.paymentId,
+      o.yocoPaymentId,
+      o.metadata?.orderId,
+      o.metadata?.orderNumber,
+      o.payment?.checkoutId,
+      o.payment?.id,
+      o.yoco?.checkoutId,
+      o.yoco?.id
+    ].filter(Boolean).map(String);
+
+    return possible.includes(value);
+  });
+}
+
+function rezaMarkOrderPaidByRefs(refs, eventData = {}) {
+  const orders = rezaReadOrdersForYocoSync();
+  let index = -1;
+  let matchedRef = "";
+
+  for (const ref of refs.filter(Boolean)) {
+    index = rezaFindOrderByAnyYocoRef(orders, ref);
+    if (index !== -1) {
+      matchedRef = String(ref);
+      break;
+    }
+  }
+
+  if (index === -1) {
+    return { success: false, message: "Order not found for refs", refs };
+  }
+
+  const now = new Date().toISOString();
+  const existing = orders[index];
+
+  orders[index] = {
+    ...existing,
+    paymentStatus: "Paid",
+    status: existing.status === "Cancelled" ? existing.status : "Paid",
+    yocoPaidAt: existing.yocoPaidAt || now,
+    yocoLastEventAt: now,
+    yocoMatchedRef: matchedRef,
+    yocoLastEvent: {
+      id: eventData.id || eventData.eventId || eventData.paymentId || eventData.checkoutId || "",
+      type: eventData.type || eventData.eventType || "",
+      status: eventData.status || eventData.paymentStatus || "",
+      checkoutId: eventData.checkoutId || eventData.id || "",
+      paymentId: eventData.paymentId || eventData.chargeId || ""
+    },
+    updatedAt: now
+  };
+
+  rezaWriteOrdersForYocoSync(orders);
+
+  return {
+    success: true,
+    message: "Order marked paid",
+    order: orders[index],
+    matchedRef
+  };
+}
+
+function rezaExtractYocoRefs(payload) {
+  const d = payload || {};
+  const data = d.data || d.payload || d.object || d.payment || d.checkout || d;
+
+  const refs = [
+    d.id,
+    d.checkoutId,
+    d.paymentId,
+    d.orderId,
+    d.orderNumber,
+    d.reference,
+    d.metadata?.orderId,
+    d.metadata?.orderNumber,
+
+    data.id,
+    data.checkoutId,
+    data.paymentId,
+    data.orderId,
+    data.orderNumber,
+    data.reference,
+    data.metadata?.orderId,
+    data.metadata?.orderNumber,
+
+    data.checkout?.id,
+    data.checkout?.checkoutId,
+    data.payment?.id,
+    data.payment?.checkoutId
+  ];
+
+  return [...new Set(refs.filter(Boolean).map(String))];
+}
+
+function rezaIsYocoPaidPayload(payload) {
+  const raw = JSON.stringify(payload || {}).toLowerCase();
+
+  return (
+    raw.includes("payment.succeeded") ||
+    raw.includes("payment_success") ||
+    raw.includes("checkout.completed") ||
+    raw.includes("checkout.succeeded") ||
+    raw.includes('"status":"succeeded"') ||
+    raw.includes('"status":"successful"') ||
+    raw.includes('"status":"paid"') ||
+    raw.includes('"paymentstatus":"paid"')
+  );
+}
+
+app.post("/api/payments/yoco/webhook-safe-sync", express.json({ type: "*/*" }), (req, res) => {
+  const payload = req.body || {};
+  const events = rezaSafeJsonFile(REZA_YOCO_EVENTS_FILE, []);
+
+  events.unshift({
+    receivedAt: new Date().toISOString(),
+    payload
+  });
+
+  rezaWriteJsonFile(REZA_YOCO_EVENTS_FILE, events.slice(0, 100));
+
+  if (!rezaIsYocoPaidPayload(payload)) {
+    return res.json({
+      success: true,
+      message: "Yoco event logged but not marked paid",
+      paidEvent: false,
+      refs: rezaExtractYocoRefs(payload)
+    });
+  }
+
+  const refs = rezaExtractYocoRefs(payload);
+  const result = rezaMarkOrderPaidByRefs(refs, payload);
+
+  res.json({
+    success: true,
+    paidEvent: true,
+    refs,
+    update: result
+  });
+});
+
+app.get("/api/payments/yoco/events", (req, res) => {
+  const events = rezaSafeJsonFile(REZA_YOCO_EVENTS_FILE, []);
+  res.json({
+    success: true,
+    count: events.length,
+    events: events.slice(0, 20)
+  });
+});
+
+app.post("/api/payments/yoco/mark-paid-by-ref", (req, res) => {
+  const refs = [
+    req.body?.orderId,
+    req.body?.orderNumber,
+    req.body?.checkoutId,
+    req.body?.yocoCheckoutId,
+    req.body?.paymentId
+  ].filter(Boolean);
+
+  const result = rezaMarkOrderPaidByRefs(refs, {
+    type: "manual-sync",
+    status: "paid",
+    checkoutId: req.body?.checkoutId || req.body?.yocoCheckoutId || ""
+  });
+
+  if (!result.success) return res.status(404).json(result);
+  res.json(result);
+});
+// ======================================================
+// END REZA YOCO PAID SYNC FIX
+// ======================================================
+
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,

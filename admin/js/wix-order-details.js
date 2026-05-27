@@ -139,3 +139,29 @@ document.getElementById("editForm").addEventListener("submit", async e=>{
 });
 
 load().catch(err=>alert(err.message));
+
+
+async function syncYocoPayment(){
+  const oid = orderId();
+  const checkoutId =
+    order.yocoCheckoutId ||
+    order.checkoutId ||
+    order.payment?.checkoutId ||
+    order.yoco?.checkoutId ||
+    "";
+
+  if(!checkoutId && !oid){
+    return alert("No order number or Yoco checkout ID found.");
+  }
+
+  const d = await api("/api/payments/yoco/mark-paid-by-ref", "POST", {
+    orderId: oid,
+    orderNumber: oid,
+    checkoutId,
+    yocoCheckoutId: checkoutId
+  });
+
+  alert("Synced: " + (d.message || "Order updated"));
+  await load();
+}
+
