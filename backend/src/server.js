@@ -502,6 +502,80 @@ app.post("/api/popup", (req,res)=>{
 // END REZA FINAL PRODUCTS + POPUP API
 // ======================================================
 
+
+// ======================================================
+// REZA ORDERS API - SAFE ADD
+// ======================================================
+const REZA_SAFE_ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+
+function rezaSafeEnsureOrdersFile() {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs.existsSync(REZA_SAFE_ORDERS_FILE)) {
+    fs.writeFileSync(REZA_SAFE_ORDERS_FILE, JSON.stringify([], null, 2));
+  }
+}
+
+function rezaSafeReadOrders() {
+  try {
+    rezaSafeEnsureOrdersFile();
+    return JSON.parse(fs.readFileSync(REZA_SAFE_ORDERS_FILE, "utf8"));
+  } catch {
+    return [];
+  }
+}
+
+function rezaSafeWriteOrders(orders) {
+  rezaSafeEnsureOrdersFile();
+  fs.writeFileSync(REZA_SAFE_ORDERS_FILE, JSON.stringify(orders, null, 2));
+}
+
+app.get("/api/orders", (req, res) => {
+  res.json({ success: true, orders: rezaSafeReadOrders() });
+});
+
+app.post("/api/orders", (req, res) => {
+  const body = req.body || {};
+  const items = Array.isArray(body.items) ? body.items : [];
+
+  if (!items.length) {
+    return res.status(400).json({ success: false, message: "Cart is empty" });
+  }
+
+  const orders = rezaSafeReadOrders();
+
+  const subtotal = items.reduce((sum, item) => {
+    return sum + Number(item.price || 0) * Number(item.qty || item.quantity || 1);
+  }, 0);
+
+  const orderNumber =
+    "REZA-" +
+    new Date().toISOString().slice(0, 10).replace(/-/g, "") +
+    "-" +
+    String(orders.length + 1).padStart(4, "0");
+
+  const order = {
+    id: orderNumber.toLowerCase(),
+    orderNumber,
+    customer: body.customer || {},
+    items,
+    subtotal,
+    total: subtotal,
+    delivery: "Calculated after order",
+    status: "New Order",
+    paymentStatus: "Pending",
+    createdAt: new Date().toISOString()
+  };
+
+  orders.unshift(order);
+  rezaSafeWriteOrders(orders);
+
+  res.json({ success: true, message: "Order created", order });
+});
+// ======================================================
+// END REZA ORDERS API - SAFE ADD
+// ======================================================
+
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,

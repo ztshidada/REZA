@@ -3,7 +3,7 @@
     ? "http://localhost:10000"
     : "https://api.rezaholdings.co.za";
 
-  const CART_KEYS = ["reza_cart", "rezaCart", "cart", "reza_cart_items"];
+  const CART_KEYS = ["reza_cart", "rezaCart", "cart", "reza_cart_items", "reza_v11_cart"];
 
   function readCart() {
     for (const key of CART_KEYS) {
@@ -16,9 +16,7 @@
   }
 
   function saveCart(cart) {
-    localStorage.setItem("reza_cart", JSON.stringify(cart));
-    localStorage.setItem("rezaCart", JSON.stringify(cart));
-    localStorage.setItem("cart", JSON.stringify(cart));
+    CART_KEYS.forEach(key => localStorage.setItem(key, JSON.stringify(cart)));
     updateCartCount();
   }
 
@@ -26,7 +24,7 @@
     const cart = readCart();
     const count = cart.reduce((sum, item) => sum + Number(item.qty || item.quantity || 1), 0);
 
-    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],.bag-count").forEach(el => {
+    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],[data-count],.bag-count,#cartCount").forEach(el => {
       el.textContent = count;
     });
 
@@ -76,7 +74,7 @@
     }
 
     saveCart(cart);
-    alert("Added to cart");
+    console.log("Added to cart");
   };
 
   function productCard(product, mode) {
@@ -115,6 +113,7 @@
 
   function findFeaturedGrids() {
     return [
+      document.querySelector("#featuredGrid"),
       document.querySelector("#featuredProducts"),
       document.querySelector(".featured-products"),
       document.querySelector("[data-featured-products]")
@@ -146,14 +145,17 @@
     const visibleSale = products.filter(p =>
       p.showOnline !== false &&
       p.status !== "comingSoon" &&
+      p.status !== "coming-soon" &&
       p.category !== "Coming Soon" &&
       p.productType !== "Coming Soon"
     );
 
     const comingSoon = products.filter(p =>
       p.status === "comingSoon" ||
+      p.status === "coming-soon" ||
       p.category === "Coming Soon" ||
-      p.productType === "Coming Soon"
+      p.productType === "Coming Soon" ||
+      p.comingSoon === true
     );
 
     const featuredSelected = visibleSale.filter(p => p.showFeatured === true).slice(0, 3);
@@ -161,7 +163,7 @@
     const featured = featuredSelected.length ? featuredSelected : featuredFallback;
 
     findSaleGrids().forEach(grid => {
-      if (grid.id === "featuredProducts" || grid.classList.contains("featured-products")) return;
+      if (grid.id === "featuredGrid" || grid.id === "featuredProducts" || grid.classList.contains("featured-products")) return;
       grid.classList.add("reza-master-grid");
       grid.innerHTML = visibleSale.length
         ? visibleSale.map(p => productCard(p, "sale")).join("")

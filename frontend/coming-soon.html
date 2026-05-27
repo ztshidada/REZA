@@ -46,10 +46,10 @@
         const res = await fetch("assets/data/products.json?t=" + Date.now());
         products = await res.json();
       }
-      products = products.filter(p => p.comingSoon || p.status === "coming-soon" || p.showOnline === false);
+      products = products.filter(p => p.comingSoon || p.status === "comingSoon" || p.status === "coming-soon" || p.category === "Coming Soon" || p.productType === "Coming Soon");
       document.getElementById("comingSoonGrid").innerHTML = products.map(p => `
         <article class="soon-card">
-          <img src="${p.image}" alt="${p.name}">
+          <img src="${p.image && p.image.startsWith("/") ? API_BASE + p.image : (p.image || "assets/images/reza-card-bg.svg")}" alt="${p.name}">
           <div class="body">
             <span class="badge">${p.badge || "Coming Soon"}</span>
             <h3>${p.name}</h3>

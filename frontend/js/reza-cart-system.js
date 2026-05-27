@@ -1,5 +1,5 @@
 (function(){
-  const CART_KEYS = ["reza_cart", "rezaCart", "cart"];
+  const CART_KEYS = ["reza_cart", "rezaCart", "cart", "reza_cart_items", "reza_v11_cart"];
 
   function readCart(){
     for(const key of CART_KEYS){
@@ -12,9 +12,7 @@
   }
 
   function writeCart(cart){
-    localStorage.setItem("reza_cart", JSON.stringify(cart));
-    localStorage.setItem("rezaCart", JSON.stringify(cart));
-    localStorage.setItem("cart", JSON.stringify(cart));
+    CART_KEYS.forEach(key => localStorage.setItem(key, JSON.stringify(cart)));
     updateCartCount();
   }
 
@@ -60,7 +58,7 @@
 
   function updateCartCount(){
     const count = readCart().reduce((sum,item)=>sum + Number(item.qty || 1), 0);
-    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],#cartCount").forEach(el => {
+    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],[data-count],#cartCount").forEach(el => {
       el.textContent = count;
     });
   }

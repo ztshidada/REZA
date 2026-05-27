@@ -1,5 +1,5 @@
 (function () {
-  const CART_KEYS = ["reza_cart", "rezaCart", "cart", "reza_cart_items"];
+  const CART_KEYS = ["reza_cart", "rezaCart", "cart", "reza_cart_items", "reza_v11_cart"];
 
   function readCart() {
     for (const key of CART_KEYS) {
@@ -12,9 +12,7 @@
   }
 
   function saveCart(cart) {
-    localStorage.setItem("reza_cart", JSON.stringify(cart));
-    localStorage.setItem("rezaCart", JSON.stringify(cart));
-    localStorage.setItem("cart", JSON.stringify(cart));
+    CART_KEYS.forEach(key => localStorage.setItem(key, JSON.stringify(cart)));
     updateCartCount(cart);
   }
 
@@ -28,7 +26,7 @@
 
   function updateCartCount(cart = readCart()) {
     const count = cart.reduce((sum, item) => sum + Number(item.qty || item.quantity || 1), 0);
-    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],.bag-count").forEach(el => {
+    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count],[data-count],.bag-count,#cartCount").forEach(el => {
       el.textContent = count;
     });
   }
@@ -138,7 +136,7 @@
         <div class="reza-summary-line"><span>Delivery</span><strong>Calculated after order</strong></div>
         <hr>
         <div class="reza-summary-line total"><span>Total</span><strong>${money(subtotal)}</strong></div>
-        <button type="button" class="reza-checkout-btn">Checkout</button>
+        <a href="checkout.html" class="reza-checkout-btn">Checkout</a>
       `;
     }
   }

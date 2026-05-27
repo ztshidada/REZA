@@ -156,7 +156,9 @@
       try{
         const res = await fetch(API + "/api/products?t=" + Date.now());
         const data = await res.json();
-        const products = (data.products || []).filter(p => p.showOnline !== false).slice(0, 4);
+        const saleProducts = (data.products || []).filter(p => p.showOnline !== false && p.status !== "comingSoon" && p.status !== "coming-soon" && p.category !== "Coming Soon" && p.productType !== "Coming Soon");
+        const selectedFeatured = saleProducts.filter(p => p.showFeatured === true).slice(0, 3);
+        const products = selectedFeatured.length ? selectedFeatured : saleProducts.slice(0, 3);
 
         if(!products.length){
           grid.innerHTML = `<div class="loading-card">No products yet. Add products from admin.</div>`;
@@ -173,7 +175,7 @@
               <p class="category">${p.category || "Reza Holdings"}</p>
               <h3>${p.name}</h3>
               <p class="price">${money(p.price)}</p>
-              <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
+              <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Bag</button>
             </div>
           </article>
         `).join("");
