@@ -1,26 +1,40 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Advanced Admin | Reza</title>
-  <style>
-    body{font-family:Arial,sans-serif;background:#fff7ed;margin:0;padding:30px;color:#241812}
-    .card{max-width:900px;margin:auto;background:white;border-radius:28px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-    h1{font-family:Georgia,serif;font-size:3rem;margin:0 0 18px}
-    a{display:inline-flex;margin:8px;padding:13px 18px;border-radius:999px;background:#241812;color:white;text-decoration:none;font-weight:900}
-  </style>
+  <link rel="stylesheet" href="css/advanced-orders.css">
 </head>
 <body>
-  <div class="card">
-    <h1>Advanced Admin</h1>
-    <p>Old advanced admin pages copied safely. They are available here without replacing your current admin.</p>
-    <a href="advanced/dashboard.html">Dashboard</a>
-    <a href="advanced/orders.html">Orders</a>
-    <a href="advanced/payments.html">Payments</a>
-    <a href="advanced/shipping.html">Shipping</a>
-    <a href="advanced/products.html">Products</a>
-    <a href="advanced/media.html">Media</a>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">R</div>
+        <div>
+          <h2>Reza Admin</h2>
+          <span>ADVANCED</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="products.html">Products</a>
+        <a href="media.html">Media</a>
+        <a href="orders.html">Orders</a>
+        <a class="active" href="advanced.html">Advanced</a>
+        <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="kicker">Control Center</div>
+      <h1>Advanced Admin</h1>
+      <section class="cards">
+        <a class="metric" href="orders.html" style="text-decoration:none;color:inherit"><span>Manage</span><strong>Orders</strong></a>
+        <a class="metric" href="products.html" style="text-decoration:none;color:inherit"><span>Manage</span><strong>Products</strong></a>
+        <a class="metric" href="media.html" style="text-decoration:none;color:inherit"><span>Manage</span><strong>Media</strong></a>
+        <a class="metric" href="dashboard.html" style="text-decoration:none;color:inherit"><span>View</span><strong>Dashboard</strong></a>
+      </section>
+    </main>
   </div>
 </body>
 </html>

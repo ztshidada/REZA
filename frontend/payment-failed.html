@@ -1,37 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Payment Failed | Reza Holdings</title><link rel="stylesheet" href="css/style.css?v=7">
-<script>
-(function () {
-  try {
-    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
-
-    function cssUrl(value, fallback) {
-      if (!value) return fallback;
-      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
-    }
-
-    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
-    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
-    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
-
-    if (media.logo) {
-      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
-    }
-  } catch (e) {}
-})();
-</script>
-
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment Failed | Reza Holdings</title>
+  <link rel="stylesheet" href="payment-page.css">
 </head>
 <body>
-<div data-header></div>
-<main class="section thankyou-bg" style="min-height:75vh;display:grid;align-items:center"><div class="container"><div class="thankyou-card">
-<h1 class="section-title">Payment failed.</h1>
-<p>The Yoco payment did not complete. You can try again or contact Reza for help.</p>
-<div class="order-number-box" id="orderBox"></div>
-<div class="hero-actions" style="justify-content:center"><a class="btn dark" href="checkout.html">Try Again</a><a class="btn" href="https://wa.me/27793773550" target="_blank">WhatsApp Reza</a></div>
-</div></div></main>
-<div data-footer></div><div data-whatsapp></div>
-<script src="js/data.js"></script><script src="js/main.js"></script>
-<script>document.getElementById("orderBox").textContent = new URLSearchParams(location.search).get("order") || "REZA ORDER";</script>
-</body></html>
+  <main class="card">
+    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
+    <div class="kicker">Payment Failed</div>
+    <h1>Try again.</h1>
+    <p>The payment did not go through. Your order can still be completed. Try again or contact Reza on WhatsApp.</p>
+    <div class="order" id="orderNo">Payment failed</div>
+    <div class="actions">
+      <a class="btn primary" href="checkout.html">Try Again</a>
+      <a class="btn dark" id="wa" href="#">WhatsApp Reza</a>
+      <a class="btn ghost" href="index.html">Back Home</a>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const order = params.get("order") || params.get("orderId") || "";
+    if(order) document.getElementById("orderNo").textContent = order;
+    document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, my payment failed. Please assist me. Order: " + order);
+  </script>
+</body>
+</html>

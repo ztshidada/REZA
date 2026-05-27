@@ -1,60 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You | Reza Holdings</title><link rel="stylesheet" href="css/style.css">
-
-<script>
-(function () {
-  try {
-    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
-
-    function cssUrl(value, fallback) {
-      if (!value) return fallback;
-      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
-    }
-
-    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
-    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
-    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
-
-    if (media.logo) {
-      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
-    }
-  } catch (e) {}
-})();
-</script>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thank You | Reza Holdings</title>
+  <link rel="stylesheet" href="payment-page.css">
 </head>
 <body>
-  <div data-header></div>
-  <main class="section thankyou-bg" style="min-height:75vh;display:grid;align-items:center">
-    <div class="container">
-      <div class="thankyou-card">
-        <img src="assets/images/reza-logo.png" alt="Reza logo" style="height:90px;margin:0 auto 20px;border-radius:14px">
-        <div class="kicker">Order Received</div>
-        <h1 class="section-title">Thank you for your order.</h1>
-        <p>Your Reza order has been created successfully. Keep this order number for payment and support.</p>
-        <div class="order-number-box" data-order-number>REZA-ORDER</div>
-        <p data-payment-status></p>
-        <div class="hero-actions" style="justify-content:center">
-          <a class="btn dark" href="shop.html">Continue Shopping</a>
-          <a class="btn" data-whatsapp-order target="_blank" href="https://wa.me/27793773550">Send Order on WhatsApp</a>
-        </div>
-      </div>
+  <main class="card">
+    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
+    <div class="kicker">Order Received</div>
+    <h1>Thank you.</h1>
+    <p>Your order has been received. Reza Holdings will contact you shortly with delivery or collection details.</p>
+    <div class="order" id="orderNo">Order received</div>
+    <div class="actions">
+      <a class="btn primary" href="index.html">Back Home</a>
+      <a class="btn dark" id="wa" href="#">WhatsApp Reza</a>
+      <a class="btn ghost" href="shop.html">Continue Shopping</a>
     </div>
   </main>
-  <div data-footer></div><div data-whatsapp></div>
-  <script src="js/data.js"></script><script src="js/main.js"></script>
   <script>
     const params = new URLSearchParams(location.search);
-    const orderId = params.get("order");
-    const order = JSON.parse(localStorage.getItem("reza_last_order") || "null");
-    const finalOrderId = orderId || order?.id || "REZA-ORDER";
-    document.querySelector("[data-order-number]").textContent = finalOrderId;
-    document.querySelector("[data-payment-status]").innerHTML = order ? `Payment status: <strong>${order.paymentStatus}</strong><br>Total: <strong>${formatMoney(order.total)}</strong>` : "";
-    const msg = encodeURIComponent(`Hi Reza Holdings, I placed an order.\nOrder number: ${finalOrderId}${order ? `\nName: ${order.customer.fullName}\nTotal: ${formatMoney(order.total)}\nDelivery: ${order.customer.deliveryMethod}\nLocker/Mall/Paxi: ${order.customer.lockerOrMall}` : ""}`);
-    document.querySelector("[data-whatsapp-order]").href = `https://wa.me/27793773550?text=${msg}`;
+    const order = params.get("order") || params.get("orderId") || "";
+    if(order) document.getElementById("orderNo").textContent = order;
+    document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, I placed an order. Order: " + order);
   </script>
 </body>
 </html>

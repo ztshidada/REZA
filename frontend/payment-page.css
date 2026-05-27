@@ -1,0 +1,111 @@
+:root{
+  --ink:#241812;
+  --muted:#6f6258;
+  --gold:#d6a33f;
+  --gold2:#f5df9c;
+  --cream:#fff8ec;
+  --paper:#fffdf8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 20% 20%,rgba(245,223,156,.45),transparent 30%),
+    radial-gradient(circle at 80% 10%,rgba(255,200,180,.35),transparent 34%),
+    linear-gradient(135deg,#fffdf8,#fff3dd);
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+.card{
+  width:min(920px,100%);
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(214,163,63,.22);
+  border-radius:36px;
+  padding:clamp(26px,5vw,58px);
+  box-shadow:0 30px 100px rgba(36,24,18,.14);
+  position:relative;
+  overflow:hidden;
+}
+.card:before{
+  content:"";
+  position:absolute;
+  inset:auto -20% -45% auto;
+  width:520px;
+  height:520px;
+  border-radius:50%;
+  background:linear-gradient(135deg,rgba(214,163,63,.18),rgba(255,255,255,.05));
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-weight:900;
+  margin-bottom:34px;
+}
+.mark{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:#0d0b08;
+  color:var(--gold2);
+  font-family:Georgia,serif;
+  font-size:32px;
+}
+.kicker{
+  color:#9f741e;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  font-weight:1000;
+  font-size:13px;
+}
+h1{
+  font-family:Georgia,serif;
+  font-size:clamp(44px,9vw,92px);
+  line-height:.92;
+  margin:12px 0 18px;
+}
+p{
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.7;
+  max-width:720px;
+}
+.order{
+  display:inline-flex;
+  margin:16px 0;
+  padding:12px 18px;
+  border-radius:999px;
+  background:#fff3d0;
+  color:#7a5312;
+  font-weight:1000;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:26px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px 22px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:1000;
+}
+.primary{background:linear-gradient(135deg,#f3d06a,#c89226);color:#241812}
+.dark{background:#241812;color:white}
+.ghost{border:1px solid rgba(36,24,18,.18);color:#241812;background:white}
+@media(max-width:620px){
+  body{padding:14px}
+  .card{border-radius:26px}
+  .actions{flex-direction:column}
+  .btn{width:100%}
+}

@@ -1,96 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Success | Reza Holdings</title><link rel="stylesheet" href="css/style.css?v=7">
-
-<script>
-(function () {
-  try {
-    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
-
-    function cssUrl(value, fallback) {
-      if (!value) return fallback;
-      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
-    }
-
-    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
-    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
-    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
-
-    if (media.logo) {
-      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
-    }
-  } catch (e) {}
-})();
-</script>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment Successful | Reza Holdings</title>
+  <link rel="stylesheet" href="payment-page.css">
 </head>
 <body>
-<div data-header></div>
-<main class="section thankyou-bg" style="min-height:75vh;display:grid;align-items:center">
-  <div class="container">
-    <div class="thankyou-card">
-      <img src="assets/images/reza-logo.png" alt="Reza logo" style="height:90px;margin:0 auto 20px;border-radius:14px">
-      <div class="kicker">Yoco Payment</div>
-      <h1 class="section-title">Payment received.</h1>
-      <p>Your payment was completed on Yoco. We are checking the backend confirmation now.</p>
-      <div class="order-number-box" data-order-number>REZA-ORDER</div>
-      <p data-status>Checking payment status...</p>
-      <div class="hero-actions" style="justify-content:center">
-        <button class="btn dark" onclick="checkStatus()">Check Status Again</button>
-        <a class="btn light" href="shop.html">Continue Shopping</a>
-        
-      </div>
+  <main class="card">
+    <div class="logo"><div class="mark">R</div><div><b>Reza Holdings</b><br><span>Champagne Luxury</span></div></div>
+    <div class="kicker">Payment Successful</div>
+    <h1>Thank you.</h1>
+    <p>Your payment was completed successfully. Reza Holdings has received your order and our team will contact you shortly.</p>
+    <div class="order" id="orderNo">Order received</div>
+    <div class="actions">
+      <a class="btn primary" href="index.html">Back Home</a>
+      <a class="btn dark" href="shop.html">Continue Shopping</a>
+      <a class="btn ghost" id="wa" href="#">WhatsApp Reza</a>
     </div>
-  </div>
-</main>
-<div data-footer></div><div data-whatsapp></div>
-<script src="js/data.js"></script><script src="js/main.js"></script>
-<script>
-const params = new URLSearchParams(location.search);
-const orderId = params.get("order");
-const last = JSON.parse(localStorage.getItem("reza_last_order") || "null");
-const finalOrderId = orderId || last?.id || "REZA-ORDER";
-document.querySelector("[data-order-number]").textContent = finalOrderId;
-
-function markLocalPaid(orderFromServer) {
-  const orders = JSON.parse(localStorage.getItem("reza_orders") || "[]").map(o => {
-    if (o.id === finalOrderId) return { ...o, paymentStatus: orderFromServer?.paymentStatus || "Paid", yocoCheckoutId: orderFromServer?.yocoCheckoutId || o.yocoCheckoutId };
-    return o;
-  });
-  localStorage.setItem("reza_orders", JSON.stringify(orders));
-  const updated = orders.find(o => o.id === finalOrderId) || last;
-  if (updated) localStorage.setItem("reza_last_order", JSON.stringify(updated));
-}
-
-async function checkStatus() {
-  const statusEl = document.querySelector("[data-status]");
-  const apiBase = localStorage.getItem("reza_api_base") || "https://api.rezaholdings.co.za";
-  const checkoutId = last?.yocoCheckoutId || finalOrderId;
-
-  try {
-    await fetch(`${apiBase}/api/payments/yoco/verify-order/${encodeURIComponent(finalOrderId)}`, { method: 'POST' }).catch(() => null);
-    const res = await fetch(`${apiBase}/api/payments/yoco/status/${encodeURIComponent(checkoutId)}`);
-    const data = await res.json();
-    if (data.success) {
-      markLocalPaid(data.order);
-      if (String(data.paymentStatus).toLowerCase().includes("paid")) {
-        localStorage.removeItem("reza_cart");
-        updateCartCount();
-        statusEl.innerHTML = `Status: <strong>Paid ✅</strong><br>Your order is confirmed.`;
-      } else {
-        statusEl.innerHTML = `Status: <strong>${data.paymentStatus}</strong><br>If it still says Pending, wait for the Yoco webhook or refresh.`;
-      }
-    } else {
-      statusEl.textContent = data.message || "Could not find payment status.";
-    }
-  } catch (err) {
-    statusEl.innerHTML = "Payment completed, but backend status check failed. Make sure the backend is running on port 5050.";
-  }
-}
-
-checkStatus();
-</script>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const order = params.get("order") || params.get("orderId") || "";
+    if(order) document.getElementById("orderNo").textContent = order;
+    document.getElementById("wa").href = "https://wa.me/27793773550?text=" + encodeURIComponent("Hi Reza, my payment was successful. Order: " + order);
+    ["reza_cart","rezaCart","cart","reza_cart_items","reza_v11_cart"].forEach(k=>localStorage.removeItem(k));
+  </script>
 </body>
 </html>

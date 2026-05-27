@@ -603,6 +603,118 @@ app.get("/api/debug/yoco-key", (req, res) => {
 
 app.use("/api/payments", paymentRoutes);
 
+
+// ======================================================
+// REZA ADVANCED ADMIN ORDER MANAGEMENT
+// ======================================================
+const REZA_ADMIN_ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+
+function rezaAdminEnsureOrdersFile() {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs.existsSync(REZA_ADMIN_ORDERS_FILE)) {
+    fs.writeFileSync(REZA_ADMIN_ORDERS_FILE, JSON.stringify([], null, 2));
+  }
+}
+
+function rezaAdminReadOrders() {
+  try {
+    rezaAdminEnsureOrdersFile();
+    const data = JSON.parse(fs.readFileSync(REZA_ADMIN_ORDERS_FILE, "utf8"));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function rezaAdminWriteOrders(orders) {
+  rezaAdminEnsureOrdersFile();
+  fs.writeFileSync(REZA_ADMIN_ORDERS_FILE, JSON.stringify(orders, null, 2));
+}
+
+function rezaAdminFindOrderIndex(orders, id) {
+  return orders.findIndex(o =>
+    String(o.id || "") === String(id) ||
+    String(o.orderNumber || "") === String(id)
+  );
+}
+
+app.get("/api/orders/:id", (req, res) => {
+  const orders = rezaAdminReadOrders();
+  const index = rezaAdminFindOrderIndex(orders, req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: "Order not found" });
+  }
+
+  res.json({ success: true, order: orders[index] });
+});
+
+app.patch("/api/orders/:id", (req, res) => {
+  const orders = rezaAdminReadOrders();
+  const index = rezaAdminFindOrderIndex(orders, req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: "Order not found" });
+  }
+
+  const existing = orders[index];
+  const incoming = req.body || {};
+
+  orders[index] = {
+    ...existing,
+    ...incoming,
+    id: existing.id || existing.orderNumber || incoming.id,
+    orderNumber: existing.orderNumber || existing.id || incoming.orderNumber,
+    customer: {
+      ...(existing.customer || {}),
+      ...(incoming.customer || {})
+    },
+    items: Array.isArray(incoming.items) ? incoming.items : existing.items,
+    updatedAt: new Date().toISOString()
+  };
+
+  rezaAdminWriteOrders(orders);
+  res.json({ success: true, message: "Order updated", order: orders[index] });
+});
+
+app.put("/api/orders/:id", (req, res) => {
+  const orders = rezaAdminReadOrders();
+  const index = rezaAdminFindOrderIndex(orders, req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: "Order not found" });
+  }
+
+  const incoming = req.body || {};
+  orders[index] = {
+    ...incoming,
+    id: incoming.id || incoming.orderNumber || req.params.id,
+    orderNumber: incoming.orderNumber || incoming.id || req.params.id,
+    updatedAt: new Date().toISOString()
+  };
+
+  rezaAdminWriteOrders(orders);
+  res.json({ success: true, message: "Order replaced", order: orders[index] });
+});
+
+app.delete("/api/orders/:id", (req, res) => {
+  const orders = rezaAdminReadOrders();
+  const index = rezaAdminFindOrderIndex(orders, req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: "Order not found" });
+  }
+
+  const deleted = orders.splice(index, 1)[0];
+  rezaAdminWriteOrders(orders);
+
+  res.json({ success: true, message: "Order deleted", order: deleted });
+});
+// ======================================================
+// END REZA ADVANCED ADMIN ORDER MANAGEMENT
+// ======================================================
+
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
