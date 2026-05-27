@@ -142,7 +142,12 @@ app.post("/api/products", (req, res) => {
     description: incoming.description || "",
     benefits: incoming.benefits || [],
     howToUse: incoming.howToUse || "",
-    showOnline: incoming.showOnline !== false
+    productType: incoming.productType || "Single",
+    status: incoming.status || (incoming.category === "Coming Soon" ? "comingSoon" : "sale"),
+    showOnline: incoming.showOnline !== false,
+    showFeatured: incoming.showFeatured === true,
+    showInPopup: incoming.showInPopup === true,
+    updatedAt: new Date().toISOString()
   };
 
   products.push(product);
@@ -500,6 +505,79 @@ app.post("/api/popup", (req,res)=>{
 });
 // ======================================================
 // END REZA FINAL PRODUCTS + POPUP API
+// ======================================================
+
+
+
+// ======================================================
+// REZA ORDERS API - ADDED BY CONNECTION REPAIR
+// ======================================================
+const REZA_ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+
+function rezaEnsureOrdersFile(){
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  if(!fs.existsSync(REZA_ORDERS_FILE)){
+    fs.writeFileSync(REZA_ORDERS_FILE, JSON.stringify([], null, 2));
+  }
+}
+
+function rezaReadOrders(){
+  try{
+    rezaEnsureOrdersFile();
+    return JSON.parse(fs.readFileSync(REZA_ORDERS_FILE, "utf8"));
+  }catch(e){
+    return [];
+  }
+}
+
+function rezaWriteOrders(orders){
+  rezaEnsureOrdersFile();
+  fs.writeFileSync(REZA_ORDERS_FILE, JSON.stringify(orders, null, 2));
+}
+
+app.get("/api/orders", (req,res)=>{
+  res.json({ success:true, orders: rezaReadOrders() });
+});
+
+app.post("/api/orders", (req,res)=>{
+  const body = req.body || {};
+  const items = Array.isArray(body.items) ? body.items : [];
+
+  if(!items.length){
+    return res.status(400).json({ success:false, message:"Cart is empty" });
+  }
+
+  const orders = rezaReadOrders();
+  const total = items.reduce((sum,item)=>{
+    return sum + Number(item.price || 0) * Number(item.qty || item.quantity || 1);
+  }, 0);
+
+  const orderNumber =
+    "REZA-" +
+    new Date().toISOString().slice(0,10).replace(/-/g,"") +
+    "-" +
+    String(orders.length + 1).padStart(4,"0");
+
+  const order = {
+    id: orderNumber.toLowerCase(),
+    orderNumber,
+    customer: body.customer || {},
+    items,
+    subtotal: total,
+    total,
+    delivery: "Calculated after order",
+    status: "New Order",
+    paymentStatus: "Pending",
+    createdAt: new Date().toISOString()
+  };
+
+  orders.unshift(order);
+  rezaWriteOrders(orders);
+
+  res.json({ success:true, message:"Order created", order });
+});
+// ======================================================
+// END REZA ORDERS API
 // ======================================================
 
 app.use((req, res) => {
