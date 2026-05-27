@@ -577,6 +577,173 @@ app.post("/api/orders", (req, res) => {
 // ======================================================
 
 
+
+// ======================================================
+// REZA LIVE BACKEND MARKER
+// ======================================================
+app.get("/api/debug/live-version", (req, res) => {
+  res.json({
+    success: true,
+    marker: "REZA_BACKEND_YOCO_FORCE_20260527_V3",
+    time: new Date().toISOString()
+  });
+});
+
+
+
+// ======================================================
+// REZA ABSOLUTE EARLY YOCO WEBHOOK INTERCEPTOR V3
+// ======================================================
+app.use("/api/payments/yoco/webhook", express.json({ type: "*/*" }), (req, res, next) => {
+  if (req.method !== "POST") return next();
+
+  try {
+    const file = path.join(DATA_DIR, "orders.json");
+    const eventsFile = path.join(DATA_DIR, "yoco-events.json");
+
+    const payload = req.body || {};
+    const d = payload.data || payload.payload || payload.object || payload.checkout || payload.payment || payload;
+
+    const refs = [...new Set([
+      payload.id,
+      payload.checkoutId,
+      payload.paymentId,
+      payload.reference,
+      payload.orderId,
+      payload.orderNumber,
+      payload.metadata && payload.metadata.orderId,
+      payload.metadata && payload.metadata.orderNumber,
+
+      d.id,
+      d.checkoutId,
+      d.paymentId,
+      d.reference,
+      d.orderId,
+      d.orderNumber,
+      d.metadata && d.metadata.orderId,
+      d.metadata && d.metadata.orderNumber,
+
+      d.checkout && d.checkout.id,
+      d.checkout && d.checkout.checkoutId,
+      d.payment && d.payment.id,
+      d.payment && d.payment.checkoutId
+    ].filter(Boolean).map(String))];
+
+    const raw = JSON.stringify(payload).toLowerCase();
+    const paidEvent =
+      raw.includes("payment.succeeded") ||
+      raw.includes("checkout.succeeded") ||
+      raw.includes("checkout.completed") ||
+      raw.includes('"status":"paid"') ||
+      raw.includes('"status":"succeeded"') ||
+      raw.includes('"status":"successful"');
+
+    let orders = [];
+    try {
+      orders = JSON.parse(fs.readFileSync(file, "utf8"));
+    } catch {
+      orders = [];
+    }
+
+    let found = -1;
+    let matchedRef = "";
+
+    for (const ref of refs) {
+      found = orders.findIndex(o => {
+        const possible = [
+          o.id,
+          o.orderNumber,
+          o.orderNo,
+          o.yocoCheckoutId,
+          o.checkoutId,
+          o.paymentId,
+          o.yocoPaymentId,
+          o.payment && o.payment.checkoutId,
+          o.payment && o.payment.id,
+          o.yoco && o.yoco.checkoutId,
+          o.yoco && o.yoco.id
+        ].filter(Boolean).map(String);
+
+        return possible.includes(ref);
+      });
+
+      if (found !== -1) {
+        matchedRef = ref;
+        break;
+      }
+    }
+
+    let update = null;
+
+    if (paidEvent && found !== -1) {
+      const now = new Date().toISOString();
+
+      orders[found] = {
+        ...orders[found],
+        paymentStatus: "Paid",
+        status: "Paid",
+        paidAt: orders[found].paidAt || now,
+        yocoPaidAt: orders[found].yocoPaidAt || now,
+        yocoMatchedRef: matchedRef,
+        yocoPaidSource: "absolute-early-webhook-v3",
+        updatedAt: now
+      };
+
+      fs.writeFileSync(file, JSON.stringify(orders, null, 2));
+
+      update = {
+        success: true,
+        message: "Order marked paid",
+        matchedRef,
+        orderNumber: orders[found].orderNumber || orders[found].id
+      };
+    } else {
+      update = {
+        success: false,
+        message: found === -1 ? "No matching order found" : "Event was not paid",
+        refs
+      };
+    }
+
+    let events = [];
+    try {
+      events = JSON.parse(fs.readFileSync(eventsFile, "utf8"));
+    } catch {
+      events = [];
+    }
+
+    events.unshift({
+      receivedAt: new Date().toISOString(),
+      route: "absolute-early-webhook-v3",
+      paidEvent,
+      refs,
+      update,
+      payload
+    });
+
+    fs.writeFileSync(eventsFile, JSON.stringify(events.slice(0, 100), null, 2));
+
+    return res.status(200).json({
+      success: true,
+      route: "absolute-early-webhook-v3",
+      paidEvent,
+      refs,
+      update
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      route: "absolute-early-webhook-v3",
+      message: err.message
+    });
+  }
+});
+// ======================================================
+// END REZA ABSOLUTE EARLY YOCO WEBHOOK INTERCEPTOR V3
+// ======================================================
+
+
 app.get("/api/payments/yoco/webhook", (req, res) => {
   res.json({
     success: true,
