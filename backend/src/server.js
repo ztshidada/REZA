@@ -768,6 +768,137 @@ app.get("/api/debug/yoco-key", (req, res) => {
 });
 
 
+
+// ======================================================
+// REZA YOCO CREATE CHECKOUT BRIDGE
+// Saves orderNumber + yocoCheckoutId into backend/data/orders.json
+// BEFORE older /api/payments router handles it.
+// ======================================================
+app.post("/api/payments/yoco/create-checkout", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const incoming = body.order || body;
+    const items = Array.isArray(incoming.items) ? incoming.items : [];
+
+    if (!items.length) {
+      return res.status(400).json({ success: false, message: "Cart is empty." });
+    }
+
+    const total = Number(
+      incoming.total !== undefined
+        ? incoming.total
+        : items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || item.quantity || 1), 0)
+    );
+
+    if (total < 2) {
+      return res.status(400).json({ success: false, message: "Yoco payments must be at least R2.00." });
+    }
+
+    const key = process.env.YOCO_SECRET_KEY || process.env.YOCO_LIVE_SECRET_KEY || "";
+    if (!key) {
+      return res.status(500).json({ success: false, message: "YOCO_SECRET_KEY is missing on Render." });
+    }
+
+    const ordersFile = path.join(__dirname, "../data/orders.json");
+    fs.mkdirSync(path.dirname(ordersFile), { recursive: true });
+
+    let orders = [];
+    try {
+      orders = JSON.parse(fs.readFileSync(ordersFile, "utf8"));
+      if (!Array.isArray(orders)) orders = [];
+    } catch {
+      orders = [];
+    }
+
+    const orderNumber =
+      incoming.orderNumber ||
+      incoming.id ||
+      "REZA-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + String(orders.length + 1).padStart(4, "0");
+
+    const frontendUrl = process.env.FRONTEND_URL || process.env.SITE_URL || "https://rezaholdings.co.za";
+
+    const order = {
+      ...incoming,
+      id: orderNumber,
+      orderNumber,
+      customer: incoming.customer || {},
+      items,
+      subtotal: Number(incoming.subtotal || total),
+      total,
+      paymentMethod: "Yoco",
+      paymentStatus: "Pending Payment",
+      deliveryStatus: incoming.deliveryStatus || "New Order",
+      status: "New Order",
+      source: "reza-v11-yoco-bridge",
+      createdAt: incoming.createdAt || new Date().toISOString()
+    };
+
+    const payload = {
+      amount: Math.max(Math.round(total * 100), 200),
+      currency: "ZAR",
+      successUrl: `${frontendUrl}/payment-success.html?order=${encodeURIComponent(orderNumber)}`,
+      cancelUrl: `${frontendUrl}/payment-cancelled.html?order=${encodeURIComponent(orderNumber)}`,
+      failureUrl: `${frontendUrl}/payment-failed.html?order=${encodeURIComponent(orderNumber)}`,
+      metadata: {
+        orderId: String(orderNumber),
+        orderNumber: String(orderNumber),
+        customerName: String(order.customer?.fullName || order.customer?.name || ""),
+        customerPhone: String(order.customer?.phone || "")
+      }
+    };
+
+    const yocoRes = await fetch("https://payments.yoco.com/api/checkouts", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json",
+        "Idempotency-Key": String(orderNumber)
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const checkout = await yocoRes.json().catch(() => ({}));
+
+    if (!yocoRes.ok || !checkout.redirectUrl) {
+      return res.status(502).json({
+        success: false,
+        message: checkout.displayMessage || checkout.message || checkout.error || "Yoco checkout failed",
+        yoco: checkout
+      });
+    }
+
+    const savedOrder = {
+      ...order,
+      yocoCheckoutId: checkout.id,
+      yocoRedirectUrl: checkout.redirectUrl,
+      yocoPaymentId: checkout.paymentId || null,
+      yocoProcessingMode: checkout.processingMode || null,
+      updatedAt: new Date().toISOString()
+    };
+
+    const idx = orders.findIndex(o => String(o.id) === String(orderNumber) || String(o.orderNumber) === String(orderNumber));
+
+    if (idx >= 0) orders[idx] = { ...orders[idx], ...savedOrder };
+    else orders.unshift(savedOrder);
+
+    fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
+
+    return res.json({
+      success: true,
+      order: savedOrder,
+      checkout,
+      redirectUrl: checkout.redirectUrl
+    });
+  } catch (error) {
+    console.error("Reza Yoco bridge checkout error:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+// ======================================================
+// END REZA YOCO CREATE CHECKOUT BRIDGE
+// ======================================================
+
+
 app.use("/api/payments", paymentRoutes);
 
 
