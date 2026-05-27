@@ -259,6 +259,7 @@ function rezaCleanProduct(body) {
     image: body.image || "",
     description: body.description || "",
     showOnline: body.showOnline !== false,
+    showFeatured: body.showFeatured === true,
     updatedAt: new Date().toISOString()
   };
 }
@@ -436,6 +437,7 @@ function rezaFinalProduct(body){
     image: body.image || "",
     description: body.description || "",
     showOnline: body.showOnline !== false,
+    showFeatured: body.showFeatured === true,
     updatedAt: new Date().toISOString()
   };
 }

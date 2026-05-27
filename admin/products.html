@@ -76,6 +76,10 @@
           <option value="sale">On Sale</option>
           <option value="comingSoon">Coming Soon</option>
         </select>
+        <select id="showFeatured">
+          <option value="false">Do not show on homepage featured</option>
+          <option value="true">Show on homepage featured</option>
+        </select>
         <select id="showOnline">
           <option value="true">Show on customer page</option>
           <option value="false">Hide from customer page</option>
@@ -100,6 +104,7 @@
             <th>Category</th>
             <th>Type</th>
             <th>Price</th>
+            <th>Featured</th>
             <th>Show</th>
             <th>Actions</th>
           </tr>
@@ -142,6 +147,7 @@ function clearForm(){
   $("category").value = "Skincare";
   $("productType").value = "Single";
   $("status").value = "sale";
+  $("showFeatured").value = "false";
   $("showOnline").value = "true";
   $("imageFile").value = "";
   setStatus("Ready.");
@@ -171,6 +177,7 @@ function renderProducts(){
       <td>${p.category || ""}</td>
       <td><span class="pill">${p.productType || ""}</span></td>
       <td>${money(p.price)}</td>
+      <td>${p.showFeatured ? "⭐ Featured" : "—"}</td>
       <td>${p.showOnline !== false ? "👁️ Visible" : "🙈 Hidden"}</td>
       <td>
         <div class="actions">
@@ -196,6 +203,7 @@ window.editProduct = function(id){
   $("stock").value = p.stock || 0;
   $("badge").value = p.badge || "";
   $("status").value = p.status || "sale";
+  $("showFeatured").value = String(Boolean(p.showFeatured));
   $("showOnline").value = String(p.showOnline !== false);
   $("description").value = p.description || "";
   imageData = p.image || "";
@@ -234,6 +242,7 @@ $("saveBtn").addEventListener("click", async () => {
       badge: $("badge").value.trim(),
       status: $("status").value,
       showOnline: $("showOnline").value === "true",
+      showFeatured: $("showFeatured").value === "true",
       description: $("description").value.trim(),
       image: imageData
     };
