@@ -1,0 +1,138 @@
+.reza-master-grid,
+.products-grid,
+.product-grid,
+#productsGrid,
+#productGrid,
+#featuredProducts,
+.featured-products,
+#comingSoonGrid,
+.coming-soon-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 28px !important;
+  width: min(1180px, calc(100% - 36px)) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  overflow: visible !important;
+}
+
+.reza-master-card {
+  background: rgba(255,255,255,.96) !important;
+  border: 1px solid rgba(0,0,0,.08) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 20px 60px rgba(50,30,15,.12) !important;
+}
+
+.reza-master-imgbox {
+  position: relative !important;
+  width: 100% !important;
+  height: 360px !important;
+  background: #fff7ef !important;
+  overflow: hidden !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.reza-master-imgbox img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+.reza-master-imgbox span {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  z-index: 2 !important;
+  background: linear-gradient(135deg,#edcf76,#c89532) !important;
+  color: #251812 !important;
+  border-radius: 999px !important;
+  padding: 9px 16px !important;
+  font-size: .76rem !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+  font-weight: 1000 !important;
+}
+
+.reza-master-body {
+  padding: 22px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 !important;
+}
+
+.reza-master-type {
+  margin: 0 !important;
+  color: #a87622 !important;
+  font-size: .78rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.reza-master-body h3 {
+  margin: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.12 !important;
+  color: #241812 !important;
+}
+
+.reza-master-price {
+  margin: 0 !important;
+  font-weight: 1000 !important;
+  color: #9a6719 !important;
+  font-size: 1.08rem !important;
+}
+
+.reza-master-body p {
+  line-height: 1.5 !important;
+}
+
+.reza-master-btn {
+  margin-top: auto !important;
+  width: max-content !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 13px 20px !important;
+  background: linear-gradient(135deg,#edcf76,#c89532) !important;
+  color: #241812 !important;
+  font-weight: 1000 !important;
+  cursor: pointer !important;
+}
+
+.reza-master-btn.muted {
+  background: #2d2621 !important;
+  color: #fffaf2 !important;
+}
+
+.reza-empty {
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+  font-weight: 900 !important;
+  padding: 40px !important;
+}
+
+@media(max-width: 760px) {
+  .reza-master-grid,
+  .products-grid,
+  .product-grid,
+  #productsGrid,
+  #productGrid,
+  #featuredProducts,
+  .featured-products,
+  #comingSoonGrid,
+  .coming-soon-grid {
+    grid-template-columns: 1fr !important;
+    width: calc(100% - 28px) !important;
+  }
+
+  .reza-master-imgbox {
+    height: 310px !important;
+  }
+}

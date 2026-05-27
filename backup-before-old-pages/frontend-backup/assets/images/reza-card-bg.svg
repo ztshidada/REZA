@@ -1,0 +1,10 @@
+<svg width="1000" height="700" viewBox="0 0 1000 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="700" rx="50" fill="#FFF4E3"/>
+  <circle cx="760" cy="120" r="190" fill="#F3C8B8" fill-opacity=".45"/>
+  <circle cx="280" cy="260" r="210" fill="#E8C98D" fill-opacity=".35"/>
+  <ellipse cx="500" cy="580" rx="310" ry="55" fill="#7E5740" fill-opacity=".12"/>
+  <rect x="430" y="160" width="125" height="310" rx="55" fill="#D9A756"/>
+  <rect x="455" y="110" width="75" height="75" rx="24" fill="#FFF8EA"/>
+  <rect x="385" y="265" width="215" height="112" rx="28" fill="#FFF9EF" fill-opacity=".86"/>
+  <text x="492" y="328" text-anchor="middle" font-family="Georgia" font-size="44" font-weight="700" fill="#4D321B">Reza</text>
+</svg>

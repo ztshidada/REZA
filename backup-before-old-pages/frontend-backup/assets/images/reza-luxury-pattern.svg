@@ -1,0 +1,15 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" fill="#FFF8ED"/>
+  <defs>
+    <pattern id="p" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M40 8C52 26 52 54 40 72C28 54 28 26 40 8Z" stroke="#C9943D" stroke-opacity="0.18" stroke-width="2"/>
+      <circle cx="40" cy="40" r="4" fill="#C9943D" fill-opacity="0.18"/>
+    </pattern>
+    <radialGradient id="r" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(920 120) rotate(138) scale(520 360)">
+      <stop stop-color="#F4D2C3"/>
+      <stop offset="1" stop-color="#F4D2C3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#p)"/>
+  <rect width="1200" height="800" fill="url(#r)"/>
+</svg>

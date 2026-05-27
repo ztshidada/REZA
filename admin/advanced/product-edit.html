@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Edit | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=9">
+</head>
+<body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="../js/image-upload.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("products");
+
+const API_BASE = "https://api.rezaholdings.co.za";
+const productId = new URLSearchParams(location.search).get("id");
+let product = null;
+let selectedImageData = "assets/images/product-placeholder.svg";
+
+function imageSrc(value) {
+  if (!value) return "../assets/images/product-placeholder.svg";
+  if (String(value).startsWith("data:image/")) return value;
+  if (String(value).startsWith("http")) return value;
+  if (String(value).startsWith("../")) return value;
+  return "../" + value;
+}
+
+async function authToken() {
+  let token = localStorage.getItem("reza_admin_token");
+  if (token) return token;
+
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: "admin@reza.co.za",
+      password: "reza2026"
+    })
+  });
+
+  const data = await res.json();
+  if (!data.token) throw new Error("Could not login to backend admin.");
+  localStorage.setItem("reza_admin_token", data.token);
+  return data.token;
+}
+
+async function apiSaveProduct(payload) {
+  const token = await authToken();
+  const method = productId ? "PUT" : "POST";
+  const url = productId ? `${API_BASE}/api/products/${encodeURIComponent(productId)}` : `${API_BASE}/api/products`;
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.message || "Could not save product.");
+  return data.product;
+}
+
+async function apiDeleteProduct() {
+  if (!productId) return;
+  const token = await authToken();
+
+  const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(productId)}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.message || "Could not delete product.");
+}
+
+async function handleProductImageUpload(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  selectedImageData = await readImageFileAsDataUrl(file);
+  document.getElementById("productPreview").src = selectedImageData;
+  document.getElementById("uploadFileName").textContent = file.name;
+}
+
+async function saveProduct(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  const payload = {
+    id: productId || undefined,
+    name: data.name,
+    category: data.category,
+    sku: data.sku,
+    price: Number(data.price || 0),
+    cost: Number(data.cost || 0),
+    stock: Number(data.stock || 0),
+    badge: data.badge,
+    image: selectedImageData,
+    description: data.description,
+    benefits: data.benefits ? data.benefits.split("\\n").filter(Boolean) : [],
+    howToUse: data.howToUse,
+    showOnline: data.showOnline === "on",
+    showPos: data.showPos === "on",
+    brand: data.brand || "Reza Holdings"
+  };
+
+  try {
+    await apiSaveProduct(payload);
+    alert("Product saved to backend. It should now appear on the customer website.");
+    location.href = "products.html";
+  } catch (error) {
+    alert("Save failed: " + error.message);
+  }
+}
+
+async function deleteProduct() {
+  if (!productId) return;
+  if (!confirm("Delete this product?")) return;
+
+  try {
+    await apiDeleteProduct();
+    alert("Product deleted.");
+    location.href = "products.html";
+  } catch (error) {
+    alert("Delete failed: " + error.message);
+  }
+}
+
+async function loadProduct() {
+  if (!productId) return render();
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(productId)}`, { cache: "no-store" });
+    const data = await res.json();
+    product = data.product || null;
+    selectedImageData = product?.image || selectedImageData;
+  } catch (error) {
+    alert("Could not load product: " + error.message);
+  }
+
+  render();
+}
+
+function render() {
+  const p = product || {
+    name: "",
+    category: "Skincare",
+    sku: "",
+    price: 0,
+    cost: 0,
+    stock: 0,
+    badge: "",
+    image: "assets/images/product-placeholder.svg",
+    description: "",
+    benefits: [],
+    howToUse: "",
+    showOnline: true,
+    showPos: true,
+    brand: "Reza Holdings"
+  };
+
+  selectedImageData = p.image || selectedImageData;
+
+  document.querySelector("[data-admin-main]").innerHTML = `
+    <form onsubmit="saveProduct(event)">
+      <div class="wx-admin-title">
+        <div>
+          <p class="wx-subtle"><a href="products.html">Products</a> › ${p.name || "New Product"}</p>
+          <h1>${p.name || "New Product"}</h1>
+          <p class="wx-subtle">This product saves to backend and appears on the public website.</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          ${productId ? `<button type="button" class="btn light" onclick="deleteProduct()">Delete</button>` : ""}
+          <a class="btn light" href="products.html">Cancel</a>
+          <button class="btn dark" type="submit">Save</button>
+        </div>
+      </div>
+
+      <div class="wx-two">
+        <div>
+          <div class="wx-card">
+            <div class="wx-card-head"><h2>Product Image</h2></div>
+            <div class="wx-card-body">
+              <label class="upload-zone">
+                <input type="file" accept="image/*" onchange="handleProductImageUpload(this)">
+                <strong>+ Upload product image</strong>
+                <p class="wx-subtle" id="uploadFileName">Choose image from device.</p>
+              </label>
+              <div class="upload-preview"><img id="productPreview" src="${imageSrc(p.image)}" alt="${p.name || "Product"}"></div>
+              <p class="admin-note">Images are saved into the backend product data. Later we can move them to Supabase Storage.</p>
+            </div>
+          </div>
+
+          <div class="wx-card">
+            <div class="wx-card-head"><h2>Product info</h2></div>
+            <div class="wx-card-body">
+              <div class="wx-field"><label>Name</label><input class="input" name="name" value="${p.name || ""}" required></div>
+              <div class="wx-field"><label>Description</label><textarea class="input" name="description" rows="5">${p.description || ""}</textarea></div>
+              <div class="wx-field"><label>Benefits, one per line</label><textarea class="input" name="benefits" rows="5">${(p.benefits || []).join("\\n")}</textarea></div>
+              <div class="wx-field"><label>How to use</label><textarea class="input" name="howToUse" rows="4">${p.howToUse || ""}</textarea></div>
+            </div>
+          </div>
+
+          <div class="wx-card">
+            <div class="wx-card-head"><h2>Pricing</h2></div>
+            <div class="wx-card-body wx-grid-3">
+              <div class="wx-field"><label>Price</label><input class="input" name="price" type="number" value="${p.price || 0}" required></div>
+              <div class="wx-field"><label>Cost</label><input class="input" name="cost" type="number" value="${p.cost || 0}"></div>
+              <div class="wx-field"><label>Stock</label><input class="input" name="stock" type="number" value="${p.stock || 0}"></div>
+            </div>
+          </div>
+
+          <div class="wx-card">
+            <div class="wx-card-head"><h2>Inventory</h2></div>
+            <div class="wx-card-body wx-grid-3">
+              <div class="wx-field"><label>SKU</label><input class="input" name="sku" value="${p.sku || ""}"></div>
+              <div class="wx-field"><label>Badge</label><input class="input" name="badge" value="${p.badge || ""}" placeholder="Best Seller"></div>
+              <div class="wx-field"><label>Category</label><input class="input" name="category" value="${p.category || ""}" placeholder="Skincare"></div>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="wx-card">
+            <div class="wx-card-body">
+              <label style="display:flex;gap:12px;align-items:center;margin-bottom:18px"><input type="checkbox" name="showOnline" ${p.showOnline !== false ? "checked" : ""}> Show in online store</label>
+              <label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="showPos" ${p.showPos !== false ? "checked" : ""}> Show in Point of Sale</label>
+            </div>
+          </div>
+
+          <div class="wx-card">
+            <div class="wx-card-head"><h2>Advanced</h2></div>
+            <div class="wx-card-body">
+              <div class="wx-field"><label>Brand</label><input class="input" name="brand" value="${p.brand || "Reza Holdings"}"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </form>
+  `;
+}
+
+loadProduct();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+</body>
+</html>

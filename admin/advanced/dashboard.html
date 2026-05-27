@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Reza Admin</title>
+  <link rel="stylesheet" href="../css/style.css?v=8">
+</head>
+<body>
+<script src="../js/data.js"></script>
+<script src="../js/main.js"></script>
+<script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("dashboard");
+
+const API_BASE = "https://api.rezaholdings.co.za";
+
+async function loadDashboard() {
+  const main = document.querySelector("[data-admin-main]");
+  main.innerHTML = `
+    <div class="wx-admin-title">
+      <div>
+        <p class="wx-subtle">Welcome back</p>
+        <h1>Dashboard</h1>
+      </div>
+      <a class="btn dark" href="product-edit.html">+ Add Product</a>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><span>Products</span><strong id="statProducts">...</strong></div>
+      <div class="stat-card"><span>Orders</span><strong id="statOrders">0</strong></div>
+      <div class="stat-card"><span>Payments</span><strong>Live</strong></div>
+      <div class="stat-card"><span>Website</span><strong>Online</strong></div>
+    </div>
+
+    <div class="wx-two">
+      <div class="wx-card">
+        <div class="wx-card-head"><h2>Quick Actions</h2></div>
+        <div class="wx-card-body" style="display:grid;gap:14px">
+          <a class="btn dark" href="products.html">Manage Products</a>
+          <a class="btn light" href="media.html">Change Background Pictures</a>
+          <a class="btn light" href="orders.html">View Orders</a>
+          <a class="btn light" href="https://www.rezaholdings.co.za" target="_blank">Open Website</a>
+        </div>
+      </div>
+
+      <div class="wx-card">
+        <div class="wx-card-head"><h2>System Status</h2></div>
+        <div class="wx-card-body">
+          <p class="admin-note">Connected to backend API: ${API_BASE}</p>
+          <p class="wx-subtle">Products, payments and media are connected to the live backend.</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products`, { cache: "no-store" });
+    const data = await res.json();
+    document.getElementById("statProducts").textContent = data.products?.length || 0;
+  } catch {
+    document.getElementById("statProducts").textContent = "Error";
+  }
+}
+
+loadDashboard();
+</script>
+<script src="../js/reza-final-live-sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Coming Soon | Reza Holdings</title>
+  <link rel="stylesheet" href="reza-style.css">
+  <style>
+    body{background:#fff8ee;color:#251711}
+    .soon-hero{padding:90px 8vw 48px;background:linear-gradient(135deg,#fff8ee,#f4dfc2)}
+    .soon-hero h1{font-family:Georgia,serif;font-size:clamp(3rem,8vw,6rem);line-height:.9;margin:0 0 16px}
+    .soon-hero p{max-width:720px;font-size:1.1rem;line-height:1.6}
+    .soon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;padding:44px 8vw 90px}
+    .soon-card{background:white;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(96,62,24,.12);border:1px solid rgba(190,140,54,.16)}
+    .soon-card img{width:100%;height:280px;object-fit:cover;display:block}
+    .soon-card .body{padding:22px}
+    .soon-card h3{margin:0 0 8px;font-size:1.35rem}
+    .soon-card p{color:#665246;line-height:1.5}
+    .badge{display:inline-flex;background:#e5bd62;color:#2b180d;border-radius:999px;padding:8px 13px;font-weight:900;margin-bottom:10px}
+    .top-link{display:inline-flex;margin-top:20px;padding:12px 18px;border-radius:999px;background:#241812;color:white;text-decoration:none;font-weight:900}
+  </style>
+<link rel="stylesheet" href="assets/css/reza-cart-system.css?v=manyora1">
+  <link rel="stylesheet" href="assets/css/reza-popup.css?v=manyora1">
+  <link rel="stylesheet" href="assets/css/reza-products-master.css?v=master2">
+  <link rel="stylesheet" href="assets/css/reza-cart-master.css?v=master2">
+</head>
+<body>
+  <section class="soon-hero">
+    <p style="letter-spacing:.25em;font-weight:900;color:#a56c17">REZA HOLDINGS</p>
+    <h1>Coming Soon</h1>
+    <p>These premium Reza products are being prepared for launch. Marine Collagen, Sea Moss and the bathing soap collection will appear here until they are ready for sale.</p>
+    <a class="top-link" href="index.html">Back Home</a>
+  </section>
+  <main id="comingSoonGrid" class="soon-grid"></main>
+
+  <script>
+    const API_BASE = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
+    function money(v){ return Number(v||0) > 0 ? "R " + Number(v).toLocaleString("en-ZA") : "Coming Soon"; }
+    async function loadSoon(){
+      let products = [];
+      try {
+        const res = await fetch(API_BASE + "/api/products?t=" + Date.now());
+        const data = await res.json();
+        products = data.products || [];
+      } catch(e) {
+        const res = await fetch("assets/data/products.json?t=" + Date.now());
+        products = await res.json();
+      }
+      products = products.filter(p => p.comingSoon || p.status === "comingSoon" || p.status === "coming-soon" || p.category === "Coming Soon" || p.productType === "Coming Soon");
+      document.getElementById("comingSoonGrid").innerHTML = products.map(p => `
+        <article class="soon-card">
+          <img src="${p.image && p.image.startsWith("/") ? API_BASE + p.image : (p.image || "assets/images/reza-card-bg.svg")}" alt="${p.name}">
+          <div class="body">
+            <span class="badge">${p.badge || "Coming Soon"}</span>
+            <h3>${p.name}</h3>
+            <p>${p.description || ""}</p>
+            <strong>${money(p.price)}</strong>
+          </div>
+        </article>
+      `).join("") || "<p>No coming soon products yet.</p>";
+    }
+    loadSoon();
+  </script>
+  <script src="js/reza-cart-system.js?v=manyora1"></script>
+  <script src="js/reza-products-master.js?v=master2"></script>
+  <script src="js/reza-popup-once.js?v=master2"></script>
+</body>
+</html>

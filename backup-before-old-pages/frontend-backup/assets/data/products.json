@@ -1,0 +1,122 @@
+[
+  {
+    "id": "reza-collagen-anti-ageing-cream",
+    "name": "Reza Collagen Anti-Ageing Cream",
+    "category": "Skincare",
+    "price": 0,
+    "stock": 20,
+    "badge": "On Sale",
+    "image": "assets/images/products/reza-collagen-anti-ageing-cream.jpg",
+    "description": "Anti-ageing collagen cream for youthful, firm and radiant-looking skin.",
+    "benefits": [
+      "Reduces fine lines & wrinkles",
+      "Boosts skin elasticity",
+      "Deep hydration",
+      "Nourishes & revitalizes"
+    ],
+    "howToUse": "Apply externally to clean skin as directed.",
+    "showOnline": true,
+    "comingSoon": false,
+    "status": "sale"
+  },
+  {
+    "id": "reza-starter-pack-combo",
+    "name": "Reza Starter Pack Combo",
+    "category": "Combos",
+    "price": 1400,
+    "stock": 15,
+    "badge": "Best Value",
+    "image": "assets/images/products/reza-starter-pack-combo.jpg",
+    "description": "Starter skincare combo with 15 premium products for a complete anti-ageing routine.",
+    "benefits": [
+      "Renew",
+      "Restore",
+      "Radiate",
+      "Complete care"
+    ],
+    "howToUse": "Use products consistently as part of your skincare routine.",
+    "showOnline": true,
+    "comingSoon": false,
+    "status": "sale"
+  },
+  {
+    "id": "reza-complete-anti-ageing-combo",
+    "name": "Reza Complete Anti-Ageing Skin Combo",
+    "category": "Combos",
+    "price": 480,
+    "stock": 25,
+    "badge": "Combo",
+    "image": "assets/images/products/reza-complete-anti-ageing-combo.jpg",
+    "description": "Complete anti-ageing skin combo with lotion, tissue oil and anti-ageing cream.",
+    "benefits": [
+      "Deep hydration",
+      "Firms & tightens",
+      "Evens tone",
+      "Protects & repairs"
+    ],
+    "howToUse": "Cleanse, nourish and moisturize as your daily routine.",
+    "showOnline": true,
+    "comingSoon": false,
+    "status": "sale"
+  },
+  {
+    "id": "reza-marine-collagen",
+    "name": "Luxury Reza Marine Collagen",
+    "category": "Coming Soon",
+    "price": 0,
+    "stock": 0,
+    "badge": "Coming Soon",
+    "image": "assets/images/products/reza-marine-collagen.jpg",
+    "description": "Marine collagen beauty support product launching soon.",
+    "benefits": [
+      "Radiant glowing skin",
+      "Supports hydration",
+      "Hair and nail support",
+      "Premium beauty from within"
+    ],
+    "howToUse": "Coming soon.",
+    "showOnline": false,
+    "comingSoon": true,
+    "status": "coming-soon"
+  },
+  {
+    "id": "reza-acne-care-collection",
+    "name": "Reza Acne Care Collection",
+    "category": "Coming Soon",
+    "price": 0,
+    "stock": 0,
+    "badge": "Coming Soon",
+    "image": "assets/images/products/reza-acne-care-collection.jpg",
+    "description": "Luxury skincare soap bar collection launching soon.",
+    "benefits": [
+      "Golden Glow Bar",
+      "Oat Calm Bar",
+      "Deep Detox Bar",
+      "Clear skin luxury"
+    ],
+    "howToUse": "Coming soon.",
+    "showOnline": false,
+    "comingSoon": true,
+    "status": "coming-soon"
+  },
+  {
+    "id": "reza-sea-moss",
+    "name": "Reza Sea Moss",
+    "category": "Coming Soon",
+    "price": 0,
+    "stock": 0,
+    "badge": "Coming Soon",
+    "image": "assets/images/products/reza-sea-moss.jpg",
+    "description": "Wildcrafted Irish Sea Moss with natural wellness support, launching soon.",
+    "benefits": [
+      "Supports skin glow",
+      "Natural immune support",
+      "Supports digestion",
+      "Rich in essential minerals"
+    ],
+    "howToUse": "Coming soon.",
+    "showOnline": false,
+    "comingSoon": true,
+    "status": "coming-soon"
+  }
+]

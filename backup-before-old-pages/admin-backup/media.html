@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Media | Reza Admin</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;color:#241812;background:linear-gradient(135deg,#fffaf2,#f3dfce);min-height:100vh}
+    .layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .side{padding:34px 28px;background:rgba(255,255,255,.52);border-right:1px solid rgba(0,0,0,.08)}
+    .side h1{font-family:Georgia,serif;font-size:2.5rem;margin:0}.side span{color:#b8872f}
+    .side a{display:block;padding:15px 18px;margin:8px 0;border-radius:18px;color:#241812;text-decoration:none;font-weight:900}
+    .side a.active,.side a:hover{background:#241812;color:#fffaf2}
+    .main{padding:44px}
+    .head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:28px}
+    .head h1{font-family:Georgia,serif;font-size:clamp(3rem,7vw,5.6rem);margin:0}
+    .card{background:rgba(255,255,255,.78);border-radius:32px;padding:28px;box-shadow:0 28px 80px rgba(70,45,25,.13);margin-bottom:24px}
+    .preview{width:100%;height:320px;object-fit:cover;border-radius:26px;background:#f4e4cf;display:block;margin:18px 0}
+    .logoPreview{width:120px;height:120px;object-fit:cover;border-radius:28px;background:#fff0c8;display:block;margin:18px 0}
+    .input{width:100%;padding:17px;border-radius:18px;border:1px solid rgba(0,0,0,.12);background:white}
+    .btn{border:0;border-radius:999px;padding:16px 28px;font-weight:1000;cursor:pointer}
+    .primary{background:linear-gradient(135deg,#e7c06f,#c9943d);color:#241812}
+    .status{padding:16px;border-radius:18px;background:rgba(201,148,61,.13);font-weight:900;color:#6d4917}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.main{padding:24px}}
+  </style>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body>
+  <div class="layout">
+    <aside class="side">
+      <h1>Reza <span>Admin</span></h1>
+      <p>Champagne Luxury V11</p>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="products.html">Products</a>
+      <a class="active" href="media.html">Media</a>
+      <a href="orders.html">Orders</a>
+      <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+      <a href="login.html">Logout</a>
+    </aside>
+
+    <main class="main">
+      <div class="head">
+        <h1>Media</h1>
+        <button id="saveBtn" class="btn primary">Save</button>
+      </div>
+
+      <section class="card">
+        <h2>Website Logo</h2>
+        <p>Upload the logo that replaces the R icon in the top navigation.</p>
+        <img id="logoPreview" class="logoPreview" alt="Logo preview">
+        <input id="logoFile" class="input" type="file" accept="image/*">
+      </section>
+
+      <section class="card">
+        <h2>Homepage Hero Background</h2>
+        <p>Upload the background image for the homepage hero.</p>
+        <img id="heroPreview" class="preview" alt="Hero preview">
+        <input id="heroFile" class="input" type="file" accept="image/*">
+        <br><br>
+        <input id="heroTitle" class="input" type="text" value="Champagne Luxury">
+      </section>
+
+      <div id="status" class="status">Ready.</div>
+    </main>
+  </div>
+
+  <script>
+    const API = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
+
+    const logoFile = document.getElementById("logoFile");
+    const heroFile = document.getElementById("heroFile");
+    const logoPreview = document.getElementById("logoPreview");
+    const heroPreview = document.getElementById("heroPreview");
+    const heroTitle = document.getElementById("heroTitle");
+    const saveBtn = document.getElementById("saveBtn");
+    const statusBox = document.getElementById("status");
+
+    let logoImage = "";
+    let heroImage = "";
+
+    function status(msg){ statusBox.textContent = msg; }
+
+    function fileToDataURL(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    logoFile.addEventListener("change", async ()=>{
+      if(!logoFile.files[0]) return;
+      logoImage = await fileToDataURL(logoFile.files[0]);
+      logoPreview.src = logoImage;
+      status("Logo ready. Click Save.");
+    });
+
+    heroFile.addEventListener("change", async ()=>{
+      if(!heroFile.files[0]) return;
+      heroImage = await fileToDataURL(heroFile.files[0]);
+      heroPreview.src = heroImage;
+      status("Hero image ready. Click Save.");
+    });
+
+    async function loadMedia(){
+      try{
+        const res = await fetch(API + "/api/media?t=" + Date.now());
+        const data = await res.json();
+        if(data.success && data.media){
+          if(data.media.logoImage) logoPreview.src = data.media.logoImage;
+          if(data.media.heroImage) heroPreview.src = data.media.heroImage;
+          if(data.media.heroTitle) heroTitle.value = data.media.heroTitle;
+        }
+      }catch(e){ status("Could not load media."); }
+    }
+
+    saveBtn.addEventListener("click", async ()=>{
+      try{
+        saveBtn.textContent = "Saving...";
+        saveBtn.disabled = true;
+
+        const payload = { heroTitle: heroTitle.value || "Champagne Luxury" };
+        if(logoImage) payload.logoImage = logoImage;
+        if(heroImage) payload.heroImage = heroImage;
+
+        const res = await fetch(API + "/api/media", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if(!data.success) throw new Error(data.message || "Save failed");
+
+        alert("Saved successfully. Hard refresh the customer website.");
+        status("Saved successfully.");
+      }catch(e){
+        alert(e.message || "Save failed");
+        status("Save failed.");
+      }finally{
+        saveBtn.textContent = "Save";
+        saveBtn.disabled = false;
+      }
+    });
+
+    loadMedia();
+  </script>
+</body>
+</html>
