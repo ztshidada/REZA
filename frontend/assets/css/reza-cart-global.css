@@ -1,0 +1,31 @@
+.reza-cart-toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:999999;
+  background:#241812;
+  color:#fff8ed;
+  padding:14px 20px;
+  border-radius:999px;
+  font-weight:900;
+  box-shadow:0 20px 55px rgba(0,0,0,.25);
+}
+
+/* make cart/bag count visible even where old design hides it */
+.cart-count,
+.cart-badge,
+.bag-count,
+[data-cart-count],
+#cartCount,
+#cart-count,
+#bagCount{
+  display:inline-flex !important;
+  min-width:24px !important;
+  height:24px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:999px !important;
+  background:#e5bd55 !important;
+  color:#241812 !important;
+  font-weight:1000 !important;
+}

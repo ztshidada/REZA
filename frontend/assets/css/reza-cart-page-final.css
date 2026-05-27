@@ -1,0 +1,131 @@
+.reza-cart-wrap{
+  width:min(1200px,calc(100% - 32px));
+  margin:60px auto;
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:26px;
+}
+
+.reza-cart-item{
+  display:grid;
+  grid-template-columns:90px 1fr auto auto auto;
+  gap:16px;
+  align-items:center;
+  background:rgba(255,255,255,.9);
+  border-radius:24px;
+  padding:14px;
+  margin-bottom:14px;
+  box-shadow:0 18px 45px rgba(60,40,20,.08);
+}
+
+.reza-cart-item img{
+  width:90px;
+  height:90px;
+  object-fit:cover;
+  border-radius:18px;
+  background:#fff7ef;
+}
+
+.reza-cart-item h3{
+  margin:0 0 6px;
+}
+
+.reza-cart-qty{
+  display:flex;
+  gap:9px;
+  align-items:center;
+}
+
+.reza-cart-qty button,
+.reza-cart-remove{
+  border:0;
+  border-radius:999px;
+  padding:9px 13px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.reza-cart-remove{
+  background:#241812;
+  color:white;
+}
+
+.reza-cart-summary-final{
+  background:rgba(255,255,255,.9);
+  border-radius:28px;
+  padding:24px;
+  height:max-content;
+  box-shadow:0 18px 45px rgba(60,40,20,.08);
+}
+
+.reza-cart-summary-final h2{
+  font-family:Georgia,serif;
+  font-size:2.5rem;
+  margin:0 0 16px;
+}
+
+.reza-cart-summary-final div{
+  display:flex;
+  justify-content:space-between;
+  margin:13px 0;
+}
+
+.reza-cart-summary-final .total{
+  font-size:1.3rem;
+}
+
+.reza-cart-summary-final button,
+.reza-cart-empty-box a{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  border:0;
+  border-radius:999px;
+  padding:15px 22px;
+  background:linear-gradient(135deg,#edcf76,#c89532);
+  color:#241812;
+  font-weight:1000;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.reza-cart-empty-box{
+  width:min(1000px,calc(100% - 32px));
+  margin:80px auto;
+  text-align:center;
+  background:rgba(255,255,255,.78);
+  border-radius:32px;
+  padding:60px 24px;
+}
+
+.reza-cart-empty-box h1{
+  font-family:Georgia,serif;
+  font-size:clamp(3rem,8vw,5rem);
+  margin:0;
+}
+
+.reza-cart-empty-box a{
+  width:max-content;
+  margin:20px auto 0;
+}
+
+@media(max-width:800px){
+  .reza-cart-wrap{
+    grid-template-columns:1fr;
+  }
+
+  .reza-cart-item{
+    grid-template-columns:74px 1fr;
+  }
+
+  .reza-cart-item img{
+    width:74px;
+    height:74px;
+  }
+
+  .reza-cart-qty,
+  .reza-cart-item > strong,
+  .reza-cart-remove{
+    grid-column:2;
+  }
+}

@@ -1,17 +1,15 @@
 (function () {
-  const API_BASE =
-    location.hostname.includes("localhost")
-      ? "http://localhost:10000"
-      : "https://api.rezaholdings.co.za";
+  const API_BASE = location.hostname.includes("localhost")
+    ? "http://localhost:10000"
+    : "https://api.rezaholdings.co.za";
 
-  function formatMoney(value) {
-    return "R " + Number(value || 0).toLocaleString("en-ZA", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+  function money(value) {
+    const n = Number(value || 0);
+    if (!n) return "Price coming soon";
+    return "R " + n.toLocaleString("en-ZA", { maximumFractionDigits: 0 });
   }
 
-  function imageUrl(src) {
+  function img(src) {
     if (!src) return "assets/images/reza-card-bg.svg";
     if (src.startsWith("data:image")) return src;
     if (src.startsWith("http")) return src;
@@ -19,119 +17,101 @@
     return src;
   }
 
-  function findProductContainer() {
-    const selectors = [
-      "#productsGrid",
-      "#productGrid",
-      "#featuredProducts",
-      ".products-grid",
-      ".product-grid",
-      ".featured-products",
-      ".luxury-products",
-      ".products"
-    ];
-
-    for (const selector of selectors) {
-      const el = document.querySelector(selector);
-      if (el) return el;
-    }
-
-    const allSections = [...document.querySelectorAll("section, div")];
-    const luxurySection = allSections.find(el =>
-      el.innerText &&
-      el.innerText.toLowerCase().includes("luxury picks")
-    );
-
-    if (luxurySection) {
-      let grid = luxurySection.querySelector(".reza-live-products-grid");
-      if (!grid) {
-        grid = document.createElement("div");
-        grid.className = "reza-live-products-grid";
-        luxurySection.appendChild(grid);
-      }
-      return grid;
-    }
-
-    return null;
+  function isComingSoon(p) {
+    return p.status === "comingSoon" ||
+           p.category === "Coming Soon" ||
+           p.productType === "Coming Soon";
   }
 
-  function productCard(p) {
+  function isVisibleSale(p) {
+    return p.showOnline !== false && !isComingSoon(p);
+  }
+
+  function card(p, coming = false) {
     return `
       <article class="reza-live-card">
-        <div class="reza-live-img-wrap">
-          ${p.badge ? `<span class="reza-live-badge">${p.badge}</span>` : ""}
-          <img src="${imageUrl(p.image)}" alt="${p.name}">
+        <div class="reza-live-img">
+          <span>${coming ? "Coming Soon" : (p.productType || p.badge || "Product")}</span>
+          <img src="${img(p.image)}" alt="${p.name}" loading="lazy">
         </div>
-
-        <div class="reza-live-info">
-          <p class="reza-live-cat">${p.category || "Reza Holdings"}</p>
-          <h3>${p.name || "Product"}</h3>
-          <p class="reza-live-price">${formatMoney(p.price)}</p>
-          <p class="reza-live-desc">${p.description || ""}</p>
-
-          <button class="reza-live-btn" type="button"
-            data-product='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
-            Add to Cart
-          </button>
+        <div class="reza-live-body">
+          <p class="type">${p.category || ""}</p>
+          <h3>${p.name || "Reza Product"}</h3>
+          <p class="price">${coming ? "Coming Soon" : money(p.price)}</p>
+          <p>${p.description || ""}</p>
+          ${
+            coming
+              ? `<button type="button" class="muted">Coming Soon</button>`
+              : `<button type="button" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Bag</button>`
+          }
         </div>
       </article>
     `;
   }
 
-  async function loadProducts() {
-    const container = findProductContainer();
+  function allSaleGrids() {
+    return [
+      document.querySelector("#productsGrid"),
+      document.querySelector("#productGrid"),
+      document.querySelector(".products-grid"),
+      document.querySelector(".product-grid")
+    ].filter(Boolean).filter(grid => {
+      return grid.id !== "featuredProducts" &&
+             !grid.classList.contains("featured-products") &&
+             !grid.closest("[data-home-featured]");
+    });
+  }
 
-    if (!container) {
-      console.warn("Reza products container not found.");
-      return;
-    }
+  function featuredGrids() {
+    return [
+      document.querySelector("#featuredProducts"),
+      document.querySelector(".featured-products"),
+      document.querySelector("[data-featured-products]")
+    ].filter(Boolean);
+  }
 
-    container.classList.add("reza-live-products-grid");
-    container.innerHTML = `<div class="reza-live-loading">Loading products...</div>`;
+  function comingGrids() {
+    return [
+      document.querySelector("#comingSoonGrid"),
+      document.querySelector("#comingSoonProducts"),
+      document.querySelector(".coming-soon-grid"),
+      document.querySelector("[data-coming-soon-products]")
+    ].filter(Boolean);
+  }
 
+  async function load() {
+    let products = [];
     try {
       const res = await fetch(API_BASE + "/api/products?t=" + Date.now());
       const data = await res.json();
-
-      if (!data.success || !Array.isArray(data.products)) {
-        container.innerHTML = `<div class="reza-live-empty">Products could not load.</div>`;
-        return;
-      }
-
-      const products = data.products.filter(p => p.showOnline !== false);
-
-      if (!products.length) {
-        container.innerHTML = `<div class="reza-live-empty">No products found.</div>`;
-        return;
-      }
-
-      container.innerHTML = products.map(productCard).join("");
-
-      container.querySelectorAll(".reza-live-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const product = JSON.parse(btn.dataset.product.replace(/&apos;/g, "'"));
-          const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-          const existing = cart.find(item => item.id === product.id);
-
-          if (existing) existing.qty += 1;
-          else cart.push({ ...product, qty: 1 });
-
-          localStorage.setItem("reza_cart", JSON.stringify(cart));
-
-          const badge = document.querySelector(".cart-count, #cartCount, .cart-badge");
-          if (badge) badge.textContent = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
-
-          alert("Added to cart");
-        });
-      });
-
-      console.log("✅ Reza live products rendered:", products.length);
+      products = Array.isArray(data.products) ? data.products : [];
     } catch (error) {
-      console.error(error);
-      container.innerHTML = `<div class="reza-live-empty">Could not connect to products API.</div>`;
+      console.warn("Product load failed", error);
+      return;
     }
+
+    const sale = products.filter(isVisibleSale);
+    const coming = products.filter(isComingSoon);
+
+    const selectedFeatured = sale.filter(p => p.showFeatured === true).slice(0, 3);
+    const featured = selectedFeatured.length ? selectedFeatured : sale.slice(0, 3);
+
+    allSaleGrids().forEach(grid => {
+      grid.classList.add("reza-live-grid");
+      grid.innerHTML = sale.map(p => card(p, false)).join("") || `<p class="reza-empty">No products yet.</p>`;
+    });
+
+    featuredGrids().forEach(grid => {
+      grid.classList.add("reza-live-grid");
+      grid.innerHTML = featured.map(p => card(p, false)).join("") || `<p class="reza-empty">No featured products selected.</p>`;
+    });
+
+    comingGrids().forEach(grid => {
+      grid.classList.add("reza-live-grid");
+      grid.innerHTML = coming.map(p => card(p, true)).join("") || `<p class="reza-empty">No coming soon products yet.</p>`;
+    });
   }
 
-  document.addEventListener("DOMContentLoaded", loadProducts);
-  window.addEventListener("load", loadProducts);
+  document.addEventListener("DOMContentLoaded", load);
+  window.addEventListener("load", load);
 })();

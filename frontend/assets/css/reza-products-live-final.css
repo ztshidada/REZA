@@ -1,0 +1,106 @@
+.reza-live-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr)) !important;
+  gap:28px !important;
+  width:min(1180px,calc(100% - 36px)) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+.reza-live-card{
+  background:rgba(255,255,255,.96) !important;
+  border-radius:28px !important;
+  overflow:hidden !important;
+  box-shadow:0 20px 60px rgba(50,30,15,.12) !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.reza-live-img{
+  height:360px !important;
+  background:#fff7ef !important;
+  position:relative !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:hidden !important;
+}
+
+.reza-live-img img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:center !important;
+}
+
+.reza-live-img span{
+  position:absolute !important;
+  top:15px !important;
+  left:15px !important;
+  background:linear-gradient(135deg,#edcf76,#c89532) !important;
+  border-radius:999px !important;
+  padding:9px 15px !important;
+  color:#241812 !important;
+  font-weight:1000 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+  font-size:.75rem !important;
+  z-index:2 !important;
+}
+
+.reza-live-body{
+  padding:22px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  flex:1 !important;
+}
+
+.reza-live-body .type{
+  color:#a87622 !important;
+  font-weight:900 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+  font-size:.78rem !important;
+  margin:0 !important;
+}
+
+.reza-live-body h3{
+  margin:0 !important;
+  color:#241812 !important;
+  font-size:1.25rem !important;
+  line-height:1.12 !important;
+}
+
+.reza-live-body .price{
+  color:#9a6719 !important;
+  font-weight:1000 !important;
+  margin:0 !important;
+}
+
+.reza-live-body button{
+  margin-top:auto !important;
+  width:max-content !important;
+  border:0 !important;
+  border-radius:999px !important;
+  padding:13px 20px !important;
+  background:linear-gradient(135deg,#edcf76,#c89532) !important;
+  color:#241812 !important;
+  font-weight:1000 !important;
+  cursor:pointer !important;
+}
+
+.reza-live-body button.muted{
+  background:#2d2621 !important;
+  color:#fffaf2 !important;
+}
+
+@media(max-width:760px){
+  .reza-live-grid{
+    grid-template-columns:1fr !important;
+    width:calc(100% - 28px) !important;
+  }
+
+  .reza-live-img{
+    height:310px !important;
+  }
+}
