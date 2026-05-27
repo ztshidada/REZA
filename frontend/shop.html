@@ -1,167 +1,30 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Catalog | Reza Holdings</title>
   <link rel="stylesheet" href="reza-style.css">
-  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
   <link rel="stylesheet" href="assets/css/mirror-gold-headings.css">
-  <link rel="stylesheet" href="mobile-final-fix.css?v=final2">
-
-  <link rel="stylesheet" href="mobile-hero-lines-v2.css?v=lines2">
-<link rel="stylesheet" href="assets/css/reza-cart-system.css?v=manyora1">
-  <link rel="stylesheet" href="assets/css/reza-popup.css?v=manyora1">
-  <link rel="stylesheet" href="assets/css/reza-products-master.css?v=master2">
-  <link rel="stylesheet" href="assets/css/reza-cart-master.css?v=master2">
+  <link rel="stylesheet" href="assets/css/reza-core-fix.css?v=clean1">
 </head>
-
 <body>
   <div class="announcement">WELCOME TO OUR STORE</div>
-
   <header class="site-header">
-    <a class="brand" href="index.html">
-      <span class="logo">R</span>
-      <span>
-        <b>Reza Holdings</b>
-        <small>Champagne Luxury</small>
-      </span>
-    </a>
-
+    <a class="brand" href="index.html"><span class="logo">R</span><span><b>Reza Holdings</b><small>Champagne Luxury</small></span></a>
     <button class="menu-btn" onclick="toggleMenu()">☰</button>
-
     <nav id="mainNav" class="nav-links">
-      <a href="index.html">Home</a>
-      <a class="active" href="shop.html">Catalog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="policies.html">Policies</a>
+      <a href="index.html">Home</a><a class="active" href="shop.html">Catalog</a><a href="coming-soon.html">Coming Soon</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="policies.html">Policies</a>
     </nav>
-
     <a class="cart-btn" href="cart.html">🛍️ <span id="cartCount">0</span></a>
   </header>
 
   <main>
-    <section class="catalog-hero">
-      <p class="eyebrow">CATALOG</p>
-      <h1 class="mirror-gold-heading">Featured Products</h1>
-      <p>Search, choose and add your favourite Reza products to cart.</p>
-    </section>
-
-    <section class="catalog-tools">
-      <input id="search" placeholder="Search products...">
-      <select id="category">
-        <option value="">All products</option>
-      </select>
-    </section>
-
-    <section id="productsGrid" class="product-grid catalog-grid">
-      <div class="loading-card">Loading products...</div>
-    </section>
+    <section class="page-hero"><div class="container"><p class="eyebrow">SHOP</p><h1 class="mirror-gold-heading">All Products</h1><p>Search, choose and add your favourite Reza products to cart.</p></div></section>
+    <div class="shop-tools"><input data-search placeholder="Search products..."><select data-category><option>All</option></select></div>
+    <section class="reza-product-grid" data-products-grid></section>
   </main>
 
-  <footer class="footer">
-    <p>© 2026 Reza Holdings.</p>
-    <a href="policies.html">Terms and Policies</a>
-  </footer>
-
-  <script src="reza-live.js"></script>
-  <script>
-    const API = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
-    let allProducts = [];
-
-    function toggleMenu(){
-      document.getElementById("mainNav").classList.toggle("open");
-    }
-
-    function money(v){
-      return "R " + Number(v || 0).toLocaleString("en-ZA", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    function img(src){
-      if(!src) return "assets/images/reza-card-bg.svg";
-      if(src.startsWith("data:image")) return src;
-      if(src.startsWith("http")) return src;
-      if(src.startsWith("/")) return API + src;
-      return src;
-    }
-
-    function updateCartCount(){
-      const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-      const count = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
-      const badge = document.getElementById("cartCount");
-      if(badge) badge.textContent = count;
-    }
-
-    function addToCart(product){
-      const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-      const found = cart.find(item => item.id === product.id);
-      if(found) found.qty += 1;
-      else cart.push({...product, qty:1});
-      localStorage.setItem("reza_cart", JSON.stringify(cart));
-      updateCartCount();
-      alert("Added to cart");
-    }
-
-    function render(){
-      const q = document.getElementById("search").value.toLowerCase();
-      const c = document.getElementById("category").value;
-      const grid = document.getElementById("productsGrid");
-
-      const products = allProducts.filter(p =>
-        p.showOnline !== false &&
-        (!q || String(p.name).toLowerCase().includes(q) || String(p.description || "").toLowerCase().includes(q)) &&
-        (!c || p.category === c)
-      );
-
-      if(!products.length){
-        grid.innerHTML = `<div class="loading-card">No products found.</div>`;
-        return;
-      }
-
-      grid.innerHTML = products.map(p => `
-        <article class="product-card">
-          <div class="product-image">
-            ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
-            <img src="${img(p.image)}" alt="${p.name}" loading="lazy">
-          </div>
-          <div class="product-body">
-            <p class="category">${p.category || "Reza Holdings"}</p>
-            <h3>${p.name}</h3>
-            <p class="price">${money(p.price)}</p>
-            <p class="description">${p.description || ""}</p>
-            <button onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
-          </div>
-        </article>
-      `).join("");
-    }
-
-    async function loadProducts(){
-      const res = await fetch(API + "/api/products?t=" + Date.now());
-      const data = await res.json();
-
-      allProducts = data.products || [];
-
-      const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
-      document.getElementById("category").innerHTML =
-        `<option value="">All products</option>` + cats.map(c => `<option>${c}</option>`).join("");
-
-      render();
-    }
-
-    document.getElementById("search").addEventListener("input", render);
-    document.getElementById("category").addEventListener("change", render);
-
-    updateCartCount();
-    loadProducts();
-  </script>
-  <script src="js/alive-words.js"></script>
-  <script src="mobile-hero-lines-v2.js?v=lines2"></script>
-  <script src="js/reza-cart-system.js?v=manyora1"></script>
-  <script src="js/reza-products-master.js?v=master2"></script>
-  <script src="js/reza-popup-once.js?v=master2"></script>
+  <footer class="footer"><p>© 2026 Reza Holdings.</p></footer>
+  <script src="site.js?v=clean1"></script>
 </body>
 </html>
