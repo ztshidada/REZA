@@ -1,19 +1,13 @@
 (function () {
-  const API_BASE =
-    location.hostname.includes("localhost")
-      ? "http://localhost:10000"
-      : "https://api.rezaholdings.co.za";
+  const API_BASE = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
 
   function money(value) {
     const n = Number(value || 0);
     if (!n) return "Price coming soon";
-    return "R " + n.toLocaleString("en-ZA", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
+    return "R " + n.toLocaleString("en-ZA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
-  function img(src) {
+  function productImage(src) {
     if (!src) return "assets/images/reza-card-bg.svg";
     if (src.startsWith("data:image")) return src;
     if (src.startsWith("http")) return src;
@@ -21,127 +15,68 @@
     return src;
   }
 
-  function addToCart(product) {
-    const cart = JSON.parse(localStorage.getItem("reza_cart") || "[]");
-    const existing = cart.find(item => item.id === product.id);
-
-    if (existing) existing.qty += 1;
-    else cart.push({ ...product, qty: 1 });
-
-    localStorage.setItem("reza_cart", JSON.stringify(cart));
-
-    const count = cart.reduce((sum, item) => sum + Number(item.qty || 1), 0);
-    document.querySelectorAll(".cart-count,.cart-badge,[data-cart-count]").forEach(el => {
-      el.textContent = count;
-    });
-
-    alert("Added to cart");
-  }
-
-  window.addToCart = addToCart;
-
-  function productCard(product, mode) {
-    const isComing = mode === "coming";
-    const badge = isComing ? "Coming Soon" : (product.badge || "On Sale");
-
+  function card(product, mode) {
+    const coming = mode === "coming";
+    const safeProduct = {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price || 0),
+      image: productImage(product.image),
+      category: product.category || "",
+      productType: product.productType || ""
+    };
     return `
       <article class="reza-final-product-card">
         <div class="reza-final-product-image-wrap">
-          <span class="reza-final-badge">${badge}</span>
-          <img
-            src="${img(product.image)}"
-            alt="${product.name || "Reza product"}"
-            loading="lazy"
-            class="reza-final-product-image"
-          >
+          <span class="reza-final-badge">${coming ? "Coming Soon" : (product.badge || product.category || "On Sale")}</span>
+          <img class="reza-final-product-image" src="${productImage(product.image)}" alt="${product.name || "Reza product"}" loading="lazy">
         </div>
-
         <div class="reza-final-product-body">
-          <p class="reza-final-product-type">${product.productType || product.category || ""}</p>
+          <p class="reza-final-product-type">${product.category || ""} ${product.productType ? "• " + product.productType : ""}</p>
           <h3>${product.name || "Reza Product"}</h3>
-          <p class="reza-final-price">${isComing ? "Coming Soon" : money(product.price)}</p>
+          <p class="reza-final-price">${coming ? "Coming Soon" : money(product.price)}</p>
           <p class="reza-final-description">${product.description || ""}</p>
-
           ${
-            isComing
+            coming
               ? `<button class="reza-final-btn muted" type="button">Coming Soon</button>`
-              : `<button class="reza-final-btn" type="button" onclick='addToCart(${JSON.stringify(product).replace(/'/g, "&apos;")})'>Add to Cart</button>`
+              : `<button class="reza-final-btn" type="button" onclick='addToCart(${JSON.stringify(safeProduct).replace(/'/g, "&apos;")})'>Add to Cart</button>`
           }
         </div>
       </article>
     `;
   }
 
-  function findSaleGrids() {
-    return [
-      document.querySelector("#productsGrid"),
-      document.querySelector("#productGrid"),
-      document.querySelector(".products-grid"),
-      document.querySelector(".product-grid"),
-      document.querySelector("#featuredProducts"),
-      document.querySelector(".featured-products")
-    ].filter(Boolean);
+  function grids(list) {
+    return list.map(s => document.querySelector(s)).filter(Boolean);
   }
 
-  function findComingSoonGrids() {
-    return [
-      document.querySelector("#comingSoonGrid"),
-      document.querySelector("#comingSoonProducts"),
-      document.querySelector(".coming-soon-grid")
-    ].filter(Boolean);
-  }
-
-  async function renderProducts() {
+  async function render() {
     try {
-      const response = await fetch(API_BASE + "/api/products?t=" + Date.now());
-      const data = await response.json();
-
+      const res = await fetch(API_BASE + "/api/products?t=" + Date.now());
+      const data = await res.json();
       if (!data.success || !Array.isArray(data.products)) return;
 
-      const all = data.products;
+      const products = data.products;
+      const sale = products.filter(p => p.showOnline !== false && p.status !== "comingSoon" && p.category !== "Coming Soon" && p.productType !== "Coming Soon");
+      const coming = products.filter(p => p.status === "comingSoon" || p.category === "Coming Soon" || p.productType === "Coming Soon");
 
-      const saleProducts = all.filter(product => {
-        return product.status !== "comingSoon" &&
-               product.category !== "Coming Soon" &&
-               product.showOnline !== false;
+      const saleGrids = grids(["#productsGrid","#productGrid",".products-grid",".product-grid","#featuredProducts",".featured-products"]);
+      const comingGrids = grids(["#comingSoonGrid","#comingSoonProducts",".coming-soon-grid"]);
+
+      saleGrids.forEach(g => {
+        g.classList.add("reza-final-products-grid");
+        const isFeatured = g.id === "featuredProducts" || g.classList.contains("featured-products");
+        const items = isFeatured ? sale.slice(0,3) : sale;
+        g.innerHTML = items.map(p => card(p, "sale")).join("") || `<p class="reza-final-empty">No products available yet.</p>`;
       });
 
-      const comingProducts = all.filter(product => {
-        return product.status === "comingSoon" ||
-               product.category === "Coming Soon" ||
-               product.productType === "Coming Soon";
+      comingGrids.forEach(g => {
+        g.classList.add("reza-final-products-grid");
+        g.innerHTML = coming.map(p => card(p, "coming")).join("") || `<p class="reza-final-empty">No coming soon products yet.</p>`;
       });
-
-      const saleGrids = findSaleGrids();
-      const comingGrids = findComingSoonGrids();
-
-      saleGrids.forEach(grid => {
-        grid.classList.add("reza-final-products-grid");
-
-        const isHomeFeatured =
-          grid.id === "featuredProducts" ||
-          grid.classList.contains("featured-products");
-
-        const productsToShow = isHomeFeatured ? saleProducts.slice(0, 3) : saleProducts;
-
-        grid.innerHTML = productsToShow.length
-          ? productsToShow.map(product => productCard(product, "sale")).join("")
-          : `<p class="reza-final-empty">No products available yet.</p>`;
-      });
-
-      comingGrids.forEach(grid => {
-        grid.classList.add("reza-final-products-grid");
-
-        grid.innerHTML = comingProducts.length
-          ? comingProducts.map(product => productCard(product, "coming")).join("")
-          : `<p class="reza-final-empty">No coming soon products yet.</p>`;
-      });
-
-    } catch (error) {
-      console.warn("Reza product render failed:", error);
-    }
+    } catch(e) { console.warn("Product render failed", e); }
   }
 
-  document.addEventListener("DOMContentLoaded", renderProducts);
-  window.addEventListener("load", renderProducts);
+  document.addEventListener("DOMContentLoaded", render);
+  window.addEventListener("load", render);
 })();
