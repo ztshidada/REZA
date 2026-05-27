@@ -1108,6 +1108,172 @@ app.get("/api/payments/yoco/events", (req, res) => {
 
 
 // REAL YOCO WEBHOOK HANDLER - REZA OVERRIDE
+
+// ======================================================
+// REZA FORCE-FIRST YOCO WEBHOOK HANDLER
+// Must appear BEFORE old webhook route that says:
+// "No order/checkout id found"
+// ======================================================
+const REZA_FORCE_YOCO_EVENTS_FILE = path.join(DATA_DIR, "yoco-events.json");
+
+function rezaForceReadJson(file, fallback) {
+  try {
+    if (!fs.existsSync(file)) fs.writeFileSync(file, JSON.stringify(fallback, null, 2));
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function rezaForceWriteJson(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+function rezaForceOrdersFile() {
+  return path.join(DATA_DIR, "orders.json");
+}
+
+function rezaForceReadOrders() {
+  return rezaForceReadJson(rezaForceOrdersFile(), []);
+}
+
+function rezaForceWriteOrders(orders) {
+  rezaForceWriteJson(rezaForceOrdersFile(), orders);
+}
+
+function rezaForceRefs(payload) {
+  const d = payload || {};
+  const data = d.data || d.payload || d.object || d.checkout || d.payment || d;
+
+  return [...new Set([
+    d.id,
+    d.checkoutId,
+    d.paymentId,
+    d.reference,
+    d.orderId,
+    d.orderNumber,
+    d.metadata?.orderId,
+    d.metadata?.orderNumber,
+
+    data.id,
+    data.checkoutId,
+    data.paymentId,
+    data.reference,
+    data.orderId,
+    data.orderNumber,
+    data.metadata?.orderId,
+    data.metadata?.orderNumber,
+
+    data.checkout?.id,
+    data.checkout?.checkoutId,
+    data.payment?.id,
+    data.payment?.checkoutId
+  ].filter(Boolean).map(String))];
+}
+
+function rezaForcePaid(payload) {
+  const raw = JSON.stringify(payload || {}).toLowerCase();
+  return (
+    raw.includes("payment.succeeded") ||
+    raw.includes("checkout.succeeded") ||
+    raw.includes("checkout.completed") ||
+    raw.includes('"status":"paid"') ||
+    raw.includes('"status":"succeeded"') ||
+    raw.includes('"status":"successful"')
+  );
+}
+
+function rezaForceMarkPaid(refs, source) {
+  const orders = rezaForceReadOrders();
+  let found = -1;
+  let matchedRef = "";
+
+  for (const ref of refs.filter(Boolean)) {
+    const r = String(ref);
+    found = orders.findIndex(o => {
+      const possible = [
+        o.id,
+        o.orderNumber,
+        o.orderNo,
+        o.yocoCheckoutId,
+        o.checkoutId,
+        o.paymentId,
+        o.yocoPaymentId,
+        o.payment?.checkoutId,
+        o.payment?.id,
+        o.yoco?.checkoutId,
+        o.yoco?.id
+      ].filter(Boolean).map(String);
+
+      return possible.includes(r);
+    });
+
+    if (found !== -1) {
+      matchedRef = r;
+      break;
+    }
+  }
+
+  if (found === -1) {
+    return { success:false, message:"No matching order found", refs };
+  }
+
+  const now = new Date().toISOString();
+
+  orders[found] = {
+    ...orders[found],
+    paymentStatus: "Paid",
+    status: "Paid",
+    paidAt: orders[found].paidAt || now,
+    yocoPaidAt: orders[found].yocoPaidAt || now,
+    yocoMatchedRef: matchedRef,
+    yocoPaidSource: source || "webhook",
+    updatedAt: now
+  };
+
+  rezaForceWriteOrders(orders);
+
+  return {
+    success:true,
+    message:"Order marked paid",
+    matchedRef,
+    orderNumber: orders[found].orderNumber || orders[found].id
+  };
+}
+
+app.post("/api/payments/yoco/webhook", express.json({ type: "*/*" }), (req, res) => {
+  const payload = req.body || {};
+  const refs = rezaForceRefs(payload);
+  const paidEvent = rezaForcePaid(payload);
+
+  let update = null;
+  if (paidEvent) update = rezaForceMarkPaid(refs, "force-first-webhook");
+
+  const events = rezaForceReadJson(REZA_FORCE_YOCO_EVENTS_FILE, []);
+  events.unshift({
+    receivedAt: new Date().toISOString(),
+    route: "force-first-webhook",
+    paidEvent,
+    refs,
+    update,
+    payload
+  });
+  rezaForceWriteJson(REZA_FORCE_YOCO_EVENTS_FILE, events.slice(0, 100));
+
+  return res.status(200).json({
+    success:true,
+    received:true,
+    route:"force-first-webhook",
+    paidEvent,
+    refs,
+    update
+  });
+});
+// ======================================================
+// END REZA FORCE-FIRST YOCO WEBHOOK HANDLER
+// ======================================================
+
+
 app.post("/api/payments/yoco/webhook", express.json({ type: "*/*" }), (req, res) => {
   const payload = req.body || {};
   const events = rezaJsonRead(REZA_YOCO_REAL_EVENTS_FILE, []);
