@@ -106,16 +106,101 @@
       alert("Added to cart");
     }
 
+    function productRank(product){
+      const text = [
+        product.name,
+        product.category,
+        product.productType,
+        product.badge,
+        product.status
+      ].join(" ").toLowerCase();
+
+      if(product.comingSoon || text.includes("coming soon")) return 99;
+
+      // 1. Singles first
+      if(
+        text.includes("single") ||
+        text.includes("singles") ||
+        text.includes("skincare")
+      ) return 1;
+
+      // 2. Normal combos second
+      if(
+        text.includes("combo") &&
+        !text.includes("5") &&
+        !text.includes("five") &&
+        !text.includes("10") &&
+        !text.includes("ten") &&
+        !text.includes("special")
+      ) return 2;
+
+      // 3. Five packs / 5 item packs
+      if(
+        text.includes("5") ||
+        text.includes("five") ||
+        text.includes("5x") ||
+        text.includes("5 pack") ||
+        text.includes("half stock")
+      ) return 3;
+
+      // 4. Ten packs / 10 item packs
+      if(
+        text.includes("10") ||
+        text.includes("ten") ||
+        text.includes("10x") ||
+        text.includes("10 pack") ||
+        text.includes("full stock")
+      ) return 4;
+
+      // 5. Specials last before coming soon
+      if(
+        text.includes("special") ||
+        text.includes("promo") ||
+        text.includes("deal")
+      ) return 5;
+
+      return 50;
+    }
+
+    function sortedProducts(list){
+      return [...list].sort((a, b) => {
+        const rankA = productRank(a);
+        const rankB = productRank(b);
+
+        if(rankA !== rankB) return rankA - rankB;
+
+        const priceA = Number(a.price || 0);
+        const priceB = Number(b.price || 0);
+
+        if(priceA !== priceB) return priceA - priceB;
+
+        return String(a.name || "").localeCompare(String(b.name || ""));
+      });
+    }
+
+    function categoryRank(category){
+      const c = String(category || "").toLowerCase();
+
+      if(c.includes("single") || c.includes("skincare")) return 1;
+      if(c.includes("combo") && !c.includes("5") && !c.includes("10") && !c.includes("special")) return 2;
+      if(c.includes("5") || c.includes("five") || c.includes("half")) return 3;
+      if(c.includes("10") || c.includes("ten") || c.includes("full")) return 4;
+      if(c.includes("special") || c.includes("promo") || c.includes("deal")) return 5;
+      if(c.includes("coming")) return 99;
+
+      return 50;
+    }
+
     function render(){
       const q = document.getElementById("search").value.toLowerCase();
       const c = document.getElementById("category").value;
       const grid = document.getElementById("productsGrid");
 
-      const products = allProducts.filter(p =>
+      const products = sortedProducts(allProducts.filter(p =>
         p.showOnline !== false &&
         (!q || String(p.name).toLowerCase().includes(q) || String(p.description || "").toLowerCase().includes(q)) &&
         (!c || p.category === c)
-      );
+      ));
 
       if(!products.length){
         grid.innerHTML = `<div class="loading-card">No products found.</div>`;
@@ -145,7 +230,11 @@
 
       allProducts = data.products || [];
 
-      const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+      allProducts = sortedProducts(allProducts);
+
+      const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))]
+        .sort((a, b) => categoryRank(a) - categoryRank(b) || String(a).localeCompare(String(b)));
+
       document.getElementById("category").innerHTML =
         `<option value="">All products</option>` + cats.map(c => `<option>${c}</option>`).join("");
 
