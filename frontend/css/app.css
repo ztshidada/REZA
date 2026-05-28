@@ -1184,3 +1184,165 @@ button,
     height: 72px !important;
   }
 }
+
+/* =========================================================
+   FINAL FIX — Premium Home Coming Soon Section
+   ========================================================= */
+.coming-section {
+  position: relative !important;
+  overflow: hidden !important;
+  padding: 82px 9% 90px !important;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(201,148,61,.22), transparent 28%),
+    radial-gradient(circle at 88% 4%, rgba(255,236,190,.12), transparent 28%),
+    linear-gradient(135deg, #2d2723 0%, #211c19 52%, #151210 100%) !important;
+  color: #fffaf2 !important;
+}
+
+.coming-section::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,.025) 1px, transparent 1px) !important;
+  background-size: 58px 58px !important;
+  opacity: .35 !important;
+}
+
+.coming-section > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.coming-section .section-title {
+  max-width: 880px !important;
+  margin: 0 auto 42px !important;
+  text-align: center !important;
+}
+
+.coming-section .section-title .eyebrow {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 9px 18px !important;
+  border-radius: 999px !important;
+  background: rgba(201,148,61,.18) !important;
+  border: 1px solid rgba(232,201,141,.22) !important;
+  color: #e8c98d !important;
+  letter-spacing: .22em !important;
+  font-size: .72rem !important;
+  font-weight: 1000 !important;
+}
+
+.coming-section .section-title h2 {
+  margin: 18px auto 14px !important;
+  max-width: 820px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: clamp(2.35rem, 4.9vw, 4.6rem) !important;
+  line-height: .98 !important;
+  letter-spacing: -.045em !important;
+  color: #f7df9b !important;
+  text-shadow: 0 18px 45px rgba(0,0,0,.24) !important;
+}
+
+.coming-section .section-title p:not(.eyebrow) {
+  max-width: 720px !important;
+  margin: 0 auto !important;
+  color: rgba(255,250,242,.78) !important;
+  font-size: 1.02rem !important;
+  line-height: 1.75 !important;
+}
+
+.coming-grid {
+  width: min(1180px, 100%) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 26px !important;
+}
+
+.coming-card {
+  overflow: hidden !important;
+  border-radius: 30px !important;
+  background: rgba(255,255,255,.075) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: 0 26px 80px rgba(0,0,0,.24) !important;
+  backdrop-filter: blur(18px) !important;
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease !important;
+}
+
+.coming-card:hover {
+  transform: translateY(-10px) !important;
+  border-color: rgba(232,201,141,.38) !important;
+  box-shadow: 0 34px 95px rgba(0,0,0,.34) !important;
+}
+
+.coming-card img {
+  width: 100% !important;
+  height: 255px !important;
+  object-fit: cover !important;
+  display: block !important;
+  background: #f6ead5 !important;
+}
+
+.coming-card span {
+  display: inline-flex !important;
+  margin: 20px 22px 10px !important;
+  padding: 9px 16px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #f5d987, #c9943d) !important;
+  color: #201510 !important;
+  font-size: .7rem !important;
+  font-weight: 1000 !important;
+  letter-spacing: .18em !important;
+}
+
+.coming-card h3 {
+  margin: 8px 22px 10px !important;
+  padding: 0 !important;
+  color: #fffaf2 !important;
+  font-size: 1.22rem !important;
+  line-height: 1.25 !important;
+}
+
+.coming-card p {
+  margin: 0 !important;
+  padding: 0 22px 26px !important;
+  color: rgba(255,250,242,.76) !important;
+  line-height: 1.65 !important;
+  font-size: .97rem !important;
+}
+
+@media (max-width: 980px) {
+  .coming-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .coming-section {
+    padding: 66px 18px 76px !important;
+  }
+
+  .coming-card img {
+    height: 270px !important;
+  }
+}
+
+@media (max-width: 650px) {
+  .coming-section .section-title {
+    text-align: left !important;
+  }
+
+  .coming-section .section-title h2 {
+    font-size: clamp(2.3rem, 12vw, 3.25rem) !important;
+  }
+
+  .coming-section .section-title p:not(.eyebrow) {
+    margin-left: 0 !important;
+  }
+
+  .coming-card img {
+    height: 235px !important;
+  }
+}
