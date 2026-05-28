@@ -26,6 +26,12 @@
     .pill{display:inline-block;padding:7px 12px;border-radius:999px;background:#f0dfc2;font-weight:900}
     @media(max-width:850px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.main{padding:18px}.side{border-right:0}.head{align-items:flex-start;flex-direction:column}table{font-size:.84rem}th:nth-child(4),td:nth-child(4){display:none}}
   </style>
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/admin-mobile-pwa.css?v=1">
 </head>
 <body>
 <div class="layout">
@@ -276,5 +282,6 @@ loadProducts().catch(err => {
   setStatus("Could not load products. Check backend deploy.");
 });
 </script>
+<script src="js/admin-pwa.js?v=1"></script>
 </body>
 </html>

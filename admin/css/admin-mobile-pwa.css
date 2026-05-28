@@ -1,0 +1,277 @@
+:root{
+  --reza-ink:#241812;
+  --reza-gold:#c89334;
+  --reza-cream:#fffaf2;
+  --reza-line:rgba(36,24,18,.12);
+}
+
+html{
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  overscroll-behavior-y:none;
+}
+
+input,select,textarea,button{
+  font-size:16px !important;
+}
+
+.pwa-install-btn{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:99999;
+  border:0;
+  border-radius:999px;
+  padding:13px 18px;
+  background:linear-gradient(135deg,#f3d06a,#c89226);
+  color:#241812;
+  font-weight:1000;
+  box-shadow:0 16px 45px rgba(36,24,18,.22);
+  cursor:pointer;
+}
+
+.pwa-install-btn.hidden{
+  display:none;
+}
+
+.pwa-toast{
+  position:fixed;
+  left:50%;
+  bottom:76px;
+  transform:translateX(-50%);
+  width:min(92vw,420px);
+  z-index:99999;
+  background:#241812;
+  color:#fffaf2;
+  border-radius:20px;
+  padding:14px 16px;
+  font-weight:850;
+  box-shadow:0 16px 45px rgba(0,0,0,.25);
+  display:none;
+}
+
+.pwa-toast.show{
+  display:block;
+}
+
+@media(max-width:900px){
+  body{
+    background:#f7f2ea !important;
+  }
+
+  .layout,
+  .app,
+  .shell,
+  .admin-shell{
+    display:block !important;
+    min-height:100vh;
+  }
+
+  .side,
+  .sidebar{
+    position:sticky !important;
+    top:0 !important;
+    height:auto !important;
+    z-index:50;
+    padding:14px 12px !important;
+    border-right:0 !important;
+    border-bottom:1px solid var(--reza-line);
+    background:rgba(255,250,242,.94) !important;
+    backdrop-filter:blur(16px);
+  }
+
+  .side h1,
+  .sidebar .brand,
+  .brand{
+    margin-bottom:10px !important;
+  }
+
+  .side p{
+    display:none;
+  }
+
+  .nav,
+  .side{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .nav{
+    display:flex !important;
+    gap:8px !important;
+    padding-bottom:4px;
+  }
+
+  .side a,
+  .nav a,
+  .nav button{
+    display:inline-flex !important;
+    white-space:nowrap;
+    margin:0 !important;
+    padding:11px 14px !important;
+    border-radius:999px !important;
+    font-size:14px !important;
+  }
+
+  .main{
+    padding:16px !important;
+    overflow:visible !important;
+  }
+
+  h1.big,
+  .title h1,
+  h1{
+    font-size:clamp(34px,11vw,52px) !important;
+    line-height:.95 !important;
+  }
+
+  .head,
+  .top,
+  .title,
+  .wx-admin-title{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+    align-items:start !important;
+  }
+
+  .card,
+  .panel,
+  .wx-card,
+  .box{
+    border-radius:22px !important;
+    padding:16px !important;
+  }
+
+  .grid,
+  .form,
+  .form-grid,
+  .tools{
+    grid-template-columns:1fr !important;
+  }
+
+  .cards,
+  .stat-grid{
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+  }
+
+  .metric,
+  .stat-card{
+    border-radius:20px !important;
+    padding:16px !important;
+  }
+
+  .metric strong,
+  .stat-card strong{
+    font-size:28px !important;
+  }
+
+  .toolbar{
+    grid-template-columns:1fr !important;
+  }
+
+  .tablewrap,
+  .table-wrap{
+    overflow:visible !important;
+  }
+
+  table{
+    min-width:0 !important;
+    width:100% !important;
+    background:transparent !important;
+  }
+
+  table thead{
+    display:none !important;
+  }
+
+  table,
+  tbody,
+  tr,
+  td{
+    display:block !important;
+  }
+
+  tr{
+    background:#fff !important;
+    border:1px solid rgba(36,24,18,.12) !important;
+    border-radius:20px !important;
+    margin:0 0 12px !important;
+    padding:12px !important;
+    box-shadow:0 12px 30px rgba(36,24,18,.07);
+  }
+
+  td{
+    border:0 !important;
+    padding:7px 4px !important;
+  }
+
+  td:first-child{
+    padding-top:0 !important;
+  }
+
+  td:last-child{
+    padding-bottom:0 !important;
+  }
+
+  .actions,
+  .row-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
+
+  .btn,
+  .icon-btn{
+    width:100%;
+    justify-content:center;
+    padding:13px 14px !important;
+  }
+
+  .preview,
+  .thumb{
+    width:72px !important;
+    height:72px !important;
+    border-radius:16px !important;
+  }
+
+  .split{
+    grid-template-columns:1fr !important;
+  }
+
+  .item{
+    grid-template-columns:56px 1fr !important;
+  }
+
+  .item > *:last-child{
+    grid-column:1/-1;
+  }
+
+  .dialog{
+    width:100% !important;
+    max-height:88vh !important;
+    border-radius:24px 24px 0 0 !important;
+    align-self:end;
+  }
+
+  .modal{
+    align-items:end !important;
+    padding:0 !important;
+  }
+}
+
+@media(max-width:520px){
+  .cards,
+  .stat-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .pwa-install-btn{
+    left:16px;
+    right:16px;
+    width:auto;
+  }
+}

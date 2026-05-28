@@ -20,6 +20,12 @@
 })();
 </script>
 
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
 </head><body>
 <script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="admin.js"></script>
 <script>
@@ -31,4 +37,5 @@ function renderOrders(){const orders=getOrders();const totalSales=orders.reduce(
 <div class="table-wrap"><table><thead><tr><th>Order</th><th>Date created</th><th>Customer</th><th>Payment</th><th>Fulfilment</th><th>Total</th><th>Items</th></tr></thead><tbody>${orders.map(o=>`<tr class="order-row-link" onclick="location.href='order-details.html?id=${encodeURIComponent(o.id)}'"><td><strong>${o.id}</strong></td><td>${orderDate(o)}</td><td>${o.customer?.fullName||""}</td><td><span class="admin-pill ${String(o.paymentStatus).toLowerCase().includes("paid")?"":"pending"}">${o.paymentStatus}</span></td><td><span class="admin-pill ${o.deliveryStatus==="Delivered"||o.deliveryStatus==="Shipped"?"fulfilled":"unfulfilled"}">${o.deliveryStatus}</span></td><td><strong>${formatMoney(o.total)}</strong></td><td>${(o.items||[]).length}</td></tr>`).join("")||`<tr><td colspan="7">No orders yet.</td></tr>`}</tbody></table></div>`} renderOrders();
 </script>
 <script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
 </body></html>
