@@ -1346,3 +1346,34 @@ button,
     height: 235px !important;
   }
 }
+
+/* FINAL — Checkout delivery prices */
+.delivery-option {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.delivery-option span {
+  display: block !important;
+  color: #7e6f61 !important;
+  margin-top: 5px !important;
+  line-height: 1.45 !important;
+}
+
+.delivery-price {
+  white-space: nowrap !important;
+  color: #2a1d17 !important;
+  font-weight: 1000 !important;
+}
+
+@media (max-width: 650px) {
+  .delivery-option {
+    grid-template-columns: auto 1fr !important;
+  }
+
+  .delivery-price {
+    grid-column: 2 / -1 !important;
+  }
+}

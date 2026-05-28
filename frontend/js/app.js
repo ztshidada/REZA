@@ -5,7 +5,10 @@ const API_BASE=localStorage.getItem("REZA_API_BASE")||(location.hostname.include
   if(!c.length) return toast("Cart is empty");
 
   let customer = Object.fromEntries(new FormData(e.target).entries());
-  let total = c.reduce((sum,item)=>sum + Number(item.price || 0) * Number(item.qty || item.quantity || 1), 0);
+  let subtotal = c.reduce((sum,item)=>sum + Number(item.price || 0) * Number(item.qty || item.quantity || 1), 0);
+  let deliveryMethod = (new FormData(e.target).get("deliveryMethod") || selectedDeliveryMethod());
+  let deliveryPrice = getDeliveryPrice(deliveryMethod);
+  let total = subtotal + deliveryPrice;
 
   const orderId = "REZA-" + new Date().toISOString().slice(0,10).replaceAll("-","") + "-" + Math.floor(1000 + Math.random() * 9000);
 
@@ -14,7 +17,8 @@ const API_BASE=localStorage.getItem("REZA_API_BASE")||(location.hostname.include
     orderNumber: orderId,
     customer,
     items: c,
-    subtotal: total,
+    subtotal: subtotal,
+    deliveryPrice: deliveryPrice,
     total,
     paymentMethod: "Yoco",
     paymentStatus: "Pending Payment",
@@ -102,19 +106,59 @@ document.addEventListener("DOMContentLoaded",boot);
   });
 })();
 
+
+function getDeliveryPrice(method){
+  const m = String(method || "").toLowerCase();
+  if(m.includes("pudo")) return 60;
+  if(m.includes("paxi")) return 110;
+  if(m.includes("courier")) return 150;
+  if(m.includes("collection")) return 0;
+  if(m.includes("stockist")) return 0;
+  return 0;
+}
+
+function selectedDeliveryMethod(){
+  const checked = document.querySelector('input[name="deliveryMethod"]:checked');
+  return checked ? checked.value : "Paxi / Pickup Point";
+}
+
+function updateCheckoutDeliveryTotal(){
+  const subtotalEl = document.querySelector("[data-checkout-subtotal]");
+  const deliveryEl = document.querySelector("[data-checkout-delivery]");
+  const totalEl = document.querySelector("[data-checkout-total]");
+
+  if(!subtotalEl || !deliveryEl || !totalEl) return;
+
+  const subtotal = Number(subtotalEl.getAttribute("data-value") || 0);
+  const deliveryPrice = getDeliveryPrice(selectedDeliveryMethod());
+  const total = subtotal + deliveryPrice;
+
+  deliveryEl.textContent = deliveryPrice > 0 ? money(deliveryPrice) : "Free";
+  deliveryEl.setAttribute("data-value", String(deliveryPrice));
+
+  totalEl.textContent = money(total);
+  totalEl.setAttribute("data-value", String(total));
+}
+
 function renderWixCheckout(){
-  const page = document.querySelector("[data-v11-checkout]");
-  if(!page) return;
+  const root =
+    document.querySelector("[data-checkout-page]") ||
+    document.querySelector("[data-checkout]") ||
+    document.querySelector("main");
+
+  if(!root) return;
 
   const c = cart();
-  const subtotal = c.reduce((s,i)=>s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const subtotal = c.reduce((s,i)=>s + Number(i.price || 0) * Number(i.qty || i.quantity || 1), 0);
+  const defaultDelivery = 110;
+  const defaultTotal = subtotal + defaultDelivery;
 
-  page.innerHTML = `
+  root.innerHTML = `
     <section class="page-hero">
       <div class="container">
-        <div class="kicker">Secure Checkout</div>
+        <p class="kicker">Secure Checkout</p>
         <h1>Checkout</h1>
-        <p class="lead">A clean Wix-style checkout with customer details, delivery choices and order summary.</p>
+        <p class="lead">Enter your details, choose your delivery method and place your order.</p>
       </div>
     </section>
 
@@ -123,70 +167,48 @@ function renderWixCheckout(){
         <form class="checkout-card" onsubmit="checkout(event)">
           <div class="checkout-card-head">
             <div>
-              <h2 style="font-size:2rem">Customer Information</h2>
+              <h2 style="font-size:2rem">Customer Details</h2>
               <p style="color:#7e6f61;margin:8px 0 0">Enter delivery/contact details.</p>
             </div>
-            <div class="checkout-step">1</div>
+            <span class="checkout-step">1</span>
           </div>
 
           <div class="checkout-card-body">
             <div class="checkout-grid">
-              <div>
-                <label class="checkout-label">Full name</label>
-                <input class="input" name="name" placeholder="Full name" required>
-              </div>
-              <div>
-                <label class="checkout-label">Phone / WhatsApp</label>
-                <input class="input" name="phone" placeholder="+27..." required>
-              </div>
-              <div class="wide">
-                <label class="checkout-label">Email</label>
+              <label>
+                <span class="checkout-label">Full Name</span>
+                <input class="input" name="name" required placeholder="Full name">
+              </label>
+
+              <label>
+                <span class="checkout-label">Phone Number</span>
+                <input class="input" name="phone" required placeholder="Phone number">
+              </label>
+
+              <label class="wide">
+                <span class="checkout-label">Email Address</span>
                 <input class="input" type="email" name="email" placeholder="Email address">
-              </div>
-            </div>
-          </div>
+              </label>
 
-          <div class="checkout-card-head">
-            <div>
-              <h2 style="font-size:2rem">Delivery Address</h2>
-              <p style="color:#7e6f61;margin:8px 0 0">Similar to Wix checkout fields.</p>
-            </div>
-            <div class="checkout-step">2</div>
-          </div>
+              <label class="wide">
+                <span class="checkout-label">Delivery Address</span>
+                <input class="input" name="address" placeholder="Street address / area">
+              </label>
 
-          <div class="checkout-card-body">
-            <div class="checkout-grid">
-              <div>
-                <label class="checkout-label">Country / Region</label>
-                <select name="country" class="input" required>
-                  <option>South Africa</option>
-                  <option>Botswana</option>
-                  <option>Zimbabwe</option>
-                  <option>Namibia</option>
-                  <option>Eswatini</option>
-                  <option>Zambia</option>
-                </select>
-              </div>
-              <div>
-                <label class="checkout-label">Province / Region</label>
-                <input class="input" name="province" placeholder="Limpopo / Gauteng / etc." required>
-              </div>
-              <div class="wide">
-                <label class="checkout-label">Street Address</label>
-                <input class="input" name="address" placeholder="Street address" required>
-              </div>
-              <div>
-                <label class="checkout-label">City</label>
-                <input class="input" name="city" placeholder="City" required>
-              </div>
-              <div>
-                <label class="checkout-label">ZIP / Postal Code</label>
-                <input class="input" name="postalCode" placeholder="Postal code">
-              </div>
-              <div class="wide">
-                <label class="checkout-label">Paxi Number / Nearest Mall</label>
+              <label>
+                <span class="checkout-label">City / Town</span>
+                <input class="input" name="city" placeholder="City or town">
+              </label>
+
+              <label>
+                <span class="checkout-label">Province</span>
+                <input class="input" name="province" placeholder="Province">
+              </label>
+
+              <label class="wide">
+                <span class="checkout-label">Paxi Number / Nearest Mall</span>
                 <input class="input" name="paxiMall" placeholder="Paxi number or nearest mall">
-              </div>
+              </label>
             </div>
           </div>
 
@@ -195,54 +217,84 @@ function renderWixCheckout(){
               <h2 style="font-size:2rem">Delivery Method</h2>
               <p style="color:#7e6f61;margin:8px 0 0">Choose how the order should be delivered.</p>
             </div>
-            <div class="checkout-step">3</div>
+            <span class="checkout-step">2</span>
           </div>
 
           <div class="checkout-card-body">
             <div class="delivery-options">
               <label class="delivery-option active">
                 <input type="radio" name="deliveryMethod" value="Paxi / Pickup Point" checked>
-                <div><strong>Paxi / Pickup Point</strong><span>Customer provides Paxi number or nearest mall. Delivery confirmed after order.</span></div>
+                <div>
+                  <strong>Paxi / Pickup Point</strong>
+                  <span>Customer provides Paxi number or nearest mall.</span>
+                </div>
+                <strong class="delivery-price">R 110,00</strong>
+              </label>
+
+              <label class="delivery-option">
+                <input type="radio" name="deliveryMethod" value="PUDO - Locker to Locker">
+                <div>
+                  <strong>PUDO - Locker to Locker</strong>
+                  <span>Locker-to-locker delivery.</span>
+                </div>
+                <strong class="delivery-price">R 60,00</strong>
               </label>
 
               <label class="delivery-option">
                 <input type="radio" name="deliveryMethod" value="Courier Delivery">
-                <div><strong>Courier Delivery</strong><span>Door-to-door delivery. Cost confirmed after address check.</span></div>
+                <div>
+                  <strong>Courier Delivery</strong>
+                  <span>Door-to-door delivery with The Courier Guy.</span>
+                </div>
+                <strong class="delivery-price">R 150,00</strong>
               </label>
 
               <label class="delivery-option">
                 <input type="radio" name="deliveryMethod" value="Collection">
-                <div><strong>Collection</strong><span>Customer collects from arranged Reza collection point.</span></div>
+                <div>
+                  <strong>Collection</strong>
+                  <span>Customer collects from arranged Reza collection point.</span>
+                </div>
+                <strong class="delivery-price">Free</strong>
               </label>
             </div>
+          </div>
 
-            <br>
-            <label class="checkout-label">Order Notes</label>
-            <textarea class="input" name="notes" rows="4" placeholder="Any extra notes for this order"></textarea>
-            <br><br>
+          <div class="checkout-card-body">
+            <label>
+              <span class="checkout-label">Order Notes</span>
+              <textarea class="input" name="orderNotes" placeholder="Any extra notes for this order"></textarea>
+            </label>
+          </div>
+
+          <div class="checkout-card-body">
             <button class="btn primary full">Place Order</button>
           </div>
         </form>
 
         <aside class="summary wix-summary">
-          <h2>Order Summary</h2>
-          <div style="margin:18px 0">
-            ${
-              c.length ? c.map(i => `
-                <div class="summary-product">
-                  <img src="${img(i.image)}" alt="${i.name}">
-                  <div><strong>${i.name}</strong><span>${i.qty} × ${money(i.price)}</span></div>
-                  <b>${money(Number(i.price || 0) * Number(i.qty || 1))}</b>
-                </div>
-              `).join("") : `<div class="empty">No cart items.</div>`
-            }
-          </div>
+          <h2 style="font-size:2rem">Order Summary</h2>
 
-          <div class="row"><span>Subtotal</span><strong>${money(subtotal)}</strong></div>
-          <div class="row"><span>Delivery</span><strong>Calculated after order</strong></div>
-          <div class="row total"><span>Total</span><strong>${money(subtotal)}</strong></div>
-          <br>
-          <div class="checkout-secure">🔒 Secure checkout. Your order details are sent to Reza admin for processing.</div>
+          ${
+            c.length
+              ? c.map(i => `
+                <div class="summary-product">
+                  <img src="${img(i.image)}" alt="${i.name || "Product"}">
+                  <div>
+                    <strong>${i.name || "Product"}</strong>
+                    <p>${Number(i.qty || i.quantity || 1)} × ${money(i.price || 0)}</p>
+                  </div>
+                  <strong>${money(Number(i.price || 0) * Number(i.qty || i.quantity || 1))}</strong>
+                </div>
+              `).join("")
+              : `<p class="empty">No cart items.</p>`
+          }
+
+          <div class="row"><span>Subtotal</span><strong data-checkout-subtotal data-value="${subtotal}">${money(subtotal)}</strong></div>
+          <div class="row"><span>Delivery</span><strong data-checkout-delivery data-value="${defaultDelivery}">${money(defaultDelivery)}</strong></div>
+          <div class="row total"><span>Total</span><strong data-checkout-total data-value="${defaultTotal}">${money(defaultTotal)}</strong></div>
+
+          <div class="checkout-secure">🔒 Secure checkout. Your order will be confirmed after payment.</div>
         </aside>
       </div>
     </section>
@@ -252,9 +304,17 @@ function renderWixCheckout(){
     label.addEventListener("click", () => {
       document.querySelectorAll(".delivery-option").forEach(x => x.classList.remove("active"));
       label.classList.add("active");
+
+      const input = label.querySelector('input[name="deliveryMethod"]');
+      if(input) input.checked = true;
+
+      updateCheckoutDeliveryTotal();
     });
   });
+
+  updateCheckoutDeliveryTotal();
 }
+
 
 document.addEventListener("DOMContentLoaded", renderWixCheckout);
 
