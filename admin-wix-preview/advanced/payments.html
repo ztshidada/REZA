@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=8">
+
+<script>
+(function () {
+  try {
+    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
+
+    function cssUrl(value, fallback) {
+      if (!value) return fallback;
+      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
+    }
+
+    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
+    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
+    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
+
+    if (media.logo) {
+      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
+    }
+  } catch (e) {}
+})();
+</script>
+
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("payments");
+
+let backendPayments = null;
+
+async function loadPayments() {
+  const status = document.getElementById("backendStatus");
+  try {
+    const res = await fetch(`${getBackendApiBase()}/api/settings/payments`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Could not load backend settings");
+    backendPayments = data.payments;
+    renderPayments();
+  } catch (error) {
+    backendPayments = null;
+    if (status) status.innerHTML = `<div class="admin-note">Backend not reachable. Start backend on port 5050. Error: ${error.message}</div>`;
+  }
+}
+
+function paymentSettings() {
+  return backendPayments || {
+    manual: { active: true },
+    yoco: { active: false, secretKey: "", publicKey: "", webhookSecret: "", mode: "test" },
+    peach: { active: false }
+  };
+}
+
+async function saveYoco(event) {
+  event.preventDefault();
+  const form = event.target;
+  const payload = Object.fromEntries(new FormData(form).entries());
+  payload.active = form.active.checked;
+
+  try {
+    await backendFetch("/api/settings/payments/yoco", {
+      method: "PATCH",
+      body: JSON.stringify(payload)
+    });
+    alert("Yoco settings saved on backend.");
+    await loadPayments();
+    closeModal();
+  } catch (error) {
+    alert("Could not save Yoco settings: " + error.message);
+  }
+}
+
+async function saveManual(event) {
+  event.preventDefault();
+  const form = event.target;
+  const payload = Object.fromEntries(new FormData(form).entries());
+  payload.active = form.active.checked;
+
+  try {
+    await backendFetch("/api/settings/payments/manual", {
+      method: "PATCH",
+      body: JSON.stringify(payload)
+    });
+    alert("Manual payment settings saved on backend.");
+    await loadPayments();
+    closeModal();
+  } catch (error) {
+    alert("Could not save manual settings: " + error.message);
+  }
+}
+
+function closeModal() {
+  document.getElementById("modalRoot").innerHTML = "";
+}
+
+function openYocoModal() {
+  const yoco = paymentSettings().yoco || {};
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="wx-modal-backdrop">
+      <div class="wx-modal">
+        <div class="wx-modal-title">
+          <h2 style="margin:0">Manage Yoco Payments</h2>
+          <button class="rz-close" onclick="closeModal()">×</button>
+        </div>
+        <form onsubmit="saveYoco(event)">
+          <label style="display:flex;gap:12px;align-items:center;margin-bottom:18px">
+            <input type="checkbox" name="active" ${yoco.active ? "checked" : ""}>
+            Activate Yoco checkout
+          </label>
+
+          <div class="wx-field">
+            <label>Mode</label>
+            <select class="input" name="mode">
+              <option value="test" ${yoco.mode !== "live" ? "selected" : ""}>Test</option>
+              <option value="live" ${yoco.mode === "live" ? "selected" : ""}>Live</option>
+            </select>
+          </div>
+
+          <div class="wx-field">
+            <label>Yoco Secret Key</label>
+            <input class="input" name="secretKey" placeholder="sk_test_... or sk_live_..." value="${yoco.secretKey || ""}">
+            <p class="wx-subtle">Saved on backend/data/settings.json, not in browser LocalStorage.</p>
+          </div>
+
+          <div class="wx-field">
+            <label>Yoco Public Key / optional</label>
+            <input class="input" name="publicKey" placeholder="pk_test_... or pk_live_..." value="${yoco.publicKey || ""}">
+          </div>
+
+          <div class="wx-field">
+            <label>Webhook Secret / optional</label>
+            <input class="input" name="webhookSecret" placeholder="whsec_..." value="${yoco.webhookSecret || ""}">
+          </div>
+
+          <div class="admin-note">
+            Never put your live secret key inside frontend JavaScript. This form sends it to your backend over the API and the backend uses it for Yoco checkout.
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:22px">
+            <button type="button" class="btn light" onclick="closeModal()">Cancel</button>
+            <button class="btn dark" type="submit">Save to Backend</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+function openManualModal() {
+  const manual = paymentSettings().manual || {};
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="wx-modal-backdrop">
+      <div class="wx-modal">
+        <div class="wx-modal-title">
+          <h2 style="margin:0">Manage Manual Payments</h2>
+          <button class="rz-close" onclick="closeModal()">×</button>
+        </div>
+        <form onsubmit="saveManual(event)">
+          <label style="display:flex;gap:12px;align-items:center;margin-bottom:18px">
+            <input type="checkbox" name="active" ${manual.active ? "checked" : ""}>
+            Activate manual payments
+          </label>
+
+          <div class="wx-field"><label>Bank name</label><input class="input" name="bankName" value="${manual.bankName || ""}"></div>
+          <div class="wx-field"><label>Account name</label><input class="input" name="accountName" value="${manual.accountName || ""}"></div>
+          <div class="wx-field"><label>Account number</label><input class="input" name="accountNumber" value="${manual.accountNumber || ""}"></div>
+          <div class="wx-field"><label>Branch code</label><input class="input" name="branchCode" value="${manual.branchCode || ""}"></div>
+
+          <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:22px">
+            <button type="button" class="btn light" onclick="closeModal()">Cancel</button>
+            <button class="btn dark" type="submit">Save to Backend</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+async function checkYocoDiagnostics() {
+  const box = document.getElementById("yocoDiagnostics");
+  if (!box) return;
+
+  try {
+    const res = await fetch(`${getBackendApiBase()}/api/payments/yoco/diagnostics`);
+    const data = await res.json();
+
+    box.innerHTML = `
+      <div class="admin-note">
+        <strong>Yoco backend:</strong> ${data.yocoConfigured ? "Configured ✅" : "Not configured ❌"}<br>
+        <strong>Mode:</strong> ${data.keyMode}<br>
+        <strong>Key source:</strong> ${data.keySource || "unknown"}<br>
+        <strong>Webhook secret:</strong> ${data.webhookConfigured ? "Configured ✅" : "Not configured yet"}<br>
+        <strong>Frontend URL:</strong> ${data.frontendUrl}
+      </div>`;
+  } catch (error) {
+    box.innerHTML = `<div class="admin-note">Backend not reachable. Start backend on port 5050.</div>`;
+  }
+}
+
+function providerCard(name, key, description, logo, manageFn) {
+  const p = paymentSettings()[key] || {};
+  return `
+    <div class="wx-payment-provider">
+      <div class="wx-provider-logo">${logo}</div>
+      <div>
+        <h2>${name}</h2>
+        <p class="wx-subtle">${description}</p>
+      </div>
+      <div style="text-align:right">
+        <button class="btn light" onclick="${manageFn}()">Manage</button>
+        <p><span class="wx-status ${p.active ? "" : "off"}">${p.active ? "Active" : "Off"}</span></p>
+      </div>
+    </div>`;
+}
+
+function renderPayments() {
+  const s = paymentSettings();
+
+  document.querySelector("[data-admin-main]").innerHTML = `
+    <div class="wx-admin-title">
+      <div>
+        <p class="wx-subtle">Settings › Accept Payments</p>
+        <h1>Accept Payments</h1>
+        <p class="wx-subtle">This page saves payment settings on the backend, not in frontend LocalStorage.</p>
+      </div>
+    </div>
+
+    <div id="backendStatus"></div>
+    <div id="yocoDiagnostics" style="margin-bottom:24px"></div>
+
+    <div class="wx-card">
+      ${providerCard("Manual Payments", "manual", "Customers can pay offline according to your bank instructions.", "R", "openManualModal")}
+      ${providerCard("Yoco Payments", "yoco", "Online card checkout using the backend Yoco API.", "Yoco", "openYocoModal")}
+      ${providerCard("Peach Payments", "peach", "Optional future payment provider placeholder.", "peach", "alert")}
+    </div>
+
+    <div class="wx-card">
+      <div class="wx-card-head"><h2>Saved backend settings</h2></div>
+      <div class="wx-card-body">
+        <p><strong>Manual bank:</strong> ${s.manual?.bankName || "Not set"}</p>
+        <p><strong>Yoco secret:</strong> ${s.yoco?.secretKey || "Not set"}</p>
+        <p><strong>Yoco webhook:</strong> ${s.yoco?.webhookSecret || "Not set"}</p>
+      </div>
+    </div>
+
+    <div id="modalRoot"></div>
+  `;
+
+  checkYocoDiagnostics();
+}
+
+renderPayments();
+loadPayments();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

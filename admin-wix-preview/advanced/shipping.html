@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=6">
+
+<script>
+(function () {
+  try {
+    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
+
+    function cssUrl(value, fallback) {
+      if (!value) return fallback;
+      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
+    }
+
+    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
+    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
+    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
+
+    if (media.logo) {
+      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
+    }
+  } catch (e) {}
+})();
+</script>
+
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("shipping");
+
+function defaultShipping() {
+  return {
+    domestic: [
+      { id: "collect", name: "Collect from your nearest stockist.", time: "", type: "flat", rate: 0, freeOver: 0 },
+      { id: "paxi", name: "PAXI", time: "3-5 business days", type: "flat", rate: 110, freeOver: 3500 },
+      { id: "courier", name: "The Courier Guy", time: "3-5 business days", type: "flat", rate: 150, freeOver: 3500 },
+      { id: "pudo", name: "PUDO - Locker to Locker", time: "3-5 business", type: "quantity", freeOver: 3500, ranges: [
+        { from: 0, to: 1, rate: 60 }, { from: 1, to: 3, rate: 80 }, { from: 3, to: 6, rate: 100 }, { from: 6, to: 10, rate: 150 }
+      ]}
+    ],
+    international: [
+      { id: "free-world", name: "Free shipping", time: "", type: "flat", rate: 0, freeOver: 0 }
+    ]
+  };
+}
+
+function getShippingSettings() {
+  return JSON.parse(localStorage.getItem("reza_shipping_settings") || JSON.stringify(defaultShipping()));
+}
+
+function saveShippingSettings(settings) {
+  localStorage.setItem("reza_shipping_settings", JSON.stringify(settings));
+}
+
+let editGroup = null;
+let editId = null;
+
+function openRateModal(group, id = null) {
+  editGroup = group; editId = id;
+  const settings = getShippingSettings();
+  const rate = id ? settings[group].find(r => r.id === id) : { id: "rate-" + Date.now(), name: "", time: "", type: "flat", rate: 0, freeOver: 3500, ranges: [] };
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="wx-modal-backdrop">
+      <div class="wx-modal">
+        <div class="wx-modal-title"><h2 style="margin:0">${id ? "Edit" : "Add"} shipping rate</h2><button class="rz-close" onclick="closeModal()">×</button></div>
+        <div class="wx-field"><label>Rate type</label>
+          <select class="input" id="rateType" onchange="toggleRateType()">
+            ${["Free shipping","Flat rate","Rate by weight","Rate by price","Rate by quantity"].map(type => `<option ${rate.type === type.toLowerCase().replaceAll(" ","-").replace("rate-by-","") || (rate.type==="quantity" && type==="Rate by quantity") || (rate.type==="flat" && type==="Flat rate") ? "selected" : ""}>${type}</option>`).join("")}
+          </select>
+        </div>
+        <div class="wx-field"><label>Name at checkout</label><input class="input" id="rateName" value="${rate.name || ""}" placeholder="PAXI"></div>
+        <div class="wx-field"><label>Estimated delivery time</label><input class="input" id="rateTime" value="${rate.time || ""}" placeholder="3-5 business days"></div>
+        <div id="flatBox" class="wx-field"><label>Rate</label><input class="input" id="rateAmount" type="number" value="${rate.rate || 0}"></div>
+        <div class="wx-field"><label>Free over</label><input class="input" id="freeOver" type="number" value="${rate.freeOver || 0}"></div>
+
+        <div id="quantityBox" class="hide">
+          <h3>Quantity range</h3>
+          <div id="rangeRows"></div>
+          <button class="btn light" type="button" onclick="addRange()">+ Add Another Range</button>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:22px">
+          <button class="btn light" onclick="closeModal()">Cancel</button>
+          <button class="btn dark" onclick="saveRate()">Save</button>
+        </div>
+      </div>
+    </div>`;
+
+  window.tempRanges = rate.ranges ? JSON.parse(JSON.stringify(rate.ranges)) : [];
+  toggleRateType();
+  renderRanges();
+}
+
+function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; }
+
+function toggleRateType() {
+  const type = document.getElementById("rateType")?.value || "Flat rate";
+  const isQuantity = type === "Rate by quantity";
+  document.getElementById("quantityBox")?.classList.toggle("hide", !isQuantity);
+  document.getElementById("flatBox")?.classList.toggle("hide", isQuantity || type === "Free shipping");
+}
+
+function renderRanges() {
+  const rows = document.getElementById("rangeRows");
+  if (!rows) return;
+  rows.innerHTML = (window.tempRanges || []).map((r,i)=>`
+    <div class="wx-range-row">
+      <input class="input" type="number" placeholder="From" value="${r.from}" onchange="tempRanges[${i}].from=Number(this.value)">
+      <input class="input" type="number" placeholder="Up to" value="${r.to}" onchange="tempRanges[${i}].to=Number(this.value)">
+      <input class="input" type="number" placeholder="Rate" value="${r.rate}" onchange="tempRanges[${i}].rate=Number(this.value)">
+      <button class="icon-btn" onclick="tempRanges.splice(${i},1);renderRanges()">🗑</button>
+    </div>`).join("");
+}
+
+function addRange() {
+  window.tempRanges.push({ from: 0, to: 1, rate: 0 });
+  renderRanges();
+}
+
+function saveRate() {
+  const settings = getShippingSettings();
+  const chosenType = rateType.value;
+  const isQuantity = chosenType === "Rate by quantity";
+  const rate = {
+    id: editId || "rate-" + Date.now(),
+    name: rateName.value,
+    time: rateTime.value,
+    type: isQuantity ? "quantity" : chosenType === "Free shipping" ? "free" : "flat",
+    rate: chosenType === "Free shipping" ? 0 : Number(rateAmount?.value || 0),
+    freeOver: Number(freeOver.value || 0),
+    ranges: isQuantity ? window.tempRanges : []
+  };
+
+  if (editId) settings[editGroup] = settings[editGroup].map(r => r.id === editId ? rate : r);
+  else settings[editGroup].push(rate);
+
+  saveShippingSettings(settings);
+  closeModal();
+  renderShipping();
+}
+
+function deleteRate(group, id) {
+  if (!confirm("Delete this shipping rate?")) return;
+  const settings = getShippingSettings();
+  settings[group] = settings[group].filter(r => r.id !== id);
+  saveShippingSettings(settings);
+  renderShipping();
+}
+
+function rateDisplay(rate) {
+  if (rate.type === "free") return "R0,00";
+  if (rate.type === "quantity") return (rate.ranges || []).map(r => `R${r.rate},00 (${r.from}-${r.to})`).join("<br>");
+  return `R${Number(rate.rate || 0).toLocaleString("en-ZA")},00`;
+}
+
+function shippingTable(title, group, subtitle) {
+  const settings = getShippingSettings();
+  const rates = settings[group] || [];
+  return `
+    <div class="wx-card">
+      <div class="wx-card-head">
+        <div><h2>${title}</h2><p class="wx-subtle">${subtitle}</p></div>
+        <button class="btn dark" onclick="openRateModal('${group}')">Add Another Rate</button>
+      </div>
+      <div class="wx-rate-section-title">Shipping</div>
+      <table class="wx-rate-table">
+        <thead><tr><th>Name at checkout</th><th>Delivery time</th><th>Rate</th><th>Range</th><th>Free over</th><th></th></tr></thead>
+        <tbody>${rates.map(r => `
+          <tr>
+            <td>${r.name}</td>
+            <td>${r.time || ""}</td>
+            <td>${rateDisplay(r)}</td>
+            <td>${r.type === "quantity" ? (r.ranges || []).map(x => `${x.from} - ${x.to}`).join("<br>") : ""}</td>
+            <td>${r.freeOver ? formatMoney(r.freeOver) : ""}</td>
+            <td>
+              <button onclick="openRateModal('${group}','${r.id}')">Edit</button>
+              <button onclick="deleteRate('${group}','${r.id}')">Delete</button>
+            </td>
+          </tr>`).join("")}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderShipping() {
+  document.querySelector("[data-admin-main]").innerHTML = `
+    <div class="wx-admin-title">
+      <div>
+        <p class="wx-subtle">Settings › Shipping, Delivery & Fulfilment</p>
+        <h1>Shipping, Delivery & Fulfilment</h1>
+        <p class="wx-subtle">Manage checkout shipping rates like Wix: collection, PAXI, Courier Guy and PUDO quantity rates.</p>
+      </div>
+    </div>
+    ${shippingTable("Domestic", "domestic", "South Africa (9 provinces)")}
+    ${shippingTable("International", "international", "Rest of the world")}
+    <div id="modalRoot"></div>
+  `;
+}
+renderShipping();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

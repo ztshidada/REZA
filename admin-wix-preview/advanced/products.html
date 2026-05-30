@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=9">
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="../js/image-upload.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("products");
+
+const API_BASE = "https://api.rezaholdings.co.za";
+let products = [];
+
+async function loadProducts() {
+  const main = document.querySelector("[data-admin-main]");
+  main.innerHTML = `<div class="form-card"><h2>Loading products...</h2></div>`;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products`, { cache: "no-store" });
+    const data = await res.json();
+    products = data.products || [];
+  } catch (error) {
+    products = [];
+    main.innerHTML = `<div class="form-card"><h2>Could not load products</h2><p>${error.message}</p></div>`;
+    return;
+  }
+
+  renderProductsPage();
+}
+
+function imageSrc(value) {
+  if (!value) return "../assets/images/product-placeholder.svg";
+  if (String(value).startsWith("data:image/")) return value;
+  if (String(value).startsWith("http")) return value;
+  if (String(value).startsWith("../")) return value;
+  return "../" + value;
+}
+
+function categoriesFromProducts(products) {
+  return ["All products", ...new Set(products.map(p => p.category).filter(Boolean))];
+}
+
+function renderProductsPage() {
+  const categories = categoriesFromProducts(products);
+  const main = document.querySelector("[data-admin-main]");
+
+  main.innerHTML = `
+    <div class="wx-admin-title">
+      <div>
+        <h1>Products <span class="wx-subtle">${products.length}</span></h1>
+        <p class="wx-subtle">Products saved here now appear on the customer website.</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn dark" onclick="location.href='product-edit.html'">+ New Product</button>
+      </div>
+    </div>
+
+    <div class="wx-card">
+      <div class="wx-card-body">
+        <div class="admin-note">Connected to backend: <strong>${API_BASE}</strong></div>
+        <div class="wx-toolbar" style="margin-top:16px">
+          <div class="wx-tabs">
+            ${categories.map((c,i)=>`<button class="wx-tab ${i===0?"active":""}" onclick="filterCategory('${c}', this)">${c}</button>`).join("")}
+          </div>
+          <input class="input wx-search" data-product-search placeholder="Search products..." oninput="renderProductRows()">
+        </div>
+      </div>
+      <div id="productRows"></div>
+    </div>
+  `;
+
+  window.activeCategory = "All products";
+  renderProductRows();
+}
+
+function filterCategory(cat, btn) {
+  window.activeCategory = cat;
+  document.querySelectorAll(".wx-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderProductRows();
+}
+
+function renderProductRows() {
+  const rows = document.getElementById("productRows");
+  if (!rows) return;
+
+  const search = (document.querySelector("[data-product-search]")?.value || "").toLowerCase();
+  let list = [...products];
+
+  if (window.activeCategory && window.activeCategory !== "All products") {
+    list = list.filter(p => p.category === window.activeCategory);
+  }
+
+  if (search) {
+    list = list.filter(p => `${p.name} ${p.category} ${p.id}`.toLowerCase().includes(search));
+  }
+
+  rows.innerHTML = `
+    <div class="wx-product-row" style="font-weight:900;background:#d9e9ff">
+      <div></div><div></div><div>Name</div><div class="wx-hide-mobile">Type</div><div class="wx-hide-mobile">SKU</div><div class="wx-hide-mobile">Price</div><div>Stock</div>
+    </div>
+    ${list.map(p => `
+      <div class="wx-product-row" onclick="location.href='product-edit.html?id=${encodeURIComponent(p.id)}'">
+        <div></div>
+        <img src="${imageSrc(p.image)}" alt="${p.name}">
+        <div><strong>${p.name}</strong><br><small class="wx-subtle">${p.category || ""}</small></div>
+        <div class="wx-hide-mobile">Physical</div>
+        <div class="wx-hide-mobile">${p.sku || p.id}</div>
+        <div class="wx-hide-mobile">${formatMoney(p.price)}</div>
+        <div>${Number(p.stock) > 0 ? "In stock" : "Out"}</div>
+      </div>
+    `).join("") || `<div class="wx-card-body">No products found.</div>`}`;
+}
+
+loadProducts();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

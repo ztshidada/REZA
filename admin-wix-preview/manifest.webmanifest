@@ -1,0 +1,39 @@
+{
+  "name": "Reza Admin Dashboard",
+  "short_name": "Reza Admin",
+  "description": "Mobile admin dashboard for Reza Holdings orders, products and media.",
+  "start_url": "/admin/login.html",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#fffaf2",
+  "theme_color": "#241812",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/admin/assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Orders",
+      "short_name": "Orders",
+      "url": "/admin/orders.html",
+      "description": "View customer orders"
+    },
+    {
+      "name": "Products",
+      "short_name": "Products",
+      "url": "/admin/products.html",
+      "description": "Manage products"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/admin/dashboard.html",
+      "description": "Open admin dashboard"
+    }
+  ]
+}

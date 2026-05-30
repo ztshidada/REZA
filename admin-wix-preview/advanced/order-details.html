@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details | Reza Admin</title>
+  <link rel="stylesheet" href="../css/style.css?v=6">
+  <style>
+    body { background:#f7f2e9; }
+    .rz-page { max-width: 1280px; margin: 0 auto; }
+    .rz-top { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:24px; }
+    .rz-breadcrumb { color:#756b63; margin:0 0 10px; font-weight:700; }
+    .rz-title { font-family: Inter, Arial, sans-serif; font-size: clamp(28px, 4vw, 44px); line-height:1.05; margin:0; letter-spacing:-.04em; }
+    .rz-sub { color:#756b63; margin:10px 0 0; }
+    .rz-pill { display:inline-flex; align-items:center; padding:7px 12px; border-radius:8px; font-size:13px; font-weight:900; text-transform:uppercase; margin-left:8px; vertical-align:middle; }
+    .rz-pill.paid, .rz-pill.delivered, .rz-pill.shipped { background:#d8f1df; color:#1c5c34; }
+    .rz-pill.pending, .rz-pill.manual, .rz-pill.failed, .rz-pill.cancelled, .rz-pill.refunded, .rz-pill.new, .rz-pill.preparing, .rz-pill.ready { background:#ffe0dc; color:#8b342a; }
+    .rz-grid { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:26px; align-items:start; }
+    .rz-card { background:white; border-radius:22px; box-shadow:0 24px 70px rgba(31,24,18,.10); border:1px solid rgba(36,29,25,.08); overflow:hidden; margin-bottom:26px; }
+    .rz-card-head { padding:20px 24px; border-bottom:1px solid rgba(0,0,0,.08); display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .rz-card-head h2 { margin:0; font-size:22px; }
+    .rz-card-body { padding:22px 24px; }
+    .rz-ship-head { background:#d9e9ff; padding:14px 24px; font-weight:900; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .rz-item { display:grid; grid-template-columns:72px 1fr 100px 70px 110px; gap:16px; align-items:center; padding:18px 24px; border-bottom:1px solid rgba(0,0,0,.08); }
+    .rz-item:last-child { border-bottom:0; }
+    .rz-item img { width:72px; height:72px; object-fit:cover; border-radius:12px; background:#f7f2e9; }
+    .rz-item strong { display:block; }
+    .rz-muted { color:#756b63; }
+    .rz-payment-line { display:flex; justify-content:space-between; gap:18px; padding:10px 0; }
+    .rz-payment-line.total { font-size:21px; border-top:1px solid rgba(0,0,0,.12); margin-top:8px; padding-top:18px; font-weight:900; }
+    .rz-info-block { padding:18px 0; border-bottom:1px solid rgba(0,0,0,.08); }
+    .rz-info-block:first-child { padding-top:0; }
+    .rz-info-block:last-child { border-bottom:0; padding-bottom:0; }
+    .rz-info-block h3 { margin:0 0 12px; font-size:16px; text-decoration: underline; }
+    .rz-info-block p { margin:8px 0; line-height:1.55; }
+    .rz-actions { position:relative; }
+    .rz-actions-menu { position:absolute; top:50px; right:0; width:270px; background:#fff; border-radius:16px; padding:10px; box-shadow:0 22px 70px rgba(0,0,0,.16); border:1px solid rgba(0,0,0,.08); z-index:30; }
+    .rz-actions-menu button { width:100%; text-align:left; border:0; background:transparent; padding:12px; border-radius:10px; font:inherit; cursor:pointer; }
+    .rz-actions-menu button:hover { background:#f7f2e9; }
+    .rz-modal-backdrop { position:fixed; inset:0; background:rgba(15,20,38,.68); display:grid; place-items:center; padding:20px; z-index:100; }
+    .rz-modal { width:min(680px,100%); background:white; border-radius:24px; padding:28px; box-shadow:0 30px 90px rgba(0,0,0,.30); }
+    .rz-modal-top { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:22px; }
+    .rz-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .rz-close { border:0; background:#f7f2e9; width:42px; height:42px; border-radius:50%; cursor:pointer; font-size:20px; }
+    .rz-select { width:100%; border:1px solid rgba(36,29,25,.14); border-radius:18px; background:white; padding:14px 16px; font:inherit; }
+    @media (max-width: 1050px) {
+      .rz-grid { grid-template-columns:1fr; }
+      .rz-item { grid-template-columns:64px 1fr; }
+      .rz-item img { width:64px; height:64px; }
+      .rz-mobile-meta { grid-column:2; color:#756b63; }
+      .rz-modal-grid { grid-template-columns:1fr; }
+    }
+    @media print {
+      .sidebar, .rz-actions, .rz-card button, .rz-card select, .rz-breadcrumb { display:none !important; }
+      .admin-layout { display:block; }
+      .admin-main { padding:0; }
+      .rz-page { max-width:none; }
+      .rz-card { box-shadow:none; border:1px solid #ddd; }
+    }
+  </style>
+
+<script>
+(function () {
+  try {
+    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
+
+    function cssUrl(value, fallback) {
+      if (!value) return fallback;
+      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
+    }
+
+    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
+    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
+    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
+
+    if (media.logo) {
+      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
+    }
+  } catch (e) {}
+})();
+</script>
+
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<script src="../js/data.js"></script>
+<script src="../js/image-upload.js"></script>
+<script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script>
+<script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("orders");
+
+const id = new URLSearchParams(location.search).get("id");
+let orders = getOrders();
+let order = orders.find(o => o.id === id) || orders[0];
+
+function saveCurrentOrder() {
+  orders = getOrders().map(o => o.id === order.id ? order : o);
+  saveOrders(orders);
+}
+
+function statusClass(status) {
+  return String(status || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function formatDate(value) {
+  return new Date(value).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function subtotal() {
+  return (order.items || []).reduce((s, i) => s + Number(i.total || 0), 0);
+}
+
+function updateOrderStatus(field, value) {
+  order[field] = value;
+  saveCurrentOrder();
+  renderOrderDetail();
+}
+
+function toggleActions() {
+  const menu = document.getElementById("actionsMenu");
+  if (menu) menu.classList.toggle("hide");
+}
+
+function markFulfilled() {
+  order.deliveryStatus = order.deliveryStatus === "Delivered" ? "New Order" : "Delivered";
+  saveCurrentOrder();
+  renderOrderDetail();
+}
+
+function markPaid() {
+  order.paymentStatus = order.paymentStatus === "Paid" ? "Pending Payment" : "Paid";
+  saveCurrentOrder();
+  renderOrderDetail();
+}
+
+function archiveOrder() {
+  if (!confirm("Archive/delete this order from demo storage?")) return;
+  saveOrders(getOrders().filter(o => o.id !== order.id));
+  location.href = "orders.html";
+}
+
+function closeModal() {
+  const modal = document.getElementById("modalRoot");
+  if (modal) modal.innerHTML = "";
+}
+
+function openTrackingModal() {
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="rz-modal-backdrop">
+      <div class="rz-modal">
+        <div class="rz-modal-top">
+          <h2 style="margin:0">Add tracking number</h2>
+          <button class="rz-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="rz-modal-grid">
+          <p>
+            <label>Tracking number</label>
+            <input class="input" id="trackingNumber" placeholder="e.g. AA1234567" value="${order.trackingNumber || ""}">
+          </p>
+          <p>
+            <label>Shipping carrier</label>
+            <select class="rz-select" id="shippingCarrier">
+              ${["PAXI","PUDO","The Courier Guy","Aramex","PostNet","Fastway","Other"].map(c => `<option ${order.shippingCarrier === c ? "selected" : ""}>${c}</option>`).join("")}
+            </select>
+          </p>
+        </div>
+        <label style="display:flex;gap:10px;align-items:center;margin:10px 0 24px">
+          <input type="checkbox" id="sendEmail" checked>
+          Send shipping confirmation email
+        </label>
+        <div style="display:flex;justify-content:flex-end;gap:12px">
+          <button class="btn light" onclick="closeModal()">Cancel</button>
+          <button class="btn dark" onclick="saveTracking()">Apply</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveTracking() {
+  order.trackingNumber = document.getElementById("trackingNumber").value.trim();
+  order.shippingCarrier = document.getElementById("shippingCarrier").value;
+  order.deliveryStatus = "Shipped";
+  saveCurrentOrder();
+  closeModal();
+  renderOrderDetail();
+}
+
+function printOrder() {
+  window.print();
+}
+
+function sendWhatsAppUpdate() {
+  const customerPhone = String(order.customer?.phone || "").replace(/^0/, "27").replace(/\D/g, "");
+  const msg = encodeURIComponent(`Hi ${order.customer?.fullName || ""}, your Reza order ${order.id} update:\nPayment: ${order.paymentStatus}\nDelivery: ${order.deliveryStatus}${order.trackingNumber ? `\nTracking: ${order.trackingNumber}\nCarrier: ${order.shippingCarrier}` : ""}`);
+  window.open(`https://wa.me/${customerPhone}?text=${msg}`, "_blank");
+}
+
+function createInvoice() {
+  alert("Invoice PDF generation is the next upgrade. For now use Print order.");
+}
+
+function createReceipt() {
+  alert("Receipt PDF generation is the next upgrade. For now use Print order.");
+}
+
+function renderOrderDetail() {
+  const main = document.querySelector("[data-admin-main]");
+
+  if (!order) {
+    main.innerHTML = `<div class="form-card"><h1>Order not found</h1><a class="btn dark" href="orders.html">Back to orders</a></div>`;
+    return;
+  }
+
+  const cust = order.customer || {};
+  const ship = Number(order.shipping || 0);
+  const tax = Number(order.tax || 0);
+  const sub = subtotal();
+  const total = Number(order.total || sub + ship + tax);
+
+  main.innerHTML = `
+    <div class="rz-page">
+      <div class="rz-top">
+        <div>
+          <p class="rz-breadcrumb"><a href="orders.html">Orders</a> › ${order.id}</p>
+          <h1 class="rz-title">
+            Order ${order.id}
+            <span class="rz-pill ${statusClass(order.paymentStatus)}">${order.paymentStatus}</span>
+            <span class="rz-pill ${statusClass(order.deliveryStatus)}">${order.deliveryStatus}</span>
+          </h1>
+          <p class="rz-sub">Placed on ${formatDate(order.createdAt)}</p>
+        </div>
+        <div class="rz-actions">
+          <button class="btn light" onclick="toggleActions()">More Actions ▾</button>
+          <div id="actionsMenu" class="rz-actions-menu hide">
+            <button onclick="markFulfilled()">Mark as fulfilled / unfulfilled</button>
+            <button onclick="markPaid()">Mark paid / unpaid</button>
+            <button onclick="sendWhatsAppUpdate()">Send WhatsApp update</button>
+            <button onclick="printOrder()">Print order</button>
+            <button onclick="createInvoice()">Create invoice</button>
+            <button onclick="createReceipt()">Create receipt</button>
+            <button onclick="archiveOrder()">Archive</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rz-grid">
+        <div>
+          <div class="rz-card">
+            <div class="rz-card-head"><h2>Items (${(order.items || []).length})</h2></div>
+            <div class="rz-ship-head">
+              <span>Products to Ship</span>
+              <button class="btn dark" onclick="openTrackingModal()">Add Tracking No.</button>
+            </div>
+            ${(order.items || []).map(item => `
+              <div class="rz-item">
+                <img src="${safeImageSrc(item.image)}" alt="${item.name || "Product"}">
+                <div>
+                  <strong>${item.name || "Product"}</strong>
+                  <small class="rz-muted">SKU: ${item.id || "REZA"}</small>
+                </div>
+                <div class="rz-mobile-meta">${formatMoney(item.price)}</div>
+                <div class="rz-mobile-meta">X ${item.qty}</div>
+                <strong>${formatMoney(item.total)}</strong>
+              </div>`).join("")}
+          </div>
+
+          <div class="rz-card">
+            <div class="rz-card-head">
+              <h2>Payment info <span class="rz-pill ${statusClass(order.paymentStatus)}">${order.paymentStatus}</span></h2>
+              <select class="rz-select" onchange="updateOrderStatus('paymentStatus', this.value)" style="max-width:220px">
+                ${["Pending Payment","Manual Payment","Paid","Failed","Cancelled","Refunded"].map(s => `<option ${order.paymentStatus === s ? "selected" : ""}>${s}</option>`).join("")}
+              </select>
+            </div>
+            <div class="rz-card-body">
+              <div class="rz-payment-line"><span>Items</span><strong>${formatMoney(sub)}</strong></div>
+              <div class="rz-payment-line"><span>Shipping</span><strong>${formatMoney(ship)}</strong></div>
+              <div class="rz-payment-line"><span>Tax</span><strong>${formatMoney(tax)}</strong></div>
+              <div class="rz-payment-line total"><span>Total</span><strong>${formatMoney(total)}</strong></div>
+            </div>
+          </div>
+
+          <div class="rz-card">
+            <div class="rz-card-head">
+              <h2>Fulfilment</h2>
+              <select class="rz-select" onchange="updateOrderStatus('deliveryStatus', this.value)" style="max-width:240px">
+                ${["New Order","Preparing","Ready for Courier","Shipped","Delivered","Cancelled"].map(s => `<option ${order.deliveryStatus === s ? "selected" : ""}>${s}</option>`).join("")}
+              </select>
+            </div>
+            <div class="rz-card-body">
+              <p><strong>Carrier:</strong> ${order.shippingCarrier || "Not added yet"}</p>
+              <p><strong>Tracking number:</strong> ${order.trackingNumber || "Not added yet"}</p>
+              <button class="btn dark" onclick="openTrackingModal()">Add / Edit Tracking</button>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="rz-card">
+            <div class="rz-card-head"><h2>Order info</h2></div>
+            <div class="rz-card-body">
+              <div class="rz-info-block">
+                <h3>Contact info</h3>
+                <p><strong>${cust.fullName || ""}</strong></p>
+                <p>${cust.email || "No email added"}</p>
+                <p>${cust.phone || ""}</p>
+              </div>
+              <div class="rz-info-block">
+                <h3>Delivery method</h3>
+                <p>${cust.deliveryMethod || "Not selected"}</p>
+                <p>${cust.lockerOrMall || ""}</p>
+              </div>
+              <div class="rz-info-block">
+                <h3>Shipping address</h3>
+                <p>${cust.fullName || ""}<br>
+                ${cust.address || ""}<br>
+                ${cust.city || ""}, ${cust.region || ""} ${cust.postalCode || ""}<br>
+                ${cust.country || ""}<br>
+                ${cust.phone || ""}</p>
+              </div>
+              <div class="rz-info-block">
+                <h3>Billing address</h3>
+                <p>Same as shipping</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rz-card">
+            <div class="rz-card-head"><h2>Additional info</h2></div>
+            <div class="rz-card-body">
+              <p><strong>Order notes:</strong></p>
+              <p>${cust.notes || "No notes added."}</p>
+              <p><strong>Payment method:</strong> ${cust.paymentMethod || "Not selected"}</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div id="modalRoot"></div>
+    </div>
+  `;
+}
+
+renderOrderDetail();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

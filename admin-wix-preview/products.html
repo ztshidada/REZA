@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Products | Reza Admin</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#fffaf2,#f4e1c6);color:#241812}
+    .layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .side{padding:34px 28px;background:rgba(255,255,255,.55);border-right:1px solid rgba(0,0,0,.08)}
+    .side h1{font-family:Georgia,serif;font-size:2.3rem;margin:0}.side h1 span{color:#b8872f}
+    .side p{font-weight:800;color:#765c45}.side a{display:block;padding:15px 18px;margin:8px 0;border-radius:18px;color:#241812;text-decoration:none;font-weight:900}
+    .side a.active,.side a:hover{background:#241812;color:#fffaf2}
+    .main{padding:34px;overflow:auto}.head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+    h1.big{font-family:Georgia,serif;font-size:clamp(3rem,7vw,5.4rem);line-height:.9;margin:0}
+    .btn{border:0;border-radius:999px;padding:13px 20px;font-weight:1000;cursor:pointer}
+    .primary{background:linear-gradient(135deg,#e8c774,#c89334);color:#241812}.dark{background:#241812;color:#fffaf2}.danger{background:#a72222;color:white}.ghost{background:#fff;border:1px solid rgba(0,0,0,.14)}
+    .card{background:rgba(255,255,255,.78);border-radius:28px;padding:22px;box-shadow:0 25px 70px rgba(60,38,20,.12)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}
+    input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(0,0,0,.15);font-size:1rem;background:white}
+    textarea{min-height:90px}.preview{width:120px;height:90px;object-fit:cover;border-radius:16px;background:#f2dfc7}
+    table{width:100%;border-collapse:collapse;margin-top:20px;background:white;border-radius:22px;overflow:hidden}
+    th,td{padding:14px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle}th{background:#f4e5cf}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.small{padding:9px 12px;font-size:.85rem}.status{font-weight:900;margin:12px 0;color:#7a5017}
+    .pill{display:inline-block;padding:7px 12px;border-radius:999px;background:#f0dfc2;font-weight:900}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.main{padding:18px}.side{border-right:0}.head{align-items:flex-start;flex-direction:column}table{font-size:.84rem}th:nth-child(4),td:nth-child(4){display:none}}
+  </style>
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <h1>Reza <span>Admin</span></h1>
+    <p>Champagne Luxury V11</p>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="products.html">Products</a>
+    <a href="media.html">Media</a>
+    <a href="orders.html">Orders</a>
+    <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+    <a href="login.html">Logout</a>
+  </aside>
+
+  <main class="main">
+    <div class="head">
+      <div>
+        <h1 class="big">Products</h1>
+        <p>Add, edit, hide/show and delete products.</p>
+      </div>
+      <button class="btn primary" id="newBtn">+ New Product</button>
+    </div>
+
+    <section class="card" id="formCard">
+      <h2 id="formTitle">Add Product</h2>
+      <div class="grid">
+        <input id="name" placeholder="Product name">
+        <input id="price" type="number" placeholder="Price, put 0 if unknown">
+        <select id="category">
+          <option>Skincare</option>
+          <option>Combos</option>
+          <option>Wellness</option>
+          <option>Coming Soon</option>
+          <option>Soap</option>
+          <option>Collagen</option>
+          <option>Sea Moss</option>
+        </select>
+        <select id="productType">
+          <option>Single</option>
+          <option>Pack of 5</option>
+          <option>Pack of 10</option>
+          <option>Combo</option>
+          <option>Coming Soon</option>
+        </select>
+        <input id="stock" type="number" placeholder="Stock">
+        <input id="badge" placeholder="Badge e.g. On Sale / Coming Soon">
+        <select id="status">
+          <option value="sale">On Sale</option>
+          <option value="comingSoon">Coming Soon</option>
+        </select>
+        <select id="showFeatured">
+          <option value="false">Do not show on homepage featured</option>
+          <option value="true">Show on homepage featured</option>
+        </select>
+        <select id="showOnline">
+          <option value="true">Show on customer page</option>
+          <option value="false">Hide from customer page</option>
+        </select>
+        <input class="full" id="imageFile" type="file" accept="image/*">
+        <textarea class="full" id="description" placeholder="Description"></textarea>
+      </div>
+      <p class="status" id="statusText">Ready.</p>
+      <div class="actions">
+        <button class="btn primary" id="saveBtn">Save Product</button>
+        <button class="btn ghost" id="clearBtn">Clear</button>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:22px">
+      <h2>Product List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Featured</th>
+            <th>Show</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productsBody"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+const API_BASE = location.hostname.includes("localhost") ? "http://localhost:10000" : "https://api.rezaholdings.co.za";
+let products = [];
+let editingId = null;
+let imageData = "";
+
+const $ = id => document.getElementById(id);
+
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function money(v){
+  const n = Number(v || 0);
+  return n ? "R " + n.toLocaleString("en-ZA") : "R 0";
+}
+
+function setStatus(msg){ $("statusText").textContent = msg; }
+
+function clearForm(){
+  editingId = null;
+  imageData = "";
+  $("formTitle").textContent = "Add Product";
+  ["name","price","stock","badge","description"].forEach(id => $(id).value = "");
+  $("category").value = "Skincare";
+  $("productType").value = "Single";
+  $("status").value = "sale";
+  $("showFeatured").value = "false";
+  $("showOnline").value = "true";
+  $("imageFile").value = "";
+  setStatus("Ready.");
+}
+
+async function api(path, options={}){
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: { "Content-Type":"application/json", ...(options.headers || {}) }
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok || data.success === false) throw new Error(data.message || "API failed");
+  return data;
+}
+
+async function loadProducts(){
+  const data = await api("/api/products?t=" + Date.now());
+  products = data.products || [];
+  renderProducts();
+}
+
+function renderProducts(){
+  $("productsBody").innerHTML = products.map(p => `
+    <tr>
+      <td><img class="preview" src="${p.image || ""}" onerror="this.style.opacity=.2"></td>
+      <td><b>${p.name}</b><br><small>${p.description || ""}</small></td>
+      <td>${p.category || ""}</td>
+      <td><span class="pill">${p.productType || ""}</span></td>
+      <td>${money(p.price)}</td>
+      <td>${p.showFeatured ? "⭐ Featured" : "—"}</td>
+      <td>${p.showOnline !== false ? "👁️ Visible" : "🙈 Hidden"}</td>
+      <td>
+        <div class="actions">
+          <button class="btn small ghost" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="btn small dark" onclick="toggleProduct('${p.id}')">${p.showOnline !== false ? "Hide" : "Show"}</button>
+          <button class="btn small danger" onclick="deleteProduct('${p.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+window.editProduct = function(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+
+  editingId = id;
+  $("formTitle").textContent = "Edit Product";
+  $("name").value = p.name || "";
+  $("price").value = p.price || 0;
+  $("category").value = p.category || "Skincare";
+  $("productType").value = p.productType || "Single";
+  $("stock").value = p.stock || 0;
+  $("badge").value = p.badge || "";
+  $("status").value = p.status || "sale";
+  $("showFeatured").value = String(Boolean(p.showFeatured));
+  $("showOnline").value = String(p.showOnline !== false);
+  $("description").value = p.description || "";
+  imageData = p.image || "";
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+
+window.toggleProduct = async function(id){
+  await api("/api/products/" + id + "/toggle", { method:"PATCH" });
+  await loadProducts();
+};
+
+window.deleteProduct = async function(id){
+  if(!confirm("Delete this product?")) return;
+  await api("/api/products/" + id, { method:"DELETE" });
+  await loadProducts();
+};
+
+$("imageFile").addEventListener("change", async () => {
+  const file = $("imageFile").files[0];
+  if(file){
+    setStatus("Reading image...");
+    imageData = await fileToDataURL(file);
+    setStatus("Image ready.");
+  }
+});
+
+$("saveBtn").addEventListener("click", async () => {
+  try{
+    setStatus("Saving...");
+    const payload = {
+      name: $("name").value.trim(),
+      price: Number($("price").value || 0),
+      category: $("category").value,
+      productType: $("productType").value,
+      stock: Number($("stock").value || 0),
+      badge: $("badge").value.trim(),
+      status: $("status").value,
+      showOnline: $("showOnline").value === "true",
+      showFeatured: $("showFeatured").value === "true",
+      description: $("description").value.trim(),
+      image: imageData
+    };
+
+    if(!payload.name){
+      alert("Product name is required.");
+      return;
+    }
+
+    if(editingId){
+      await api("/api/products/" + editingId, { method:"PUT", body:JSON.stringify(payload) });
+    } else {
+      await api("/api/products", { method:"POST", body:JSON.stringify(payload) });
+    }
+
+    clearForm();
+    await loadProducts();
+    setStatus("Saved successfully.");
+  }catch(err){
+    console.error(err);
+    alert(err.message);
+    setStatus("Save failed.");
+  }
+});
+
+$("clearBtn").addEventListener("click", clearForm);
+$("newBtn").addEventListener("click", clearForm);
+
+loadProducts().catch(err => {
+  console.error(err);
+  setStatus("Could not load products. Check backend deploy.");
+});
+</script>
+<script src="js/admin-pwa.js?v=1"></script>
+<script src="js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

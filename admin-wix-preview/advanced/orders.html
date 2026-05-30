@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Orders | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=6">
+<script>
+(function () {
+  try {
+    var media = JSON.parse(localStorage.getItem("reza_background_images") || "{}");
+
+    function cssUrl(value, fallback) {
+      if (!value) return fallback;
+      return 'url("' + String(value).replace(/"/g, '\\"') + '")';
+    }
+
+    document.documentElement.style.setProperty("--reza-bg-1", cssUrl(media.bg1, 'url("assets/images/background-image-1.png")'));
+    document.documentElement.style.setProperty("--reza-bg-2", cssUrl(media.bg2, 'url("assets/images/background-image-2.png")'));
+    document.documentElement.style.setProperty("--reza-bg-3", cssUrl(media.bg3, 'url("assets/images/background-image-3.png")'));
+
+    if (media.logo) {
+      document.documentElement.style.setProperty("--reza-logo-custom", 'url("' + String(media.logo).replace(/"/g, '\\"') + '")');
+    }
+  } catch (e) {}
+})();
+</script>
+
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head><body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin(); adminShell("orders");
+function orderDate(o){return new Date(o.createdAt).toLocaleString("en-ZA",{dateStyle:"medium",timeStyle:"short"});}
+function renderOrders(){const orders=getOrders();const totalSales=orders.reduce((s,o)=>s+Number(o.total||0),0);const paid=orders.filter(o=>String(o.paymentStatus).toLowerCase().includes("paid")).length;const unfulfilled=orders.filter(o=>o.deliveryStatus!=="Delivered"&&o.deliveryStatus!=="Shipped").length;document.querySelector("[data-admin-main]").innerHTML=`
+<div class="admin-topline"><div><h1 class="section-title">Orders</h1><p style="color:var(--muted)">Click an order row to open full order details.</p></div><button class="btn dark" onclick="alert('Manual order creation can be added next.')">+ Add New Order</button></div>
+<div class="grid stats-grid" style="margin-bottom:24px"><div class="stat">Sales<strong>${formatMoney(totalSales)}</strong></div><div class="stat">Orders<strong>${orders.length}</strong></div><div class="stat">Paid<strong>${paid}</strong></div><div class="stat">To Fulfil<strong>${unfulfilled}</strong></div></div>
+<div class="table-wrap"><table><thead><tr><th>Order</th><th>Date created</th><th>Customer</th><th>Payment</th><th>Fulfilment</th><th>Total</th><th>Items</th></tr></thead><tbody>${orders.map(o=>`<tr class="order-row-link" onclick="location.href='order-details.html?id=${encodeURIComponent(o.id)}'"><td><strong>${o.id}</strong></td><td>${orderDate(o)}</td><td>${o.customer?.fullName||""}</td><td><span class="admin-pill ${String(o.paymentStatus).toLowerCase().includes("paid")?"":"pending"}">${o.paymentStatus}</span></td><td><span class="admin-pill ${o.deliveryStatus==="Delivered"||o.deliveryStatus==="Shipped"?"fulfilled":"unfulfilled"}">${o.deliveryStatus}</span></td><td><strong>${formatMoney(o.total)}</strong></td><td>${(o.items||[]).length}</td></tr>`).join("")||`<tr><td colspan="7">No orders yet.</td></tr>`}</tbody></table></div>`} renderOrders();
+</script>
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body></html>

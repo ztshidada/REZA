@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media | Reza Admin</title><link rel="stylesheet" href="../css/style.css?v=10">
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="../css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="../css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<script src="../js/data.js"></script><script src="../js/live-products.js"></script><script src="../js/main.js"></script><script src="../js/live-media.js"></script><script src="../js/image-upload.js"></script><script src="admin.js"></script>
+<script>
+requireAdmin();
+adminShell("media");
+
+const API_BASE = "https://api.rezaholdings.co.za";
+let media = {};
+
+async function authToken() {
+  let token = localStorage.getItem("reza_admin_token");
+  if (token) return token;
+
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: "admin@reza.co.za",
+      password: "reza2026"
+    })
+  });
+
+  const data = await res.json();
+  if (!data.token) throw new Error("Could not login to backend admin.");
+  localStorage.setItem("reza_admin_token", data.token);
+  return data.token;
+}
+
+function imageSrc(value) {
+  if (!value) return "../assets/images/background-image-1.png";
+  if (String(value).startsWith("data:image/")) return value;
+  if (String(value).startsWith("http")) return value;
+  if (String(value).startsWith("../")) return value;
+  return "../" + value;
+}
+
+async function loadMedia() {
+  const main = document.querySelector("[data-admin-main]");
+  main.innerHTML = `<div class="form-card"><h2>Loading media...</h2></div>`;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/media`, { cache: "no-store" });
+    const data = await res.json();
+    media = data.media || {};
+  } catch (error) {
+    main.innerHTML = `<div class="form-card"><h2>Could not load media</h2><p>${error.message}</p></div>`;
+    return;
+  }
+
+  renderMedia();
+}
+
+async function saveMedia() {
+  const token = await authToken();
+
+  const res = await fetch(`${API_BASE}/api/media`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(media)
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.message || "Could not save media.");
+  media = data.media;
+  localStorage.setItem("reza_media_cache", JSON.stringify(media));
+  await applyLiveMedia();
+}
+
+async function uploadMedia(input, key) {
+  const file = input.files?.[0];
+  if (!file) return;
+
+  try {
+    const dataUrl = await readImageFileAsDataUrl(file);
+    media[key] = dataUrl;
+    await saveMedia();
+    alert("Image saved to backend. It will now show on the public website.");
+    renderMedia();
+  } catch (error) {
+    alert("Upload failed: " + error.message);
+  }
+}
+
+function mediaCard(key, title, description) {
+  const img = imageSrc(media[key] || "");
+  return `
+    <div class="wx-card reza-safe-reveal">
+      <div class="wx-card-head"><h2>${title}</h2></div>
+      <div class="wx-card-body">
+        <label class="upload-zone">
+          <input type="file" accept="image/*" onchange="uploadMedia(this, '${key}')">
+          <strong>+ Select image from local device</strong>
+          <p class="wx-subtle">${description}</p>
+        </label>
+        <div class="upload-preview">
+          <img src="${img}" alt="${title}">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMedia() {
+  document.querySelector("[data-admin-main]").innerHTML = `
+    <div class="wx-admin-title reza-safe-reveal">
+      <div>
+        <h1>Media</h1>
+        <p class="wx-subtle">Upload pictures from your laptop. These are now saved to backend and used by the public website.</p>
+      </div>
+      <a class="btn dark" href="https://www.rezaholdings.co.za" target="_blank">View Website</a>
+    </div>
+
+    <div class="admin-note reza-safe-reveal">
+      Connected to backend: <strong>${API_BASE}/api/media</strong>
+    </div>
+
+    <div class="wx-two" style="margin-top:24px">
+      ${mediaCard("background1", "Main Website Background", "Home, shop and checkout hero background.")}
+      ${mediaCard("background2", "Second Background", "Reusable section background.")}
+      ${mediaCard("background3", "Third Background", "Alternative premium background.")}
+      ${mediaCard("logo", "Logo", "Header and admin logo.")}
+    </div>
+  `;
+}
+
+loadMedia();
+</script>
+
+<script src="../js/reza-final-live-sync.js"></script>
+<script src="../js/admin-pwa.js?v=1"></script>
+<script src="../js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>

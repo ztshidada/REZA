@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Orders | Reza Admin</title>
+  <link rel="stylesheet" href="css/wix-orders.css">
+  <link rel="manifest" href="/admin/manifest.webmanifest">
+  <meta name="theme-color" content="#241812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reza Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/admin-mobile-pwa.css?v=1">
+  <link rel="stylesheet" href="css/admin-wix-preview.css?v=1">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span>R</span> Reza Admin</div>
+    <nav class="nav">
+      <a href="dashboard.html">Home</a>
+      <a class="active" href="orders.html">Sales • Orders</a>
+      <a href="products.html">Catalog • Products</a>
+      <a href="media.html">Media</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="https://rezaholdings.co.za" target="_blank">View Website</a>
+      <a href="login.html">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Orders</h1>
+        <p style="color:#64748b;margin:6px 0 0">Manage customer orders, payments and fulfilment.</p>
+      </div>
+      <button class="btn blue" onclick="openManual()">+ Add New Order</button>
+    </div>
+
+    <section class="card">
+      <div class="toolbar">
+        <select id="filter">
+          <option value="">All items</option>
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+          <option value="Pending">Pending</option>
+          <option value="Fulfilled">Fulfilled</option>
+          <option value="Unfulfilled">Unfulfilled</option>
+        </select>
+        <input id="search" placeholder="Search orders, customers, products...">
+        <button class="btn" onclick="loadOrders()">Refresh</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:55px"><input type="checkbox"></th>
+              <th>Order</th>
+              <th>Date created</th>
+              <th>Customer</th>
+              <th>Payment</th>
+              <th>Fulfillment</th>
+              <th>Total</th>
+              <th>Items</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="dialog">
+    <h2>Add New Order</h2>
+    <form id="manualForm" class="grid">
+      <input id="mName" placeholder="Customer name">
+      <input id="mPhone" placeholder="Customer phone">
+      <input id="mEmail" placeholder="Email">
+      <input id="mTotal" type="number" placeholder="Total">
+      <textarea id="mAddress" class="full" placeholder="Delivery address"></textarea>
+      <textarea id="mItems" class="full" placeholder='Items JSON e.g. [{"name":"Product","price":200,"qty":1}]'>[{"name":"Product","price":0,"qty":1}]</textarea>
+      <button class="btn blue" type="submit">Save Order</button>
+      <button class="btn" type="button" onclick="closeManual()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/wix-orders.js"></script>
+<script src="js/admin-pwa.js?v=1"></script>
+<script src="js/admin-wix-preview.js?v=1"></script>
+</body>
+</html>
