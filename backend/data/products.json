@@ -198,5 +198,28 @@
     "showOnline": true,
     "showInPopup": false,
     "updatedAt": "2026-05-27T11:52:59.048639Z"
+  },
+  {
+    "id": "reza-cracked-heels-premium-tissue-oil",
+    "name": "Reza Cracked Heels Premium Tissue Oil",
+    "category": "Singles",
+    "productType": "Single",
+    "status": "sale",
+    "price": 200,
+    "stock": 50,
+    "badge": "New",
+    "image": "https://rezaholdings.co.za/assets/images/products/reza-cracked-heels-premium-tissue-oil.jpg",
+    "description": "A luxurious multi-purpose tissue oil specially formulated to improve the appearance of cracked heels and leave heels soft, smooth and beautiful.",
+    "benefits": [
+      "Helps improve the appearance of cracked heels",
+      "Deeply nourishing formula",
+      "Non-greasy and lightweight feel",
+      "Safe and effective for daily use",
+      "Suitable for all skin types"
+    ],
+    "howToUse": "Apply to clean skin and massage gently into cracked heels in circular motions twice daily for best results.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-05-30T00:00:00.000Z"
   }
 ]
