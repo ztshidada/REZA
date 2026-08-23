@@ -1,23 +1,26 @@
 [
   {
     "id": "reza-collagen-anti-ageing-cream",
-    "name": "Reza Collagen Anti-Ageing Cream",
-    "category": "Skincare",
-    "price": 0,
-    "stock": 20,
-    "badge": "On Sale",
-    "image": "assets/images/products/reza-collagen-anti-ageing-cream.jpg",
-    "description": "Anti-ageing collagen cream for youthful, firm and radiant-looking skin.",
+    "name": "Reza Anti-Ageing Collagen Cream",
+    "category": "Singles",
+    "price": 200,
+    "stock": 80,
+    "badge": "Single",
+    "image": "assets/images/products/reza-collagen-anti-ageing-cream-new.jpg",
+    "description": "A luxurious collagen-infused cream formulated to nourish and hydrate the skin while helping improve the appearance of fine lines and loss of firmness.",
     "benefits": [
-      "Reduces fine lines & wrinkles",
-      "Boosts skin elasticity",
-      "Deep hydration",
-      "Nourishes & revitalizes"
+      "Boosts collagen production",
+      "Firms skin",
+      "Reduces fine lines",
+      "Deeply moisturizes and nourishes"
     ],
-    "howToUse": "Apply externally to clean skin as directed.",
+    "howToUse": "Apply to clean skin and massage gently until absorbed. Use daily for best results.",
     "showOnline": true,
     "comingSoon": false,
-    "status": "sale"
+    "status": "sale",
+    "productType": "Single",
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
   },
   {
     "id": "reza-starter-pack-combo",
@@ -149,10 +152,10 @@
     "productType": "Single",
     "status": "sale",
     "price": 80,
-    "stock": 120,
-    "badge": "New",
-    "image": "https://rezaholdings.co.za/assets/images/products/reza-glow-soap.jpg",
-    "description": "Glow Soap infused with carrot extract, lemon extract, honey, aloe vera and natural oils. Helps brighten dull skin, even skin tone and leave skin soft and smooth.",
+    "stock": 150,
+    "badge": "Single",
+    "image": "assets/images/products/reza-glow-soap-new.jpg",
+    "description": "A luxurious cleansing soap infused with carrot to gently cleanse and refresh the skin while helping improve the appearance of dull, uneven-looking skin.",
     "benefits": [
       "Brightens dull skin",
       "Evens skin tone",
@@ -164,51 +167,160 @@
     "howToUse": "Lather on wet skin, gently massage in circular motions, rinse thoroughly, and use morning and night for best results.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-05-30T00:00:00.000Z"
+    "updatedAt": "2026-08-23T00:00:00.000Z"
   },
   {
     "id": "reza-glow-soap-10-pack",
-    "name": "Reza Glow Soap 10 Pack",
+    "name": "Reza Glow Soap \u2013 10 Bar Stock Pack",
     "category": "10 Packs",
     "productType": "10 Pack",
     "status": "sale",
     "price": 400,
     "stock": 60,
     "badge": "10 Pack",
-    "image": "https://rezaholdings.co.za/assets/images/products/reza-glow-soap-10-pack.jpg",
-    "description": "10 Reza Glow Soaps for R400. Great value pack for glowing, brighter and more radiant skin.",
+    "image": "assets/images/products/reza-glow-soap-10-pack-new.jpg",
+    "description": "Stock up on our signature Reza Glow Soap with 10 bars, perfect for distributors and resellers.",
     "benefits": [
-      "Value pack",
-      "Brighten your skin",
-      "Boost your confidence",
-      "Feel beautiful every day"
+      "10 bars",
+      "Great for resellers",
+      "More stock, more sales",
+      "Glow soap value pack"
     ],
-    "howToUse": "Use daily on wet skin. Lather, gently massage, rinse thoroughly and use consistently for best results.",
+    "howToUse": "Use daily or sell individually to customers.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-05-30T00:00:00.000Z"
+    "updatedAt": "2026-08-23T00:00:00.000Z"
   },
   {
     "id": "reza-complete-glow-combo",
-    "name": "Reza Complete Glow Combo",
+    "name": "Reza Luxury Full Glow Combo",
     "category": "Combos",
     "productType": "Combo",
     "status": "sale",
     "price": 560,
-    "stock": 45,
+    "stock": 60,
     "badge": "Glow Combo",
-    "image": "https://rezaholdings.co.za/assets/images/products/reza-complete-glow-combo.jpg",
-    "description": "4-step glow combo including anti-ageing lotion, tissue oil, anti-ageing cream and glow soap for younger, brighter and radiant skin.",
+    "image": "assets/images/products/reza-full-glow-combo-new.jpg",
+    "description": "Your complete skincare routine for nourished, hydrated and radiant-looking skin. This combo includes Glow Soap, Tissue Oil, Anti-Ageing Collagen Cream and Anti-Ageing Collagen Lotion.",
     "benefits": [
-      "Youthful glow",
-      "Deep hydration",
-      "Firms and tightens",
-      "Evens skin tone",
-      "Protects and repairs"
+      "Complete 4-step skincare routine",
+      "Cleanses, moisturises and pampers skin",
+      "Supports radiant-looking skin",
+      "Best value glow combo"
     ],
-    "howToUse": "Use the anti-ageing lotion, tissue oil, anti-ageing cream and glow soap as part of your daily skincare routine.",
+    "howToUse": "Use the soap, tissue oil, cream and lotion as part of your daily skincare routine.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-05-30T00:00:00.000Z"
+    "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-anti-ageing-lotion",
+    "name": "Reza Anti-Ageing Collagen Lotion",
+    "category": "Singles",
+    "productType": "Single",
+    "status": "sale",
+    "price": 200,
+    "stock": 80,
+    "badge": "Single",
+    "image": "assets/images/products/reza-anti-ageing-lotion-new.jpg",
+    "description": "A nourishing body lotion infused with collagen to help hydrate, smooth and improve the appearance of dry, dull-looking skin.",
+    "benefits": [
+      "Hydrates skin",
+      "Smooths dry-looking skin",
+      "Leaves skin soft and supple",
+      "Supports youthful-looking radiance"
+    ],
+    "howToUse": "Apply generously to clean skin and massage until absorbed. Use daily.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-luxury-tissue-oil",
+    "name": "Reza Luxury Tissue Oil",
+    "category": "Singles",
+    "productType": "Single",
+    "status": "sale",
+    "price": 80,
+    "stock": 150,
+    "badge": "Single",
+    "image": "assets/images/products/reza-luxury-tissue-oil-new.jpg",
+    "description": "A nourishing and moisturising body oil formulated to help soften dry skin and improve the appearance of uneven-looking skin.",
+    "benefits": [
+      "Deeply nourishing",
+      "Fast absorbing",
+      "Helps improve uneven-looking skin",
+      "Suitable for all skin types"
+    ],
+    "howToUse": "Apply to clean skin and massage gently in circular motions twice daily for best results.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-tissue-oil-business-pack",
+    "name": "Reza Tissue Oil \u2013 10 Bottle Stock Pack",
+    "category": "10 Packs",
+    "productType": "10 Pack",
+    "status": "sale",
+    "price": 500,
+    "stock": 50,
+    "badge": "10 Pack",
+    "image": "assets/images/products/reza-tissue-oil-10-pack-new.jpg",
+    "description": "Stock up and grow your Reza business with our 10-bottle Tissue Oil Pack. Perfect for distributors and resellers.",
+    "benefits": [
+      "10 bottles",
+      "Great for resellers",
+      "More stock, more sales",
+      "Business stock pack"
+    ],
+    "howToUse": "Sell individually or keep as stock for customers.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-anti-ageing-cream-10-pack",
+    "name": "Reza Anti-Ageing Collagen Cream \u2013 10 Bottle Stock Pack",
+    "category": "10 Packs",
+    "productType": "10 Pack",
+    "status": "sale",
+    "price": 1000,
+    "stock": 40,
+    "badge": "10 Pack",
+    "image": "assets/images/products/reza-cream-10-pack-new.jpg",
+    "description": "Stock up on our nourishing Anti-Ageing Collagen Cream with this convenient 10-bottle pack. Perfect for distributors and resellers.",
+    "benefits": [
+      "10 bottles",
+      "Great for resellers",
+      "More stock, more sales",
+      "Quality skincare stock pack"
+    ],
+    "howToUse": "Sell individually or keep as stock for customers.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-anti-ageing-lotion-10-pack",
+    "name": "Reza Anti-Ageing Collagen Lotion \u2013 10 Bottle Stock Pack",
+    "category": "10 Packs",
+    "productType": "10 Pack",
+    "status": "sale",
+    "price": 1000,
+    "stock": 40,
+    "badge": "10 Pack",
+    "image": "assets/images/products/reza-lotion-10-pack-new.jpg",
+    "description": "Stock up on our nourishing Anti-Ageing Collagen Lotion with a 10-bottle pack, perfect for distributors and resellers.",
+    "benefits": [
+      "10 bottles",
+      "Great for resellers",
+      "More stock, more sales",
+      "Hydration stock pack"
+    ],
+    "howToUse": "Sell individually or keep as stock for customers.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-08-23T00:00:00.000Z"
   }
 ]
