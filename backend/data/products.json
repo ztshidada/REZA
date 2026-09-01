@@ -291,25 +291,26 @@
   },
   {
     "id": "reza-complete-glow-combo",
-    "name": "Reza Luxury Full Glow Combo",
+    "name": "Reza Glow Combo",
     "category": "Combos",
     "productType": "Combo",
     "status": "sale",
-    "price": 560,
+    "price": 580,
     "stock": 60,
     "badge": "Glow Combo",
-    "image": "assets/images/products/reza-full-glow-combo-new.jpg",
-    "description": "Your complete skincare routine for nourished, hydrated and radiant-looking skin. This combo includes Glow Soap, Tissue Oil, Anti-Ageing Collagen Cream and Anti-Ageing Collagen Lotion.",
+    "image": "assets/images/products/reza-glow-combo-r580.jpg",
+    "description": "The ultimate 4-in-1 Reza Glow Combo for healthy, clear and radiant-looking skin. Includes Anti-Ageing Lotion, Tissue Oil, Glow Soap and Collagen Anti-Ageing Cream.",
     "benefits": [
-      "Complete 4-step skincare routine",
-      "Cleanses, moisturises and pampers skin",
-      "Supports radiant-looking skin",
-      "Best value glow combo"
+      "Brightens dark spots",
+      "Fades acne and blemishes",
+      "Evens skin tone",
+      "Deep hydration",
+      "Healthy youthful glow"
     ],
-    "howToUse": "Use the soap, tissue oil, cream and lotion as part of your daily skincare routine.",
+    "howToUse": "Use daily as a 4-step routine: wash with Glow Soap, apply Anti-Ageing Lotion, apply Tissue Oil to areas needing extra care, and apply Collagen Cream in the evening.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-08-23T00:00:00.000Z"
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-luxury-tissue-oil",
@@ -376,5 +377,30 @@
     "showOnline": true,
     "showInPopup": false,
     "updatedAt": "2026-08-23T00:00:00.000Z"
+  },
+  {
+    "id": "reza-ultimate-glow-combo-r2900",
+    "name": "Reza Ultimate Glow Combo",
+    "category": "Specials",
+    "productType": "Special",
+    "status": "sale",
+    "price": 2900,
+    "stock": 30,
+    "badge": "Special Offer",
+    "image": "assets/images/products/reza-ultimate-glow-combo-r2900.jpg",
+    "description": "The ultimate Reza business stock combo with 40 products: 10 Anti-Ageing Lotions, 10 Tissue Oils, 10 Anti-Ageing Creams and 10 Glow Soaps. Includes free T-shirt and cap.",
+    "benefits": [
+      "40 products",
+      "10 lotions",
+      "10 tissue oils",
+      "10 creams",
+      "10 glow soaps",
+      "Free T-shirt and cap",
+      "Best value business stock combo"
+    ],
+    "howToUse": "Perfect for distributors, resellers and customers who want a full Reza skincare stock package.",
+    "showOnline": true,
+    "showInPopup": false,
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   }
 ]
