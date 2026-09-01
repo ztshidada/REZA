@@ -26,7 +26,7 @@
     "id": "reza-starter-pack-combo",
     "name": "Reza Starter Pack Combo",
     "category": "Combos",
-    "price": 1400,
+    "price": 500,
     "stock": 15,
     "badge": "Best Value",
     "image": "assets/images/products/reza-starter-pack-combo.jpg",
@@ -40,13 +40,14 @@
     "howToUse": "Use products consistently as part of your skincare routine.",
     "showOnline": true,
     "comingSoon": false,
-    "status": "sale"
+    "status": "sale",
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-complete-anti-ageing-combo",
     "name": "Reza Complete Anti-Ageing Skin Combo",
     "category": "Combos",
-    "price": 480,
+    "price": 500,
     "stock": 25,
     "badge": "Combo",
     "image": "assets/images/products/reza-complete-anti-ageing-combo.jpg",
@@ -60,7 +61,8 @@
     "howToUse": "Cleanse, nourish and moisturize as your daily routine.",
     "showOnline": true,
     "comingSoon": false,
-    "status": "sale"
+    "status": "sale",
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-marine-collagen",
@@ -242,7 +244,7 @@
     "category": "Singles",
     "productType": "Single",
     "status": "sale",
-    "price": 80,
+    "price": 100,
     "stock": 150,
     "badge": "Single",
     "image": "assets/images/products/reza-luxury-tissue-oil-new.jpg",
@@ -256,7 +258,7 @@
     "howToUse": "Apply to clean skin and massage gently in circular motions twice daily for best results.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-08-23T00:00:00.000Z"
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-tissue-oil-business-pack",

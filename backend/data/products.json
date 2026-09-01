@@ -26,26 +26,28 @@
     "name": "Reza Starter Pack Combo",
     "category": "Combos",
     "status": "sale",
-    "price": 1400,
+    "price": 500,
     "stock": 15,
     "badge": "Starter Combo",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-starter-pack-combo.jpg",
     "description": "Complete anti-ageing skincare solution starter combo.",
     "showOnline": true,
-    "productType": "Single"
+    "productType": "Single",
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-complete-anti-ageing-skin-combo",
     "name": "Reza Complete Anti-Ageing Skin Combo",
     "category": "Combos",
     "status": "sale",
-    "price": 480,
+    "price": 500,
     "stock": 25,
     "badge": "Complete Combo",
     "image": "https://rezaholdings.co.za/assets/images/products/reza-complete-anti-ageing-combo.jpg",
     "description": "A complete anti-ageing skin combo for youthful, firm and glowing skin.",
     "showOnline": true,
-    "productType": "Single"
+    "productType": "Single",
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "luxury-reza-marine-collagen",
@@ -122,14 +124,14 @@
     "category": "Combos",
     "productType": "Combo",
     "status": "sale",
-    "price": 480,
+    "price": 500,
     "stock": 0,
     "badge": "Combo",
     "image": "https://rezaholdings.co.za/assets/images/products/complete-anti-ageing-skin-combo.jpg",
     "description": "Complete anti-ageing skin combo for youthful, firm and glowing skin.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-05-27T11:52:59.048630Z"
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "starter-pack-combo-2500",
@@ -318,7 +320,7 @@
     "category": "Singles",
     "productType": "Single",
     "status": "sale",
-    "price": 80,
+    "price": 100,
     "stock": 150,
     "badge": "Single",
     "image": "assets/images/products/reza-luxury-tissue-oil-new.jpg",
@@ -332,7 +334,7 @@
     "howToUse": "Apply to clean skin and massage gently in circular motions twice daily for best results.",
     "showOnline": true,
     "showInPopup": false,
-    "updatedAt": "2026-08-23T00:00:00.000Z"
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   },
   {
     "id": "reza-anti-ageing-cream-10-pack",
